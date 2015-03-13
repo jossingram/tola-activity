@@ -339,31 +339,6 @@ class TemplateAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'documentation_type', 'file_field', 'create_date', 'edit_date')
     display = 'Template'
 
-class Budget(models.Model):
-    contributor = models.CharField(max_length=135)
-    description_of_contribution = models.CharField(max_length=255)
-    proposed_value = models.CharField(max_length="255", blank=True, null=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    #onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Template, self).save()
-
-    def __unicode__(self):
-        return self.contributor
-
-    class Meta:
-        ordering = ('contributor',)
-
-
-class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('contributor', 'description_of_contribution', 'proposed_value', 'create_date', 'edit_date')
-    display = 'Budget'
-
 
 class ProjectProposal(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True, related_name="proposal")
@@ -451,7 +426,7 @@ class ProjectAgreement(models.Model):
     estimated_num_indirect_beneficiaries = models.CharField("Estimated Number of indirect beneficiaries", help_text="This is a calculation - multiply direct beneficiaries by average household size",max_length=255, blank=True, null=True)
     total_estimated_budget = models.CharField(help_text="In USD", max_length=255, blank=True, null=True)
     mc_estimated_budget = models.CharField(help_text="In USD", max_length=255, blank=True, null=True)
-    other_budget = models.ForeignKey(Budget, help_text="Describe and quantify in dollars", blank=True, null=True)
+    project_type_other = models.CharField("Select Type", max_length=255, blank=True, null=True)
     estimation_date = models.DateTimeField(blank=True, null=True)
     estimated_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="estimating")
     checked_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="checking")
@@ -642,6 +617,33 @@ class Monitor(models.Model):
 class MonitorAdmin(admin.ModelAdmin):
     list_display = ('responsible_person', 'frequency', 'type', 'create_date', 'edit_date')
     display = 'Monitor'
+
+
+class Budget(models.Model):
+    contributor = models.CharField(max_length=135, blank=True, null=True)
+    description_of_contribution = models.CharField(max_length=255, blank=True, null=True)
+    proposed_value = models.IntegerField(default=0, blank=True, null=True)
+    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Template, self).save()
+
+    def __unicode__(self):
+        return self.contributor
+
+    class Meta:
+        ordering = ('contributor',)
+
+
+class BudgetAdmin(admin.ModelAdmin):
+    list_display = ('contributor', 'description_of_contribution', 'proposed_value', 'create_date', 'edit_date')
+    display = 'Budget'
 
 
 class MergeMap(models.Model):

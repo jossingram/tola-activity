@@ -36,8 +36,10 @@
             <h4>Project Proposal</h4>
         </li>
 
-        <li class="list-group-item"><b>{{ proposal.project_proposal.project_name }} {{ proposal.project_proposal.activity_code }}</b>
-            <div class="panel-body">created: <span class="date-badge">{{ proposal.project_proposal.create_date|date }}</span> edited: <span class="date-badge">{{ proposal.project_proposal.edit_date|date }}</span></div></li>
+        <li class="list-group-item"><b>Name: </b>{{ proposal.project_proposal.project_name }}<br/>
+            <b>Activity Code: </b>{{ proposal.project_proposal.activity_code }}<br/>
+            <b>Created:</b> <span class="date-badge">{{ proposal.project_proposal.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ proposal.project_proposal.edit_date|date }}</span>
+        </li>
         <li class="list-group-item">
             <div class="btn-group" role="group" aria-label="...">
                 <button data-toggle="tooltip" data-placement="top" onclick="location.href='/activitydb/projectproposal_update/{{ proposal.project_proposal.id }}'" type="button" class="btn btn-sm btn-warning">Update Proposal</button>
@@ -69,8 +71,10 @@
                 <h4>Project Agreement</h4>
             </li>
 
-            <li class="list-group-item"><b>{{ proposal.project_agreement.project_name }} {{ proposal.project_agreement.activity_code }}</b>
-                <div class="panel-body">created: <span class="date-badge">{{ proposal.project_agreement.create_date|date }}</span> edited: <span class="date-badge">{{ proposal.project_agreement.edit_date|date }}</span></div></li>
+            <li class="list-group-item"><b>Name: </b>{{ proposal.project_agreement.project_name }}<br/>
+                <b>Activity Code: </b>{{ proposal.project_agreement.activity_code }}<br/>
+                <b>Created:</b> <span class="date-badge">{{ proposal.project_agreement.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ proposal.project_agreement.edit_date|date }}</span>
+            </li>
             <li class="list-group-item">
                 <div class="btn-group" role="group" aria-label="...">
                     <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectagreement_update/{{ proposal.project_agreement.id }}'">Update Agreement</button>
@@ -103,9 +107,10 @@
             <li class="list-group-item list-group-item-info">
                 <h4>Project Completion</h4>
             </li>
-
-            <li class="list-group-item"><b>{{ proposal.project_completion.project_name }} {{ proposal.project_completion.activity_code }}</b>
-                <div class="panel-body">created: <span class="date-badge">{{ proposal.project_completion.create_date|date }}</span> edited: <span class="date-badge">{{ proposal.project_completion.edit_date|date }}</span></div></li>
+            <li class="list-group-item"><b>Name: </b>{{ proposal.project_agreement.project_name }}<br/>
+                <b>Activity Code: </b>{{ proposal.project_agreement.activity_code }}<br/>
+                <b>Created:</b> <span class="date-badge">{{ proposal.project_agreement.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ proposal.project_agreement.edit_date|date }}</span>
+            </li>
             <li class="list-group-item">
                 <div class="btn-group" role="group" aria-label="...">
                     <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectcomplete_update/{{ proposal.project_completion.id }}'">Update Completion</button>

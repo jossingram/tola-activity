@@ -1,6 +1,6 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
-from .models import ProjectProposal, ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, QuantitativeOutputs
+from .models import ProjectProposal, ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, QuantitativeOutputs, Budget
 from silo.models import Silo, ValueStore, DataField
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
@@ -365,6 +365,13 @@ class ProjectAgreementCreate(CreateView):
         latest = ProjectAgreement.objects.latest('id')
         getAgreement = ProjectAgreement.objects.get(id=latest.id)
 
+        print "HELP!!!!!!"
+        print self.cleaned_data
+        print form
+        print form.instance
+        budget = Budget(contributor=self.cleaned_data['contributor'],description_of_contribution=self.cleaned_data['description_of_contribution'], proposed_value=self.cleaned_data['proposed_value'], agreement=latest)
+        budget.save()
+
         update_dashboard = ProgramDashboard.objects.filter(project_proposal__id=self.request.POST['project_proposal']).update(project_agreement=getAgreement)
 
         messages.success(self.request, 'Success, Agreement Created!')
@@ -413,6 +420,12 @@ class ProjectAgreementUpdate(UpdateView):
     def form_valid(self, form):
 
         form.save()
+
+        print "HELP!!!!!!"
+        print form.instance
+        budget = Budget(contributor=form.instance['contributor'],description_of_contribution=form.instance['description_of_contribution'], proposed_value=form.instance['proposed_value'], agreement=id)
+        budget.save()
+
         messages.success(self.request, 'Success, form updated!')
 
         return self.render_to_response(self.get_context_data(form=form))

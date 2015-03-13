@@ -64,11 +64,11 @@ body > .container {
     padding: 3px 7px;
     font-size: 12px;
     font-weight: 700;
-    color: #ffffff;
+    color: #000000;
     line-height: 1;
     vertical-align: baseline;
     white-space: nowrap;
     text-align: center;
-    background-color: lightgrey;
+    background-color: lightgoldenrodyellow;
     border-radius: 5px
 }
