@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block page_title %}Tola-Activity{% endblock %}
+
+{% block content %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Track and complete project activities.</div>
+        <div class="panel-body">
+            <p>This application allows you to track program and project activites from proposal, to compleltion.</p>
+
+            <div class="well">
+                Go to the <a href="/activitydb/create_projectproposal/0/">Create a Project</a> page to start a new Project/Activity.
+                </br><b>OR</b></br>
+                <p>Select an existing project to <a href="/display">track progress</a></p>
+
+            </div>
+
+            <a href="/activitydb/create_projectproposal/0/" class="btn btn-lg btn-success">Project Proposal</a>
+
+        </div>
+    </div>
+
+{% endblock content %}
