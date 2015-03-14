@@ -2,18 +2,28 @@
 {% block page_title %}Indicator Planning Tool{% endblock %} 
 
 {% block content %}
-	<a href="/indicators/indicator">Create a new Indicator</a>
-	<h4>Existing Programs: </h4>
-	<ul>
-	{% for item in getPrograms %}
-		<li><a href="/indicators/home/{{ item.id }}">{{ item.name }}</a></li>
-	{% endfor %}
-	</ul>
+
+    <div class="dropdown">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+    Programs
+    <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/0"> -- All --</a></li>
+    {% for program in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
+    {% endfor %}
+    </ul>
+    <a href="/indicators/indicator" class="btn btn-large btn-success">New Indicator</a>
+    </div>
+    <br/>
     <div class="jumbotron">
         <h3>Indicators</h3>
-        <ul>
+        <ul class="list-group">
         {% for item in getIndicators %}
-            <li><a href="/indicators/editIndicator/{{ item.id }}">{{ item.name }}</a></li>
+            <li class="list-group-item"><a href="/indicators/editIndicator/{{ item.id }}">{{ item.name }}</a></li>
+        {% empty %}
+            <li class="list-group-item">No indicators yet.</li>
         {% endfor %}
         </ul>
     </div>

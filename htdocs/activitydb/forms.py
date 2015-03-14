@@ -186,7 +186,8 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
-        self.helper.form_tag = False
+        self.helper.add_input(HTML('<input type=\"submit\" name=\"submit\" value=\"Save\" class=\"btn btn-primary\" id=\"submit-id-submit\" onclick=\"this.window.close()\">'))
+        self.helper.add_input(Submit('submit', 'Save & Add Another'))
 
         super(QuantitativeOutputsForm, self).__init__(*args, **kwargs)
 
@@ -353,6 +354,7 @@ class ProjectAgreementForm(forms.ModelForm):
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
 
+
 class ProjectCompleteForm(forms.ModelForm):
 
     class Meta:
@@ -507,6 +509,7 @@ class DocumentationForm(forms.ModelForm):
 
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
+                Submit('submit', 'Save & Add Another', css_class='btn-default'),
                 Reset('reset', 'Reset', css_class='btn-warning')
             )
         )
@@ -537,6 +540,7 @@ class BenchmarkForm(forms.ModelForm):
 
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
+                Submit('submit', 'Save & Add Another', css_class='btn-default'),
                 Reset('reset', 'Reset', css_class='btn-warning')
             )
         )
@@ -569,6 +573,7 @@ class MonitorForm(forms.ModelForm):
 
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
+                Submit('submit', 'Save & Add Another', css_class='btn-default'),
                 Reset('reset', 'Reset', css_class='btn-warning')
             )
         )

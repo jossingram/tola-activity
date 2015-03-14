@@ -800,7 +800,7 @@ class QuantitativeOutputs(models.Model):
     logframe_indicator = models.ForeignKey('indicators.Indicator', blank=True, null=True)
     non_logframe_indicator = models.CharField("Logframe Indicator", max_length=255, blank=True, null=True)
     project_agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement")
-    project_complete = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_complete")
+    project_complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
