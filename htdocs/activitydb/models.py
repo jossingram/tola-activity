@@ -632,7 +632,7 @@ class Budget(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(Template, self).save()
+        super(Budget, self).save()
 
     def __unicode__(self):
         return self.contributor

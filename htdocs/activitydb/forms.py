@@ -8,6 +8,7 @@ import floppyforms as forms
 from django.contrib.auth.models import Permission, User, Group
 from .models import ProjectProposal, ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, QuantitativeOutputs, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget
 from django.forms.formsets import formset_factory
+from django.forms.models import modelformset_factory
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 
 """
@@ -220,9 +221,13 @@ class BudgetForm(forms.ModelForm):
 
         super(BudgetForm, self).__init__(*args, **kwargs)
 
+    def save(self, *args, **kwargs):
+        # Commit is already set to false
+        obj = super(BudgetForm, self).save(*args, **kwargs)
+        return obj
 
 
-BudgetFormSet = formset_factory(BudgetForm, extra=3)
+BudgetFormSet = modelformset_factory(Budget, form=BudgetForm, extra=3)
 
 
 class ProjectAgreementForm(forms.ModelForm):

@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectCompleteForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, QuantitativeOutputsForm
+from .forms import ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectCompleteForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, QuantitativeOutputsForm, BudgetFormSet
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -365,13 +365,6 @@ class ProjectAgreementCreate(CreateView):
         latest = ProjectAgreement.objects.latest('id')
         getAgreement = ProjectAgreement.objects.get(id=latest.id)
 
-        print "HELP!!!!!!"
-        print self.cleaned_data
-        print form
-        print form.instance
-        budget = Budget(contributor=self.cleaned_data['contributor'],description_of_contribution=self.cleaned_data['description_of_contribution'], proposed_value=self.cleaned_data['proposed_value'], agreement=latest)
-        budget.save()
-
         update_dashboard = ProgramDashboard.objects.filter(project_proposal__id=self.request.POST['project_proposal']).update(project_agreement=getAgreement)
 
         messages.success(self.request, 'Success, Agreement Created!')
@@ -394,6 +387,13 @@ class ProjectAgreementUpdate(UpdateView):
         getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
         id = getAgreement.project_proposal_id
         context.update({'id': id})
+
+        #add formsets to context
+        if self.request.POST:
+            context['budget_form'] = BudgetFormSet(self.request.POST)
+        else:
+            context['budget_form'] = BudgetFormSet()
+
         return context
 
     # add the request to the kwargs
@@ -421,10 +421,11 @@ class ProjectAgreementUpdate(UpdateView):
 
         form.save()
 
-        print "HELP!!!!!!"
-        print form.instance
-        budget = Budget(contributor=form.instance['contributor'],description_of_contribution=form.instance['description_of_contribution'], proposed_value=form.instance['proposed_value'], agreement=id)
-        budget.save()
+        context = self.get_context_data()
+        budget_form = context['budget_form']
+        self.object = form.save()
+        budget_form.instance = self.object
+        budget_form.save()
 
         messages.success(self.request, 'Success, form updated!')
 
