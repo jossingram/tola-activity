@@ -200,7 +200,7 @@ class BudgetForm(forms.ModelForm):
 
     class Meta:
         model = Budget
-        exclude = ['create_date', 'edit_date', 'agreement']
+        exclude = ['create_date', 'edit_date']
 
 
     def __init__(self, *args, **kwargs):
@@ -226,7 +226,7 @@ class BudgetForm(forms.ModelForm):
         return obj
 
 
-BudgetFormSet = modelformset_factory(Budget, form=BudgetForm, extra=2)
+BudgetFormSet = modelformset_factory(Budget, form=BudgetForm, extra=1)
 
 
 class ProjectAgreementForm(forms.ModelForm):
@@ -317,7 +317,7 @@ class ProjectAgreementForm(forms.ModelForm):
                 Tab('Budget Other',
                     Fieldset("Other Budget Contributions:",
                         MultiField(
-                                "Describe and quantify in dollars:",
+                                "Describe and quantify in dollars (Save to add another):",
                                 Formset(BudgetFormSet),
                         ),
                     ),

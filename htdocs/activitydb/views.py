@@ -350,6 +350,13 @@ class ProjectAgreementCreate(CreateView):
         getProposal = ProjectProposal.objects.get(id=self.kwargs['pk'])
         id = getProposal.id
         context.update({'id': id})
+
+         #add formsets to context
+        if self.request.POST:
+            context['budget_form'] = BudgetFormSet(self.request.POST)
+        else:
+            context['budget_form'] = BudgetFormSet()
+
         return context
 
     def form_invalid(self, form):
@@ -361,6 +368,13 @@ class ProjectAgreementCreate(CreateView):
     def form_valid(self, form):
 
         form.save()
+
+        #save formset from context
+        context = self.get_context_data()
+        budget_form = context['budget_form']
+        self.object = form.save()
+        budget_form.instance = self.object
+        budget_form.save()
 
         latest = ProjectAgreement.objects.latest('id')
         getAgreement = ProjectAgreement.objects.get(id=latest.id)
@@ -420,7 +434,7 @@ class ProjectAgreementUpdate(UpdateView):
     def form_valid(self, form):
 
         form.save()
-
+        #save formset from context
         context = self.get_context_data()
         budget_form = context['budget_form']
         self.object = form.save()
