@@ -6,7 +6,7 @@ from functools import partial
 from widgets import GoogleMapsWidget
 import floppyforms as forms
 from django.contrib.auth.models import Permission, User, Group
-from .models import ProjectProposal, ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, QuantitativeOutputs, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget
+from .models import ProjectProposal, ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, QuantitativeOutputs, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
@@ -205,8 +205,7 @@ class BudgetForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.form_class = 'form-vertical'
+        self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-6'
         self.helper.form_error_title = 'Form Errors'
@@ -215,7 +214,7 @@ class BudgetForm(forms.ModelForm):
         self.helper.html5_required = True
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Field('contributor', required=False), Field('description_of_contribution', required=False), PrependedAppendedText('proposed_value','$', '.00'),
+            Field('contributor', required=False), Field('description_of_contribution', required=False), PrependedAppendedText('proposed_value','$', '.00'), 'agreement',
         )
 
 
@@ -227,7 +226,7 @@ class BudgetForm(forms.ModelForm):
         return obj
 
 
-BudgetFormSet = modelformset_factory(Budget, form=BudgetForm, extra=3)
+BudgetFormSet = modelformset_factory(Budget, form=BudgetForm, extra=2)
 
 
 class ProjectAgreementForm(forms.ModelForm):
@@ -257,6 +256,18 @@ class ProjectAgreementForm(forms.ModelForm):
     description_of_government_involvement = forms.CharField(help_text="This is an open-text field for describing the project. It does not need to be too long, but this is where you will be the main description and the main description that will be in the database.  Please make this a description from which someone can understand what this project is doing. You do not need to list all activities, such as those that will appear on your benchmark list. Just describe what you are doing. You should attach technical drawings, technical appraisals, bill of quantity or any other appropriate documentation", widget=forms.Textarea, required=False)
     documentation_government_approval = forms.CharField(help_text="Check the box if there IS documentation to show government request for or approval of the project. This should be attached to the proposal, and also kept in the program file.", widget=forms.Textarea, required=False)
     description_of_community_involvement = forms.CharField(help_text="How the community is involved in the planning, approval, or implementation of this project should be described. Indicate their approval (copy of a signed MOU, or their signed Project Prioritization request, etc.). But also describe how they will be involved in the implementation - supplying laborers, getting training, etc.", widget=forms.Textarea, required=False)
+
+    capacity = forms.ModelChoiceField(
+        queryset=Capacity.objects.all(),
+        initial='',
+        required=False,
+    )
+
+    evaluate = forms.ModelChoiceField(
+        queryset=Evaluate.objects.all(),
+        initial='',
+        required=False,
+    )
 
     approval = forms.ChoiceField(
         choices=APPROVALS,
@@ -336,6 +347,7 @@ class ProjectAgreementForm(forms.ModelForm):
                         HTML(""" <br/> <a href="/activitydb/quantitative_add/{{ id }}" target="_new">Add Quantitative Outputs</a> """),
                         HTML(""" <br/> <a href="/activitydb/monitor_add/{{ id }}" target="_new">Add Monitoring Data</a> """),
                         HTML(""" <br/> <a href="/activitydb/benchmark_add/{{ id }}" target="_new">Add Benchmarks</a> """),
+                        'capacity','evaluate'
 
                     ),
                 ),
