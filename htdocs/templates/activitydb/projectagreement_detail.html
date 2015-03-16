@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block bread_crumb %}
+<ol class="breadcrumb">
+  <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
+  <li><a href="/activitydb/dashboard/project/{{ project_proposal_id }}/">Project Dashboards</a></li>
+  <li class="active">Trainings</li>
+</ol>
+
+{% endblock bread_crumb %}
+{% load render_table from django_tables2 %}
+
+{% block page_title %}Activity Report{% endblock %}
+
+{% block content %}
+
+
+{% endblock content %}
