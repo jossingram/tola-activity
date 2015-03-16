@@ -495,8 +495,9 @@ class CommunityForm(forms.ModelForm):
 
     date_of_firstcontact = forms.DateField(widget=DatePicker.DateInput())
 
-
     def __init__(self, *args, **kwargs):
+        #get the user object from request to check permissions
+        self.request = kwargs.pop('request')
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -542,6 +543,11 @@ class CommunityForm(forms.ModelForm):
                         'total_num_literate','literate_males','literate_females','literacy_rate',
                     ),
                 ),
+                Tab('Approval',
+                    Fieldset('Approval',
+                        'approval', 'filled_by', 'approved_by',
+                    ),
+                ),
             ),
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
@@ -550,6 +556,11 @@ class CommunityForm(forms.ModelForm):
         )
 
         super(CommunityForm, self).__init__(*args, **kwargs)
+
+        if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
+            self.fields['approval'].widget.attrs['disabled'] = "disabled"
+            self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
+            self.fields['approval'].help_text = "Approval level permissions required"
 
 
 class DocumentationForm(forms.ModelForm):

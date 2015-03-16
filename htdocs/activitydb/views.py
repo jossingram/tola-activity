@@ -559,8 +559,6 @@ class ProjectCompleteCreate(CreateView):
 
         return context
 
-        return context
-
     def form_invalid(self, form):
 
         messages.error(self.request, 'Invalid Form', fail_silently=False)
@@ -787,6 +785,20 @@ class CommunityCreate(CreateView):
     def dispatch(self, request, *args, **kwargs):
         return super(CommunityCreate, self).dispatch(request, *args, **kwargs)
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(CommunityCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def get_initial(self):
+        initial = {
+            'approved_by': self.request.user,
+            'filled_by': self.request.user,
+        }
+
+        return initial
+
     def form_invalid(self, form):
 
         messages.error(self.request, 'Invalid Form', fail_silently=False)
@@ -806,6 +818,12 @@ class CommunityUpdate(UpdateView):
     Community Form
     """
     model = Community
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(CommunityUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
