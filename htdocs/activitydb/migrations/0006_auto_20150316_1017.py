@@ -23,10 +23,4 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(null=True, blank=True),
             preserve_default=True,
         ),
-        migrations.AlterField(
-            model_name='beneficiary',
-            name='training',
-            field=models.ManyToManyField(to='activitydb.TrainingAttendance', null=True, blank=True),
-            preserve_default=True,
-        ),
     ]
