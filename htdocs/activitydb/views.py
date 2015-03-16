@@ -806,7 +806,7 @@ class CommunityCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-
+        form.save()
         messages.success(self.request, 'Success, Community Created!')
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -908,7 +908,7 @@ class MonitorCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-
+        form.save()
         messages.success(self.request, 'Success, Monitor Created!')
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -981,7 +981,7 @@ class BenchmarkCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-
+        form.save()
         messages.success(self.request, 'Success, Benchmark Created!')
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -1121,9 +1121,100 @@ class TrainingDelete(DeleteView):
     form_class = TrainingAttendanceForm
 
 
+class BeneficiaryList(ListView):
+    """
+    Beneficiary
+    """
+    model = Beneficiary
+    template_name = 'activitydb/beneficiary_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        project_proposal_id = self.kwargs['pk']
+
+        if int(self.kwargs['pk']) == 0:
+            getBeneficiaries = Beneficiary.objects.all()
+        else:
+            getBeneficiaries = Beneficiary.objects.all().filter(project_proposal_id=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getBeneficiaries': getBeneficiaries, 'project_proposal_id': project_proposal_id})
+
+
+class BeneficiaryCreate(CreateView):
+    """
+    Beneficiary Form
+    """
+    model = Beneficiary
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(BeneficiaryCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = {
+            'training': self.kwargs['id'],
+            }
+
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Beneficiary Created!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = BeneficiaryForm
+
+
+class BeneficiaryUpdate(UpdateView):
+    """
+    Training Form
+    """
+    model = Beneficiary
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Beneficiary Updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = BeneficiaryForm
+
+
+class BeneficiaryDelete(DeleteView):
+    """
+    Beneficiary Delete
+    """
+    model = Beneficiary
+    success_url = reverse_lazy('training_list')
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Beneficiary Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = BeneficiaryForm
+
+
 class QuantitativeOutputsList(ListView):
     """
-    QuantitativeOutput Attendance
+    QuantitativeOutput List
     """
     model = QuantitativeOutputs
     template_name = 'activitydb/quantitative_list.html'

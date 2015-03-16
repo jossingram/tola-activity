@@ -1,14 +1,20 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
-  <li><a href="/activitydb/dashboard/0/">Program Dashboard</a></li>
-  <li><a href="/activitydb/dashboard/project/{{ id }}/">Project Dashboard</a></li>
-  <li class="active">Project Agreement Form</li>
+  <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
+  {%  if project_proposal_id %}
+    <li><a href="/activitydb/dashboard/project/{{ project_proposal_id }}/">Project Dashboards</a></li>
+    <li><a href="/activitydb/beneficiary_list/{{ project_proposal_id }}/">Beneficiaries</a></li>
+  {%  else  %}
+    <li><a href="/activitydb/beneficiary_list/0/">Beneficiairies</a></li>
+  {% endif %}
+
+  <li class="active">Beneficiairy Form</li>
 </ol>
 {% endblock %}
-{% block page_title %}Project Agreement Form{% endblock %}
-{% block content %}
+{% block page_title %}Beneficiary Form{% endblock %}
 
+{% block content %}
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}
@@ -23,10 +29,8 @@
             </div>
         {% endfor %}
     {% endif %}
+	{% csrf_token %}
     {% load crispy_forms_tags %}
-    <form class="form-horizontal" method="post" enctype="multipart/form-data" name="most">
     {% crispy form %}
-    <input type="submit" name="submit" value="Save" class="btn btn-primary btn-default" id="submit-id-submit" onclick="document.most.submit()">
-    </form>
-    <!--- my end form --->
+
 {% endblock content %}

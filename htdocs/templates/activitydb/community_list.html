@@ -2,7 +2,9 @@
 {% block bread_crumb %}
 <ol class="breadcrumb">
   <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
-  <li><a href="/activitydb/dashboard/project/{{ project_proposal_id }}/">Project Dashboards</a></li>
+  {%  if project_proposal_id %}
+    <li><a href="/activitydb/dashboard/project/{{ project_proposal_id }}/">Project Dashboards</a></li>
+  {% endif %}
   <li class="active">Communites</li>
 </ol>
 {% endblock %}
@@ -93,10 +95,7 @@
 
 <ul class="list-group">
 {% for item in getCommunity %}
-    <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.name }}</b></li>
-    {% if request.user|has_group:"Editor" %}
-        <li class="list-group-item"><a href="/activitydb/community_update/{{ item.id }}" class="btn btn-sm btn-warning">Update Community</a> <a href="/activitydb/community_delete/{{ item.id }}" class="btn btn-sm btn-danger">Delete Community</a></li>
-    {% endif %}
+    <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.name }}</b> <a href="/activitydb/community_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Community</a> {% if request.user|has_group:"Editor" %} <a href="/activitydb/community_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Community</a>{% endif %}</li>
 {% empty %}
     <li class="list-group-item">No communities yet.</li>
 {% endfor %}

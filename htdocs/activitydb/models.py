@@ -203,6 +203,7 @@ class Community(models.Model):
     name = models.CharField("Community", max_length=255, blank=True, null=True)
     code = models.CharField("Community Profile Code", help_text="See AIMS Village (Shura) Code", max_length=255, blank=True, null=True)
     type = models.CharField("Profile Type", max_length=255, blank=True, null=True)
+    office = models.ForeignKey(Office, default="1")
     existing_village = models.BooleanField("Is There an existing shura or CDC?", default="True")
     existing_village_descr = models.CharField("If Yes please describe", max_length=255, blank=True, null=True)
     community_leader = models.CharField("Community Malik/Elder Name", max_length=255, blank=True, null=True)
@@ -267,7 +268,7 @@ class Community(models.Model):
 
 
 class CommunityAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'country', 'district', 'province', 'village', 'cluster', 'longitude', 'latitude', 'create_date', 'edit_date')
+    list_display = ('name', 'code','office', 'country', 'district', 'province', 'village', 'cluster', 'longitude', 'latitude', 'create_date', 'edit_date')
     display = 'Community'
 
 
@@ -751,6 +752,8 @@ class TrainingAttendance(models.Model):
     total_age_15_24_female = models.IntegerField(null=True, blank=True)
     total_age_25_59_male = models.IntegerField(null=True, blank=True)
     total_age_25_59_female = models.IntegerField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ('training_name',)
@@ -795,11 +798,12 @@ class Beneficiary(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return unicode(self.program)
+        return unicode(self.beneficiary_name)
 
 
 class BeneficiaryAdmin(admin.ModelAdmin):
     list_display = ('beneficiary_name', 'father_name', 'age', 'gender', 'community', 'signature', 'remarks', 'initials')
+
 
 class Contribution(models.Model):
     contributor = models.CharField("Contributor", max_length=255, blank=True)

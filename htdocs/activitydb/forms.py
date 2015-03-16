@@ -430,7 +430,7 @@ class ProjectCompleteForm(forms.ModelForm):
                     Fieldset(
                         'Dates',
                         'expected_start_date','expected_end_date', 'expected_duration', 'actual_start_date', 'actual_end_date', 'actual_duration',
-                        PrependedText('on_time', ' '),'no_explanation',
+                        PrependedText('on_time', ''), 'no_explanation',
 
                     ),
                 ),
@@ -468,11 +468,6 @@ class ProjectCompleteForm(forms.ModelForm):
                 ),
             ),
 
-            HTML("""<br/>"""),
-            FormActions(
-                Submit('submit', 'Save', css_class='btn-default'),
-                Reset('reset', 'Reset', css_class='btn-warning')
-            )
         )
         super(ProjectCompleteForm, self).__init__(*args, **kwargs)
 
@@ -513,7 +508,7 @@ class CommunityForm(forms.ModelForm):
             TabHolder(
                 Tab('Profile',
                     Fieldset('Description',
-                        'code', 'name', 'type', PrependedText('existing_village',''), 'existing_village_descr',
+                        'code', 'name', 'type', 'office', PrependedText('existing_village',''), 'existing_village_descr',
                     ),
                     Fieldset('Community',
                         'community_leader', 'head_of_institution', 'date_of_firstcontact', 'contact_number', 'num_members',
