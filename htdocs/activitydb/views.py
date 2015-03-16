@@ -1,12 +1,13 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
+from django.views.generic.detail import View, DetailView
 from .models import ProjectProposal, ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, QuantitativeOutputs, Budget
 from silo.models import Silo, ValueStore, DataField
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectCompleteForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, QuantitativeOutputsForm, BudgetFormSet
+from .forms import ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectCompleteForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, QuantitativeOutputsForm, BudgetFormSet, FilterForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -15,6 +16,11 @@ from django.contrib.auth.models import User
 from django.db.models import Count
 from django.db.models import Q
 from django.contrib.auth.decorators import permission_required
+from tables import ProjectAgreementTable
+from django_tables2 import RequestConfig
+from filters import ProjectAgreementFilter
+import json as simplejson
+
 
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
@@ -448,6 +454,21 @@ class ProjectAgreementUpdate(UpdateView):
     form_class = ProjectAgreementForm
 
 
+class ProjectAgreementDetail(DetailView):
+
+    model = ProjectAgreement
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(ProjectAgreementDetail, self).get_context_data(**kwargs)
+        data = ProjectAgreement.objects.get(id=self.kwargs['pk'])
+        jsonData = serializers.serialize('json', data)
+        print jsonData
+        context.update({'jsonData': jsonData})
+
+        return self.render_to_response(self.get_context_data(context=context))
+
+
 class ProjectAgreementDelete(DeleteView):
     """
     Project Agreement Delete
@@ -519,8 +540,7 @@ class ProjectCompleteCreate(CreateView):
             'program': getProjectAgreement.program,
             'project_proposal': getProjectAgreement.project_proposal,
             'project_agreement': getProjectAgreement.id,
-            'project_name': getProjectAgreement.project_title,
-            'proposal_num': getProjectAgreement.proposal_num,
+            'project_name': getProjectAgreement.project_name,
             'activity_code': getProjectAgreement.activity_code,
         }
         return initial
@@ -530,6 +550,15 @@ class ProjectCompleteCreate(CreateView):
         getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
         id = getAgreement.project_proposal_id
         context.update({'id': id})
+
+        #add formsets to context
+        if self.request.POST:
+            context['budget_form'] = BudgetFormSet(self.request.POST)
+        else:
+            context['budget_form'] = BudgetFormSet()
+
+        return context
+
         return context
 
     def form_invalid(self, form):
@@ -540,6 +569,11 @@ class ProjectCompleteCreate(CreateView):
     def form_valid(self, form):
 
         form.save()
+        context = self.get_context_data()
+        budget_form = context['budget_form']
+        self.object = form.save()
+        budget_form.instance = self.object
+        budget_form.save()
 
         latest = ProjectComplete.objects.latest('id')
         getComplete = ProjectComplete.objects.get(id=latest.id)
@@ -591,6 +625,12 @@ class ProjectCompleteUpdate(UpdateView):
     def form_valid(self, form):
 
         form.save()
+        context = self.get_context_data()
+        budget_form = context['budget_form']
+        self.object = form.save()
+        budget_form.instance = self.object
+        budget_form.save()
+
         messages.success(self.request, 'Success, form updated!')
 
         return self.render_to_response(self.get_context_data(form=form, request=request))
@@ -1156,6 +1196,40 @@ class QuantitativeOutputsDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = QuantitativeOutputsForm
+
+def report(request):
+    """
+    Show LIST of submitted incidents with a filtered search view using django-tables2
+    and django-filter
+    """
+
+    getAgreements = ProjectAgreement.objects.select_related()
+    filtered = ProjectAgreementFilter(request.GET, queryset=getAgreements)
+    table = ProjectAgreementTable(filtered.queryset)
+    table.paginate(page=request.GET.get('page', 1), per_page=20)
+
+    if request.method == "GET" and "search" in request.GET:
+        #list1 = list()
+        #for obj in filtered:
+        #    list1.append(obj)
+            """
+             fields = ['country','activity_code', 'project_name', 'beneficiary_type', 'project_proposal', 'activity_code',
+             'office', 'program', 'sector','approval_status', 'approved by', 'approved date'
+            """
+            queryset = ProjectAgreement.objects.filter(
+                                               Q(activity_code__contains=request.GET["search"]) |
+                                               Q(project_name__contains=request.GET["search"]) |
+                                               Q(beneficiary_type__contains=request.GET["search"]) |
+                                               Q(approval__contains=request.GET["search"]) |
+                                               Q(program__name__contains=request.GET["search"])).select_related()
+            table = ProjectAgreementTable(queryset)
+
+
+
+    RequestConfig(request).configure(table)
+
+    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+    return render(request, "activitydb/report.html", {'get_agreements': table, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
 
 
 def doImport(request, pk):

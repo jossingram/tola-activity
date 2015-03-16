@@ -40,10 +40,10 @@ class Formset(LayoutObject):
 
 #Global for approvals
 APPROVALS=(
-        ('approved', 'approved'),
         ('in progress', 'in progress'),
+        ('awaiting approval', 'awaiting approval'),
+        ('approved', 'approved'),
         ('rejected', 'rejected'),
-        ('awaiting approval', 'awaiting approval')
     )
 
 #Global for other
@@ -54,6 +54,12 @@ TYPE_OTHER=(
         ("Energy Efficency Project", "Energy Efficency Project"),
     )
 
+#Global for Budget Variance
+BUDGET_VARIANCE=(
+        ("Over Budget", "Over Budget"),
+        ("Under Budget", "Under Budget"),
+        ("No Variance", "No Variance"),
+    )
 
 class Formset(LayoutObject):
     """
@@ -77,7 +83,9 @@ class Formset(LayoutObject):
 
     def render(self, form, form_style, context, template_pack=TEMPLATE_PACK):
 
-        return render_to_string(self.template, Context({'wrapper': self, 'formset': self.formset_name_in_context}))
+        form_class = 'form-horizontal'
+
+        return render_to_string(self.template, Context({'wrapper': self, 'formset': self.formset_name_in_context, 'form_class': form_class}))
 
 
 class ProgramDashboardForm(forms.ModelForm):
@@ -394,6 +402,12 @@ class ProjectCompleteForm(forms.ModelForm):
         required=False,
     )
 
+    budget_variance = forms.ChoiceField(
+        choices=BUDGET_VARIANCE,
+        initial='Over Budget',
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         #get the user object from request to check permissions
         self.request = kwargs.pop('request')
@@ -411,18 +425,19 @@ class ProjectCompleteForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'project_name'
+                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name'
                     ),
                     Fieldset(
                         'Dates',
                         'expected_start_date','expected_end_date', 'expected_duration', 'actual_start_date', 'actual_end_date', 'actual_duration',
+                        PrependedText('on_time', ' '),'no_explanation',
+
                     ),
                 ),
                 Tab('Budget and Issues',
                     Fieldset(
                         'Budget',
                         'estimated_budget','actual_budget', 'budget_variance', 'explanation_of_variance', 'actual_contribution', 'direct_beneficiaries',
-                        PrependedText('on_time', ''),'no_explanation',
                     ),
                      Fieldset(
                         'Jobs',
@@ -434,6 +449,15 @@ class ProjectCompleteForm(forms.ModelForm):
                         'issues_and_challenges','lessons_learned','quantitative_outputs'
 
                     ),
+                ),
+                Tab('Budget Other',
+                    Fieldset("Other Budget Contributions:",
+                        MultiField(
+                                "This should match the Contributions from the Project Agreement Form:",
+                                Formset(BudgetFormSet),
+                        ),
+                    ),
+
                 ),
 
                 Tab('Approval',
@@ -638,3 +662,12 @@ class BeneficiaryForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
         super(BeneficiaryForm, self).__init__(*args, **kwargs)
+
+
+class FilterForm(forms.Form):
+    fields = "search"
+    search = forms.CharField(required=False)
+    helper = FormHelper()
+    helper.form_method = 'get'
+    helper.form_class = 'form-inline'
+    helper.layout = Layout(FieldWithButtons('search', StrictButton('Submit', type='submit', css_class='btn-primary')))
