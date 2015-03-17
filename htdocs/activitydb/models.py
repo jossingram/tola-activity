@@ -728,6 +728,7 @@ class ProgramDashboardAdmin(admin.ModelAdmin):
     list_display = ('program', 'project_proposal', 'project_proposal_approved', 'create_date', 'edit_date')
     display = 'Program Dashboard'
 
+
 class TrainingAttendance(models.Model):
     training_name = models.CharField(max_length=255)
     program = models.ForeignKey(Program, null=True, blank=True)
@@ -773,6 +774,7 @@ class TrainingAttendance(models.Model):
 class TrainingAttendanceAdmin(admin.ModelAdmin):
     list_display = ('training_name', 'program', 'project_proposal', 'create_date', 'edit_date')
     display = 'Program Dashboard'
+
 
 class Beneficiary(models.Model):
     beneficiary_name = models.CharField(max_length=255, null=True, blank=True)
@@ -837,6 +839,7 @@ class ContributionAdmin(admin.ModelAdmin):
 
 class QuantitativeOutputs(models.Model):
     targeted = models.CharField("Targeted #", max_length=255, blank=True, null=True)
+    achieved = models.CharField("Achieved #", max_length=255, blank=True, null=True)
     description = models.CharField("Description of Contribution", max_length=255, blank=True, null=True)
     logframe_indicator = models.ForeignKey('indicators.Indicator', blank=True, null=True)
     non_logframe_indicator = models.CharField("Non-Logframe Indicator", max_length=255, blank=True, null=True)
@@ -862,6 +865,6 @@ class QuantitativeOutputs(models.Model):
 
 
 class QuantitativeOutputsAdmin(admin.ModelAdmin):
-    list_display = ('description', 'targeted', 'logframe_indicator', 'non_logframe_indicator', 'create_date', 'edit_date')
+    list_display = ('description', 'targeted', 'achieved', 'logframe_indicator', 'non_logframe_indicator', 'create_date', 'edit_date')
     display = 'Quantitative Outputs'
 

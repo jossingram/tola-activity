@@ -466,6 +466,17 @@ class ProjectCompleteForm(forms.ModelForm):
                     ),
 
                 ),
+                 Tab('Project Planning',
+                    Fieldset(
+                        'Additional Planning Data Added via links below after save',
+                        MultiField(
+                            '',
+                            HTML("""{% if getQuantitative %} <h4>Outputs</h4><ul class='list-group'> {% for item in getQuantitative %}<li class='list-group-item'> <b>targeted:</b>{{ item.targeted}} <b>achieved:</b>{{ item.achieved}}  <b>description:</b>{{ item.description}} <b>logframe indicator:</b>{{ item.logframe_indicator}}  <b>non-logframe indicator:</b>{{ item.non_logframe_indicator}} <br/><a href='/activitydb/quantitative_update/{{ item.id }}/' target="_new">view</a></li>{% endfor %}</ul> {% endif %} """),
+                            HTML(""" <a href="/activitydb/quantitative_add/{{ id }}" target="_new">Add Quantitative Outputs</a> <br/> """),
+
+                        ),
+                    ),
+                ),
 
                 Tab('Approval',
                     Fieldset('Approval',

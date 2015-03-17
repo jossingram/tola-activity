@@ -7,7 +7,20 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
+from activitydb.models import ProjectAgreement, ProjectProposal
 
+
+def index(request):
+    """
+    Home page
+    get count of proposals and agreemtns approved and total for progress gauges
+    """
+    agreement_total_count = ProjectAgreement.objects.all().count()
+    proposal_total_count = ProjectProposal.objects.all().count()
+    agreement_approved_count = ProjectAgreement.objects.all().filter(approval='approved').count()
+    proposal_approved_count = ProjectProposal.objects.all().filter(approval='approved').count()
+
+    return render(request, "index.html", {'agreement_total_count':agreement_total_count, 'proposal_total_count':proposal_total_count,'agreement_approved_count':agreement_approved_count,'proposal_approved_count':proposal_approved_count })
 
 def contact(request):
     """

@@ -69,7 +69,7 @@ $(function () {
     $('#container-speed').highcharts(Highcharts.merge(gaugeOptions, {
         yAxis: {
             min: 0,
-            max: 200,
+            max: {{ proposal_total_count }},
             title: {
                 text: 'Proposals'
             }
@@ -81,7 +81,7 @@ $(function () {
 
         series: [{
             name: 'Proposals',
-            data: [80],
+            data: [{{ proposal_approved_count }}],
             dataLabels: {
                 format: '<div style="text-align:center"><span style="font-size:25px;color:' +
                     ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
@@ -98,7 +98,7 @@ $(function () {
     $('#container-rpm').highcharts(Highcharts.merge(gaugeOptions, {
         yAxis: {
             min: 0,
-            max: 150,
+            max: {{ agreement_total_count }},
             title: {
                 text: 'Agreements'
             }
@@ -106,7 +106,7 @@ $(function () {
 
         series: [{
             name: 'Agreements',
-            data: [40],
+            data: [{{ agreement_approved_count }}],
             dataLabels: {
                 format: '<div style="text-align:center"><span style="font-size:25px;color:' +
                     ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +

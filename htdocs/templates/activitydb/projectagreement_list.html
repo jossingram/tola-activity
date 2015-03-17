@@ -28,7 +28,7 @@
 {% endif %}
 <ul class="list-group">
 {% for item in getDashboard %}
-    <li class="list-group-item"><b>{{ item.create_date|date }} - <a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_title }}</a></b>&nbsp;<a href="/activitydb/dashboard/project/{{ item.project_proposal.id }}" class="btn btn-xs btn-success">Project Dashboard</a>&nbsp;<a href="/activitydb/projectagreement_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Agreement</a> </li>
+    <li class="list-group-item"><b>{{ item.create_date|date }} - <a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name }}</a></b>&nbsp;<a href="/activitydb/dashboard/project/{{ item.project_proposal.id }}" class="btn btn-xs btn-success">Project Dashboard</a>&nbsp;<a href="/activitydb/projectagreement_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Agreement</a> </li>
 {% empty %}
     <li class="list-group-item">No agreements yet.</li>
 {% endfor %}

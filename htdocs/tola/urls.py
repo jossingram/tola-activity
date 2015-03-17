@@ -34,7 +34,7 @@ urlpatterns = patterns('',
                         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
                         #index
-                        url(r'^$', 'display.views.index', name='index'),
+                        url(r'^$', 'tola.views.index', name='index'),
 
                         #base template for layout
                         url(r'^$', TemplateView.as_view(template_name='base.html')),

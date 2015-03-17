@@ -466,6 +466,10 @@ class ProjectAgreementUpdate(UpdateView):
         budget_form.instance = self.object
         budget_form.save()
 
+        if is_approved:
+            update_dashboard = ProgramDashboard.objects.filter(project_agreement__id=self.request.GET.get('id')).update(project_agreement_approved=True)
+
+
         messages.success(self.request, 'Success, form updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
@@ -574,6 +578,13 @@ class ProjectCompleteCreate(CreateView):
         id = getAgreement.project_proposal_id
         context.update({'id': id})
 
+        #add quantitative outputs data to form via context
+        try:
+            getQuantitative = QuantitativeOutputs.objects.all().filter(project_agreement__id=self.kwargs['pk'])
+        except QuantitativeOutputs.DoesNotExist:
+            getQuantitative = None
+        context.update({'getQuantitative': getQuantitative})
+
         #add formsets to context
         if self.request.POST:
             context['budget_form'] = BudgetFormSet(self.request.POST)
@@ -651,6 +662,12 @@ class ProjectCompleteUpdate(UpdateView):
         self.object = form.save()
         budget_form.instance = self.object
         budget_form.save()
+
+        is_approved = self.request.GET.get('approved')
+
+        if is_approved:
+            update_dashboard = ProgramDashboard.objects.filter(project_completion__id=self.request.GET.get('id')).update(project_completion_approved=True)
+
 
         messages.success(self.request, 'Success, form updated!')
 
@@ -1362,7 +1379,6 @@ def report(request):
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "activitydb/report.html", {'get_agreements': table, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
-
 
 def doImport(request, pk):
     """
