@@ -352,6 +352,7 @@ class ProjectAgreementForm(forms.ModelForm):
                 Tab('Project Planning',
                     MultiField(
                         'Additional Planning Data Added via links below after save',
+                        HTML("""{% if getQuantitative %} Outputs: {% for item in getQuantitative %} targeted:{{ item.targeted}} description:{{ item.description}} {% endfor %} {% endif %} """),
                         HTML(""" <br/> <a href="/activitydb/quantitative_add/{{ id }}" target="_new">Add Quantitative Outputs</a> """),
                         HTML(""" <br/> <a href="/activitydb/monitor_add/{{ id }}" target="_new">Add Monitoring Data</a> """),
                         HTML(""" <br/> <a href="/activitydb/benchmark_add/{{ id }}" target="_new">Add Benchmarks</a> """),

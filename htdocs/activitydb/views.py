@@ -19,8 +19,9 @@ from django.contrib.auth.decorators import permission_required
 from tables import ProjectAgreementTable
 from django_tables2 import RequestConfig
 from filters import ProjectAgreementFilter
-import json as simplejson
-
+from datetime import datetime
+import json
+from django.shortcuts import get_object_or_404
 
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
@@ -41,7 +42,8 @@ TO-DO: Create imports for Agreement, Community, and Training Attendance
 TO-DO: Update ProjectProposal IMport with new form fields
 TO-DO: Beneficiaries List, Form and Delete
 """
-
+def date_handler(obj):
+    return obj.isoformat() if hasattr(obj, 'isoformat') else obj
 
 def group_required(*group_names, **url):
     #Requires user membership in at least one of the groups passed in.
@@ -407,6 +409,23 @@ class ProjectAgreementUpdate(UpdateView):
         getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
         id = getAgreement.project_proposal_id
         context.update({'id': id})
+        try:
+            getQuantitative = QuantitativeOutputs.objects.all().filter(project_agreement__id=self.kwargs['pk'])
+        except QuantitativeOutputs.DoesNotExist:
+            getQuantitative = None
+        context.update({'getQuantitative': getQuantitative})
+
+        try:
+            getMonitor = Monitor.objects.all().filter(agreement__id=self.kwargs['pk'])
+        except Monitor.DoesNotExist:
+            getMonitor = None
+        context.update({'getMonitor': getMonitor})
+
+        try:
+            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk'])
+        except Benchmarks.DoesNotExist:
+            getBenchmark = None
+        context.update({'getBenchmark': getBenchmark})
 
         #add formsets to context
         if self.request.POST:
@@ -458,15 +477,19 @@ class ProjectAgreementDetail(DetailView):
 
     model = ProjectAgreement
 
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(ProjectAgreementDetail, self).get_context_data(**kwargs)
-        data = ProjectAgreement.objects.get(id=self.kwargs['pk'])
-        jsonData = serializers.serialize('json', data)
-        print jsonData
-        context.update({'jsonData': jsonData})
+    def get_field_values(self):
+        return [field.value_to_string(self) for field in ProjectAgreement._meta.fields]
 
-        return self.render_to_response(self.get_context_data(context=context))
+    def get_context_data(self, **kwargs):
+        context = super(ProjectAgreementDetail, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        data = ProjectAgreement.objects.all().filter(id=self.kwargs['pk'])
+        getData = serializers.serialize('python', data)
+        justFields = [d['fields'] for d in getData]
+        #handle date exceptions with date_handler
+        jsonData =json.dumps(justFields, default=date_handler)
+        context.update({'jsonData': jsonData})
+        return context
 
 
 class ProjectAgreementDelete(DeleteView):
@@ -889,7 +912,7 @@ class MonitorCreate(CreateView):
     """
     Monitor Form
     """
-    model = Community
+    model = Monitor
 
     def dispatch(self, request, *args, **kwargs):
         return super(MonitorCreate, self).dispatch(request, *args, **kwargs)

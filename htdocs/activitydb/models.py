@@ -558,7 +558,7 @@ class ProjectComplete(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.project_title
+        return self.project_name
 
 
 class ProjectCompleteAdmin(admin.ModelAdmin):

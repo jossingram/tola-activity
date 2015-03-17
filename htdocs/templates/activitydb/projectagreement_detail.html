@@ -13,5 +13,63 @@
 
 {% block content %}
 
+<!-- 3rd party dependencies -->
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/jquery/1.7.1/jquery.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/underscore/1.4.4/underscore.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/backbone/1.0.0/backbone.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/mustache/0.5.0-dev/mustache.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/bootstrap/3.2.0/js/bootstrap.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/jquery.event.drag-2.2.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/slick.core.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/slick.grid.js"></script>
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/dist/recline.js"></script>
+
+<link rel="stylesheet" href="{{ STATIC_URL }}js/recline/css/slickgrid.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/slick.grid.css">
+
+<!-- vendor -->
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/jquery.event.drag-2.0.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/slick.grid.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/plugins/slick.rowselectionmodel.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/plugins/slick.rowmovemanager.js"></script>
+
+<!-- Recline (only needed when NOT including the combined JS file as shown above) -->
+<script type="text/javascript" src="{{ STATIC_URL }}js/recline/src/view.slickgrid.js"></script>
+
+<h3>{{ agreement.project_title }} - {{ agreement.activity_code }}</h3>
+
+<div id="mygrid" style="height: 400px"></div>
+
+<script>
+{% autoescape off %}
+var data = {{ jsonData }}
+{% endautoescape %}
+
+  var dataset = new recline.Model.Dataset({
+    records: data
+  });
+
+  var $el = $('#mygrid');
+
+  var grid = new recline.View.SlickGrid({
+    model: dataset,
+    el: $el
+  });
+
+  grid.visible = true;
+  grid.render();
+ </script>
+
+
+
+<table>
+    {% for value in agreement.get_field_values %}
+        <tr>
+            <td>{{ value }}</td>
+        </tr>
+    {% endfor %}
+</table>
 
 {% endblock content %}
