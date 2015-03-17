@@ -839,7 +839,7 @@ class QuantitativeOutputs(models.Model):
     targeted = models.CharField("Targeted #", max_length=255, blank=True, null=True)
     description = models.CharField("Description of Contribution", max_length=255, blank=True, null=True)
     logframe_indicator = models.ForeignKey('indicators.Indicator', blank=True, null=True)
-    non_logframe_indicator = models.CharField("Logframe Indicator", max_length=255, blank=True, null=True)
+    non_logframe_indicator = models.CharField("Non-Logframe Indicator", max_length=255, blank=True, null=True)
     project_agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement")
     project_complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete")
     create_date = models.DateTimeField(null=True, blank=True)
@@ -862,6 +862,6 @@ class QuantitativeOutputs(models.Model):
 
 
 class QuantitativeOutputsAdmin(admin.ModelAdmin):
-    list_display = ('description', 'targeted', 'logframe_indicator', 'create_date', 'edit_date')
+    list_display = ('description', 'targeted', 'logframe_indicator', 'non_logframe_indicator', 'create_date', 'edit_date')
     display = 'Quantitative Outputs'
 

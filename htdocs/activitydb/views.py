@@ -1304,7 +1304,7 @@ class QuantitativeOutputsUpdate(UpdateView):
 
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = TrainingAttendanceForm
+    form_class = QuantitativeOutputsForm
 
 
 class QuantitativeOutputsDelete(DeleteView):
