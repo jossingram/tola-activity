@@ -17,6 +17,7 @@
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/projectagreement_list/0">--All--</a></li>
     {% for program in getPrograms %}
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/projectagreement_list/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
     {% endfor %}
@@ -28,7 +29,12 @@
 {% endif %}
 <ul class="list-group">
 {% for item in getDashboard %}
-    <li class="list-group-item"><b>{{ item.create_date|date }} - <a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name }}</a></b>&nbsp;<a href="/activitydb/dashboard/project/{{ item.project_proposal.id }}" class="btn btn-xs btn-success">Project Dashboard</a>&nbsp;<a href="/activitydb/projectagreement_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Agreement</a> </li>
+    <li class="list-group-item"><b>{{ item.create_date|date }} - <a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name }}</a></b>
+    <div class="btn-group align-right" role="group" aria-label="...">
+        <a href="/activitydb/dashboard/project/{{ item.project_proposal.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
+        <a href="/activitydb/projectagreement_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Agreement</a>
+    </div>
+    </li>
 {% empty %}
     <li class="list-group-item">No agreements yet.</li>
 {% endfor %}

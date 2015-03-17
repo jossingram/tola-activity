@@ -354,15 +354,99 @@ class ProjectAgreementForm(forms.ModelForm):
                         'Additional Planning Data Added via links below after save',
                         MultiField(
                             '',
-                            HTML("""{% if getQuantitative %} <h4>Outputs</h4><ul class='list-group'> {% for item in getQuantitative %}<li class='list-group-item'> <b>targeted:</b>{{ item.targeted}} <b>description:</b>{{ item.description}} <b>logframe indicator:</b>{{ item.logframe_indicator}}  <b>non-logframe indicator:</b>{{ item.non_logframe_indicator}} <br/><a href='/activitydb/quantitative_update/{{ item.id }}/' target="_new">view</a></li>{% endfor %}</ul> {% endif %} """),
-                            HTML(""" <a href="/activitydb/quantitative_add/{{ id }}" target="_new">Add Quantitative Outputs</a> <br/> """),
+                            HTML("""
 
-                            HTML("""{% if getMonitor %} <h4>Monitoring</h4><ul class='list-group'> {% for item in getMonitor %}<li class='list-group-item'> <b>Person Responsible:</b>{{ item.responsible_person}} <b>description:</b>{{ item.frequency}} <b>logframe indicator:</b>{{ item.type}} <br/><a href='/activitydb/monitor_update/{{ item.id }}/' target="_new">view</a></li>{% endfor %}</ul> {% endif %} """),
-                            HTML(""" <a href="/activitydb/monitor_add/{{ id }}" target="_new">Add Monitoring Data</a> <br/> """),
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Quantitative Outputs</div>
+                                      {% if getQuantitative %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Targeted</th>
+                                            <th>Description</th>
+                                            <th>Logframe Indicator</th>
+                                            <th>Non-Logframe Indicator</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getQuantitative %}
+                                            <tr>
+                                                <td>{{ item.targeted}}</td>
+                                                <td>{{ item.description}}</td>
+                                                <td>{{ item.logframe_indicator}}</td>
+                                                <td>{{ item.non_logframe_indicator}}</td>
+                                                <td><a href='/activitydb/quantitative_update/{{ item.id }}/' target="_new">View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a href="/activitydb/quantitative_add/{{ id }}" target="_new">Add Quantitative Outputs</a>
+                                      </div>
+                                    </div>
+                                     """),
 
-                            HTML("""{% if getBenchmark %} <h4>Benchmarks</h4><ul class='list-group'> {% for item in getBenchmark %}<li class='list-group-item'> <b>Percent Complete:</b> {{ item.percent_complete}} <b>Percent Cumlative Completion:</b> {{ item.percent_cumlative}} <b>Description</b>: {{ item.description}} <br/><a href='/activitydb/benchmark_update/{{ item.id }}/' target="_new">view</a></li>{% endfor %}</ul> {% endif %} """),
-                            HTML(""" <a href="/activitydb/benchmark_add/{{ id }}" target="_new">Add Benchmarks</a> """),
-                            'capacity','evaluate'
+                            HTML("""
+
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Monitoring</div>
+                                      {% if getMonitor %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Person Responsible</th>
+                                            <th>Frequency</th>
+                                            <th>Type</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getMonitor %}
+                                            <tr>
+                                                <td>{{ item.responsible_person}}</td>
+                                                <td>{{ item.frequency}}</td>
+                                                <td>{{ item.type}}</td>
+                                                <td><a href='/activitydb/monitor_update/{{ item.id }}/' target="_new">View</a> | <a href='/activitydb/monitor_delete/{{ item.id }}/' target="_new">Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a href="/activitydb/monitor_add/{{ id }}" target="_new">Add Monitoring Data</a>
+                                      </div>
+                                    </div>
+                                     """),
+
+                             HTML("""
+
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Benchmarks</div>
+                                      {% if getBenchmark %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Percent Complete</th>
+                                            <th>Percent Cumlative Completion</th>
+                                            <th>Description</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getBenchmark %}
+                                            <tr>
+                                                <td>{{ item.percent_complete}}</td>
+                                                <td>{{ item.percent_cumlative}}</td>
+                                                <td>{{ item.description}}</td>
+                                                <td><a href='/activitydb/benchmark_update/{{ item.id }}/' target="_new">View</a> | <a href='/activitydb/benchmark_delete/{{ item.id }}/' target="_new">Delete</a></td>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a href="/activitydb/benchmark_add/{{ id }}" target="_new">Add Benchmarks</a>
+                                      </div>
+                                    </div>
+                                     """),
+
+                            'capacity', 'evaluate',
                         ),
                     ),
                 ),
@@ -471,11 +555,40 @@ class ProjectCompleteForm(forms.ModelForm):
                         'Additional Planning Data Added via links below after save',
                         MultiField(
                             '',
-                            HTML("""{% if getQuantitative %} <h4>Outputs</h4><ul class='list-group'> {% for item in getQuantitative %}<li class='list-group-item'> <b>targeted:</b>{{ item.targeted}} <b>achieved:</b>{{ item.achieved}}  <b>description:</b>{{ item.description}} <b>logframe indicator:</b>{{ item.logframe_indicator}}  <b>non-logframe indicator:</b>{{ item.non_logframe_indicator}} <br/><a href='/activitydb/quantitative_update/{{ item.id }}/' target="_new">view</a></li>{% endfor %}</ul> {% endif %} """),
-                            HTML(""" <a href="/activitydb/quantitative_add/{{ id }}" target="_new">Add Quantitative Outputs</a> <br/> """),
+                             HTML("""
 
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Quantitative Outputs</div>
+                                      {% if getQuantitative %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Targeted</th>
+                                            <th>Description</th>
+                                            <th>Logframe Indicator</th>
+                                            <th>Non-Logframe Indicator</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getQuantitative %}
+                                            <tr>
+                                                <td>{{ item.targeted}}</td>
+                                                <td>{{ item.description}}</td>
+                                                <td>{{ item.logframe_indicator}}</td>
+                                                <td>{{ item.non_logframe_indicator}}</td>
+                                                <td><a href='/activitydb/quantitative_update/{{ item.id }}/' target="_new">View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a href="/activitydb/quantitative_add/{{ id }}" target="_new">Add Quantitative Outputs</a>
+                                      </div>
+                                    </div>
+                              """),
+
+                            ),
                         ),
-                    ),
                 ),
 
                 Tab('Approval',

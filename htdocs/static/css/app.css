@@ -72,3 +72,13 @@ body > .container {
     background-color: lightgoldenrodyellow;
     border-radius: 5px
 }
+
+.jumbotron.dashboard {
+    padding-top: 5px;
+    padding-bottom: 16px;
+    margin-bottom: 30px;
+}
+
+.btn-group.align-right {
+    float: right;
+}

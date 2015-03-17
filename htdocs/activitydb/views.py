@@ -108,7 +108,7 @@ class ProgramDash(ListView):
             getDashboard = Program.objects.all().filter(funding_status="Funded", country=set_country).filter(Q(agreement__isnull=False) | Q(proposal__isnull=False) | Q(complete__isnull=False)).order_by('name').values('id', 'name', 'gaitid','agreement__id','proposal__id','complete__id')
 
         else:
-            getDashboard = ProgramDashboard.objects.all().filter(program__id=self.kwargs['pk'])
+            getDashboard = Program.objects.all().filter(id=self.kwargs['pk'], funding_status="Funded", country=set_country).filter(Q(agreement__isnull=False) | Q(proposal__isnull=False) | Q(complete__isnull=False)).order_by('name').values('id', 'name', 'gaitid','agreement__id','proposal__id','complete__id')
 
         return render(request, self.template_name, {'form': form, 'getDashboard': getDashboard, 'getPrograms':getPrograms})
 
@@ -1175,7 +1175,7 @@ class BeneficiaryList(ListView):
         if int(self.kwargs['pk']) == 0:
             getBeneficiaries = Beneficiary.objects.all()
         else:
-            getBeneficiaries = Beneficiary.objects.all().filter(project_proposal_id=self.kwargs['pk'])
+            getBeneficiaries = Beneficiary.objects.all().filter(training_id=self.kwargs['pk'])
 
         return render(request, self.template_name, {'getBeneficiaries': getBeneficiaries, 'project_proposal_id': project_proposal_id})
 

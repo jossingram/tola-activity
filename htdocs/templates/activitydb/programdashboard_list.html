@@ -9,6 +9,7 @@
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/0">-- All --</a></li>
     {% for program in getPrograms %}
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
     {% endfor %}
@@ -21,8 +22,8 @@
 {% regroup getDashboard by gaitid as programs_by_gaitid %}
 <ul class="list-group">
 {% for item in programs_by_gaitid %}
-    <div class="jumbotron">
-        <h3>{{ item.grouper }} - {{ item.list.0.name }}</h3>
+    <div class="jumbotron dashboard">
+        <h4>{{ item.grouper }} - {{ item.list.0.name }}</h4>
         {% if item.list.0.proposal__id %}
             {% regroup item.list by proposal__id as proposal_list %}
             <button class="btn btn-success" type="button" onclick="location.href='/activitydb/projectproposal_list/{{ item.list.0.id }}'">Project Proposal <span class="badge">{{ proposal_list | length }} </span></button>

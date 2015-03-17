@@ -29,7 +29,12 @@
 {% endif %}
 <ul class="list-group">
 {% for item in getDashboard %}
-    <li class="list-group-item"><b>{{ item.create_date|date }} - <a href="/activitydb/dashboard/project/{{ item.project_proposal.id }}/">{{ item.project_name }}</a></b> <a href="/activitydb/projectcomplete_update/{{ item.project_completion.id }}" class="btn btn-xs btn-warning">Update Project Complete</a> <a href="/activitydb/projectcomplete_delete/{{ item.project_completion.id }}" class="btn btn-xs btn-danger">Delete Project Complete</a></li>
+    <li class="list-group-item"><b>{{ item.create_date|date }} - <a href="/activitydb/dashboard/project/{{ item.project_proposal.id }}/">{{ item.project_name }}</a></b>
+    <div class="btn-group align-right" role="group" aria-label="...">
+        <a href="/activitydb/projectcomplete_update/{{ item.project_completion.id }}" class="btn btn-xs btn-warning">Update Project Complete</a>
+        <a href="/activitydb/projectcomplete_delete/{{ item.project_completion.id }}" class="btn btn-xs btn-danger">Delete Project Complete</a>
+    </div>
+    </li>
 {% empty %}
     <li class="list-group-item">No project complete forms yet.</li>
 {% endfor %}
