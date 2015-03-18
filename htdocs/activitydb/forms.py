@@ -715,7 +715,6 @@ class DocumentationForm(forms.ModelForm):
 
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
-                Submit('submit', 'Save & Add Another', css_class='btn-default'),
                 Reset('reset', 'Reset', css_class='btn-warning')
             )
         )
@@ -745,7 +744,7 @@ class BenchmarkForm(forms.ModelForm):
                 'file_field','project',
 
             FormActions(
-                Reset('submit', 'Save & Close', css_class='btn-warning', onclick='window.close()'),
+                Reset('submit', 'Close', css_class='btn-warning', onclick='submitClose()'),
                 Submit('submit', 'Save & Add Another'),
             )
         )
@@ -777,7 +776,7 @@ class MonitorForm(forms.ModelForm):
                 'responsible_person', 'frequency', Field('type', rows="3", css_class='input-xlarge'), 'agreement',
 
             FormActions(
-                Reset('submit', 'Save & Close', css_class='btn-warning', onclick='window.close()'),
+                Reset('submit', 'Close', css_class='btn-warning', onclick='submitClose()'),
                 Submit('submit', 'Save & Add Another'),
             )
         )

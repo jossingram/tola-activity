@@ -206,8 +206,7 @@ THIRD_PARTY_APPS = (
     'crispy_forms',
     'floppyforms',
     'django_extensions',
-
-    #'mongoengine'
+    'report_builder',
 )
 
 # Apps specific for this project go here.
@@ -313,3 +312,8 @@ WSGI_APPLICATION = '%s.wsgi.application' % SITE_NAME
 ########## END WSGI CONFIGURATION
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+#Report Builder
+REPORT_BUILDER_INCLUDE = []
+REPORT_BUILDER_EXCLUDE = ['user','groups']
+REPORT_BUILDER_ASYNC_REPORT = False

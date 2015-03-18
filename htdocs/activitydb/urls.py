@@ -1,4 +1,3 @@
-
 from .views import ProjectProposalImport, ProjectProposalList, ProjectProposalCreate, ProjectProposalUpdate, ProjectProposalDelete, \
     ProgramDash, ProjectAgreementCreate, ProjectAgreementList, ProjectAgreementUpdate, ProjectAgreementDetail, ProjectAgreementDelete, ProjectAgreementImport, ProjectCompleteCreate, ProjectCompleteUpdate,\
     ProjectCompleteList, ProjectCompleteDelete, ProjectCompleteImport, CommunityList, CommunityCreate, CommunityUpdate, CommunityDelete,\
@@ -15,7 +14,7 @@ except ImportError:  # django < 1.4
 # place app url patterns here
 
 urlpatterns = patterns('',
-
+                       url(r'^report_builder/', include('report_builder.urls')),
                        ###activitydb
                        url(r'^dashboard/(?P<pk>\w+)/$', ProgramDash.as_view(), name='dashboard'),
                        url(r'^dashboard/project/(?P<pk>\w+)/$', ProjectDash.as_view(), name='project_dashboard'),
@@ -74,7 +73,7 @@ urlpatterns = patterns('',
                        url(r'^quantitative_update/(?P<pk>\w+)/$', QuantitativeOutputsUpdate.as_view(), name='quantitative_update'),
                        url(r'^quantitative_delete/(?P<pk>\w+)/$', QuantitativeOutputsDelete.as_view(), name='quantitative_delete'),
 
-                       url(r'^report', 'activitydb.views.report', name='report'),
+                       #url(r'^report', 'activitydb.views.report', name='report'),
 
                        url(r'^doimport/(?P<pk>\w+)/$', 'activitydb.views.doImport', name='doImport'),
                        url(r'^doMerge/(?P<pk>\w+)/$', 'activitydb.views.doMerge', name='doMerge'),

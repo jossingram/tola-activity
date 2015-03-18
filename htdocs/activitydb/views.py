@@ -410,7 +410,7 @@ class ProjectAgreementUpdate(UpdateView):
         id = getAgreement.project_proposal_id
         context.update({'id': id})
         try:
-            getQuantitative = QuantitativeOutputs.objects.all().filter(project_agreement__id=self.kwargs['pk'])
+            getQuantitative = QuantitativeOutputs.objects.all().filter(agreement__id=self.kwargs['pk'])
         except QuantitativeOutputs.DoesNotExist:
             getQuantitative = None
         context.update({'getQuantitative': getQuantitative})
@@ -431,7 +431,7 @@ class ProjectAgreementUpdate(UpdateView):
         if self.request.POST:
             context['budget_form'] = BudgetFormSet(self.request.POST)
         else:
-            context['budget_form'] = BudgetFormSet()
+            context['budget_form'] = BudgetFormSet(queryset=Budget.objects.all().filter(agreement__id=self.kwargs['pk']))
 
         return context
 
@@ -465,10 +465,6 @@ class ProjectAgreementUpdate(UpdateView):
         self.object = form.save()
         budget_form.instance = self.object
         budget_form.save()
-
-        if is_approved:
-            update_dashboard = ProgramDashboard.objects.filter(project_agreement__id=self.request.GET.get('id')).update(project_agreement_approved=True)
-
 
         messages.success(self.request, 'Success, form updated!')
 
@@ -1450,8 +1446,6 @@ def doMerge(request, pk):
                 getSourceFrom = ValueStore.objects.get(field__silo__id=from_silo_id, field__name=str(column), row_number=row['row_number'])
             except Exception as e:
                 getSourceFrom = None
-                print e
-                print "No value for: " + str(column)
                 pass
 
             if request.POST[column] != "Ignore" and request.POST[column] != "0" and str(column) != "csrfmiddlewaretoken" and str(column) != "from_column_id" and str(column) != "from_silo_id":
@@ -1464,7 +1458,6 @@ def doMerge(request, pk):
             programs, created = Program.objects.get_or_create(name__icontains=program_value)
             program_id = programs.pk
         except Exception as e:
-            print e
             program_id = None
             messages.add_message(request, messages.INFO, "Program ID not found, a program is required for each new project proposal.")
 

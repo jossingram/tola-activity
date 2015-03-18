@@ -48,6 +48,7 @@ if [[ $c == "y" || $c == "Y" ]]; then
     sudo py manage.py loaddata fixtures/read_type.json
     sudo py manage.py loaddata fixtures/silo.json
     sudo py manage.py loaddata fixtures/sector.json
+    sudo py manage.py loaddata fixtures/office.json
 else
   echo "Ok Skipping"
 fi

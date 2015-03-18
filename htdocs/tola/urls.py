@@ -25,9 +25,6 @@ router.register(r'read', ReadViewSet)
 router.register(r'readtype', ReadTypeViewSet)
 
 
-
-
-
 urlpatterns = patterns('',
                         #rest framework
                         url(r'^api/', include(router.urls)),
