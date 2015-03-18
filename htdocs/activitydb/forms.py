@@ -452,7 +452,7 @@ class ProjectAgreementForm(forms.ModelForm):
                 ),
                 Tab('Approval',
                     Fieldset('Approval',
-                             'approval', 'approved_by', 'approval_submitted_by',
+                             'approval', 'estimated_by', 'checked_by','reviewed_by', 'approved_by', 'approval_submitted_by',
                              Field('approval_remarks', rows="3", css_class='input-xlarge')
                     ),
                 ),

@@ -340,6 +340,9 @@ class ProjectAgreementCreate(CreateView):
         getProjectProposal = ProjectProposal.objects.get(id=self.kwargs['pk'])
         initial = {
             'approved_by': self.request.user,
+            'estimated_by': self.request.user,
+            'checked_by': self.request.user,
+            'reviewed_by': self.request.user,
             'approval_submitted_by': self.request.user,
             'program': getProjectProposal.program,
             'project_proposal': getProjectProposal.id,
@@ -445,6 +448,9 @@ class ProjectAgreementUpdate(UpdateView):
     def get_initial(self):
         initial = {
             'approved_by': self.request.user,
+            'estimated_by': self.request.user,
+            'checked_by': self.request.user,
+            'reviewed_by': self.request.user,
             'approval_submitted_by': self.request.user,
         }
 
