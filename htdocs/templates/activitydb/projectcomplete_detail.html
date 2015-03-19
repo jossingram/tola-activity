@@ -14,12 +14,12 @@
 {% block content %}
 <ul class="nav nav-tabs">
   <li role="presentation"><a href="/activitydb/projectproposal_detail/{{ id }}/">Proposal</a></li>
-  <li role="presentation" class="active"><a href="/activitydb/projectagreement_detail/{{ id }}/">Agreement</a></li>
-  <li role="presentation"><a href="/activitydb/projectcomplete_detail/{{ id }}/">Complete</a></li>
+  <li role="presentation"><a href="/activitydb/projectcomplete_detail/{{ id }}/">Agreement</a></li>
+  <li role="presentation" class="active"><a href="/activitydb/projectcomplete_detail/{{ id }}/">Complete</a></li>
   <li role="presentation"><a href="/activitydb/community_report/{{ id }}/">Communities</a></li>
 </ul>
-<h3>{{ agreement.project_name }}</h3>
-<p><b>Created:</b> {{ agreement.create_date }} <b>Last Edited:</b> {{ agreement.edit_date }} <span class="btn btn-xs btn-info">Status: <b>{{ agreement.approval }}</b></span></p>
+<h3>{{ complete.project_name }}</h3>
+<p><b>Created:</b> {{ complete.create_date }} <b>Last Edited:</b> {{ complete.edit_date }} <span class="btn btn-xs btn-info">Status: <b>{{ complete.approval }}</b></span></p>
 <div class="panel panel-info">
     <!-- Default panel contents -->
     <div class="panel-heading">Part I: Executive Summary</div>
@@ -31,9 +31,9 @@
             <th>Office</th>
         </tr>
         <tr>
-            <td>{{ agreement.activity_code }}</td>
-            <td>{{ agreement.sector }}</td>
-            <td>{{ agreement.office }}</td>
+            <td>{{ complete.activity_code }}</td>
+            <td>{{ complete.sector }}</td>
+            <td>{{ complete.office }}</td>
         </tr>
     </table>
     <br/>
@@ -44,9 +44,9 @@
             <th>Project Type</th>
         </tr>
         <tr>
-            <td>{{ agreement.program }}</td>
-            <td>{{ agreement.project_activity }}</td>
-            <td>{{ agreement.project_type }}</td>
+            <td>{{ complete.program }}</td>
+            <td>{{ complete.project_activity }}</td>
+            <td>{{ complete.project_type }}</td>
         </tr>
     </table>
     <br/>
@@ -55,13 +55,13 @@
             <th>Account Code</th>
             <th>LIN Code</th>
             <th>Are there partners involved?</th>
-            <th>Name of Partners</th>
+            <th>LIN Code</th>
         </tr>
         <tr>
-            <td>{{ agreement.account_code }}</td>
-            <td>{{ agreement.lin_code }}</td>
-            <td>{{ agreement.partners }}</td>
-            <td>{{ agreement.name_of_partners }}</td>
+            <td>{{ complete.account_code }}</td>
+            <td>{{ complete.lin_code }}</td>
+            <td>{{ complete.partners }}</td>
+            <td>{{ complete.name_of_partners }}</td>
         </tr>
     </table>
     <br/>
@@ -71,8 +71,8 @@
             <th>External Stakeholder lists(s) attached?</th>
         </tr>
         <tr>
-            <td>{{ agreement.name_of_partners }}</td>
-            <td>{{ agreement.external_stakeholder_list }}</td>
+            <td>{{ complete.name_of_partners }}</td>
+            <td>{{ complete.external_stakeholder_list }}</td>
         </tr>
     </table>
     <br/>
@@ -83,9 +83,9 @@
             <th>Duration</th>
         </tr>
         <tr>
-            <td>{{ agreement.expected_start_date }}</td>
-            <td>{{ agreement.expected_end_date }}</td>
-            <td>{{ agreement.expected_duration }}</td>
+            <td>{{ complete.expected_start_date }}</td>
+            <td>{{ complete.expected_end_date }}</td>
+            <td>{{ complete.expected_duration }}</td>
         </tr>
     </table>
     <br/>
@@ -96,9 +96,9 @@
             <th>Estimated # of Indirect Beneficiaries</th>
         </tr>
         <tr>
-            <td>{{ agreement.estimated_num_direct_beneficiaries }}</td>
-            <td>{{ agreement.average_household_size }}</td>
-            <td>{{ agreement.estimated_num_indirect_beneficiaries }}</td>
+            <td>{{ complete.estimated_num_direct_beneficiaries }}</td>
+            <td>{{ complete.average_household_size }}</td>
+            <td>{{ complete.estimated_num_indirect_beneficiaries }}</td>
         </tr>
     </table>
 </div>
@@ -113,9 +113,9 @@
             <th>Estimation Date</th>
         </tr>
         <tr>
-            <td>{{ agreement.total_estimated_budget }}</td>
-            <td>{{ agreement.mc_estimated_budget }}</td>
-            <td>{{ agreement.estimation_date }}</td>
+            <td>{{ complete.total_estimated_budget }}</td>
+            <td>{{ complete.mc_estimated_budget }}</td>
+            <td>{{ complete.estimation_date }}</td>
         </tr>
     </table>
     <br/>
@@ -127,9 +127,9 @@
             <th>Processed Value of Contribution</th>
         </tr>
         <tr>
-            <td>{{ agreement.program }}</td>
-            <td>{{ agreement.project_activity }}</td>
-            <td>{{ agreement.project_type }}</td>
+            <td>{{ complete.program }}</td>
+            <td>{{ complete.project_activity }}</td>
+            <td>{{ complete.project_type }}</td>
         </tr>
     </table>
     <br/>
@@ -138,7 +138,7 @@
             <th>Project Type Other</th>
         </tr>
         <tr>
-            <td>{{ agreement.project_type_other }}</td>
+            <td>{{ complete.project_type_other }}</td>
         </tr>
     </table>
     <br/>
@@ -155,9 +155,9 @@
             <th>What is the anticipated outcome or impact of this project?</th>
         </tr>
         <tr>
-            <td>{{ agreement.program_objectives }}</td>
-            <td>{{ agreement.mc_objectives }}</td>
-            <td>{{ agreement.effect_or_impact }}</td>
+            <td>{{ complete.program_objectives }}</td>
+            <td>{{ complete.mc_objectives }}</td>
+            <td>{{ complete.effect_or_impact }}</td>
         </tr>
     </table>
     <br/>
@@ -167,8 +167,8 @@
             <th>Description of Community Selection Criteria</th>
         </tr>
         <tr>
-            <td>{{ agreement.justification_background }}</td>
-            <td>{{ agreement.justification_description_community_selection }}</td>
+            <td>{{ complete.justification_background }}</td>
+            <td>{{ complete.justification_description_community_selection }}</td>
         </tr>
     </table>
     <h4> II. Description</h4>
@@ -177,7 +177,7 @@
             <th>Description of project and activities</th>
         </tr>
         <tr>
-            <td>{{ agreement.description_of_project_activities }}</td>
+            <td>{{ complete.description_of_project_activities }}</td>
         </tr>
     </table>
     <br/>
@@ -187,8 +187,8 @@
             <th>Documentation of Government approval attached</th>
         </tr>
         <tr>
-            <td>{{ agreement.description_of_government_involvement }}</td>
-            <td>{{ agreement.documentation_government_approval }}</td>
+            <td>{{ complete.description_of_government_involvement }}</td>
+            <td>{{ complete.documentation_government_approval }}</td>
         </tr>
     </table>
     <br/>
@@ -198,8 +198,8 @@
             <th>Documentation of Community approval attached</th>
         </tr>
         <tr>
-            <td>{{ agreement.description_of_community_involvement }}</td>
-            <td>{{ agreement.documentation_community_approval }}</td>
+            <td>{{ complete.description_of_community_involvement }}</td>
+            <td>{{ complete.documentation_community_approval }}</td>
         </tr>
     </table>
     <br/>
@@ -216,9 +216,9 @@
             <th>Is this Indicator in the Logframe?</th>
         </tr>
         <tr>
-            <td>{{ agreement.program_objectives }}</td>
-            <td>{{ agreement.mc_objectives }}</td>
-            <td>{{ agreement.effect_or_impact }}</td>
+            <td>{{ complete.program_objectives }}</td>
+            <td>{{ complete.mc_objectives }}</td>
+            <td>{{ complete.effect_or_impact }}</td>
         </tr>
     </table>
     <h4>Benchmarks</h4>
@@ -229,9 +229,9 @@
             <th>% Cumulative completion</th>
         </tr>
         <tr>
-            <td>{{ agreement.justification_background }}</td>
-            <td>{{ agreement.justification_description_community_selection }}</td>
-            <td>{{ agreement.justification_description_community_selection }}</td>
+            <td>{{ complete.justification_background }}</td>
+            <td>{{ complete.justification_description_community_selection }}</td>
+            <td>{{ complete.justification_description_community_selection }}</td>
         </tr>
     </table>
     <h4>Capacity</h4>
@@ -240,7 +240,7 @@
             <th>What capacity is being built to ensure sustainability of this project?</th>
         </tr>
         <tr>
-            <td>{{ agreement.capacity }}</td>
+            <td>{{ complete.capacity }}</td>
         </tr>
     </table>
 </div>
@@ -255,7 +255,7 @@
                 take place, who is responsible for it, and how often should it take place?</th>
         </tr>
         <tr>
-            <td>{{ agreement.evaluate }}</td>
+            <td>{{ complete.evaluate }}</td>
         </tr>
     </table>
     <h4>Monitoring</h4>
@@ -266,9 +266,9 @@
             <th>Frequency</th>
         </tr>
         <tr>
-            <td>{{ agreement.justification_background }}</td>
-            <td>{{ agreement.justification_description_community_selection }}</td>
-            <td>{{ agreement.justification_description_community_selection }}</td>
+            <td>{{ complete.justification_background }}</td>
+            <td>{{ complete.justification_description_community_selection }}</td>
+            <td>{{ complete.justification_description_community_selection }}</td>
         </tr>
     </table>
 </div>
@@ -284,38 +284,38 @@
         </tr>
         <tr>
             <td>Submitted By</td>
-            <td>{{ agreement.approval_submitted_by }}</td>
-            <td>{{ agreement.approval_submitted_by_date}}</td>
+            <td>{{ complete.approval_submitted_by }}</td>
+            <td>{{ complete.approval_submitted_by_date}}</td>
         </tr>
         <tr>
             <td>Estimated</td>
-            <td>{{ agreement.approved_by }}</td>
-            <td>{{ agreement.approved_date}}</td>
+            <td>{{ complete.approved_by }}</td>
+            <td>{{ complete.approved_date}}</td>
         </tr>
         <tr>
             <td>Checked</td>
-            <td>{{ agreement.estimated_by }}</td>
-            <td>{{ agreement.estimated_by_date}}</td>
+            <td>{{ complete.estimated_by }}</td>
+            <td>{{ complete.estimated_by_date}}</td>
         </tr>
         <tr>
             <td>Reviewed by MEL</td>
-            <td>{{ agreement.reviewed_by }}</td>
-            <td>{{ agreement.reviewed_by_date}}</td>
+            <td>{{ complete.reviewed_by }}</td>
+            <td>{{ complete.reviewed_by_date}}</td>
         </tr>
         <tr>
             <td>Reviewed</td>
-            <td>{{ agreement.reviewed_by }}</td>
-            <td>{{ agreement.reviewed_by_date}}</td>
+            <td>{{ complete.reviewed_by }}</td>
+            <td>{{ complete.reviewed_by_date}}</td>
         </tr>
         <tr>
             <td>Approved</td>
-            <td>{{ agreement.approved_by }}</td>
-            <td>{{ agreement.approved_date}}</td>
+            <td>{{ complete.approved_by }}</td>
+            <td>{{ complete.approved_date}}</td>
         </tr>
         <tr>
             <td>Financial Review</td>
-            <td>{{ agreement.approved_by }}</td>
-            <td>{{ agreement.approved_date}}</td>
+            <td>{{ complete.approved_by }}</td>
+            <td>{{ complete.approved_date}}</td>
         </tr>
     </table>
     <table class="table" border="1">
@@ -323,7 +323,7 @@
             <th>Approval Remarks</th>
         </tr>
         <tr>
-            <td>{{ agreement.approval_remarks }}</td>
+            <td>{{ complete.approval_remarks }}</td>
         </tr>
     </table>
 </div>

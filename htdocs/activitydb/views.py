@@ -279,6 +279,27 @@ class ProjectProposalDelete(DeleteView):
     form_class = ProjectProposalForm
 
 
+class ProjectProposalDetail(DetailView):
+
+    model = ProjectProposal
+    context_object_name = 'proposal'
+    queryset = ProjectProposal.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectProposalDetail, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        data = ProjectProposal.objects.all().filter(id=self.kwargs['pk'])
+        getData = serializers.serialize('python', data)
+        #return just the fields and skip the object name
+        justFields = [d['fields'] for d in getData]
+        #handle date exceptions with date_handler
+        jsonData =json.dumps(justFields, default=date_handler)
+        context.update({'jsonData': jsonData})
+        context.update({'id': self.kwargs['pk']})
+
+        return context
+
+
 class ProjectAgreementList(ListView):
     """
     Project Agreement
@@ -485,9 +506,6 @@ class ProjectAgreementDetail(DetailView):
     context_object_name = 'agreement'
     queryset =  ProjectAgreement.objects.all()
 
-    def get_field_values(self):
-        return [field.value_to_string(self) for field in ProjectAgreement._meta.fields]
-
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementDetail, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
@@ -498,8 +516,7 @@ class ProjectAgreementDetail(DetailView):
         #handle date exceptions with date_handler
         jsonData =json.dumps(justFields, default=date_handler)
         context.update({'jsonData': jsonData})
-
-
+        context.update({'id':self.kwargs['pk']})
 
         return context
 
@@ -684,6 +701,34 @@ class ProjectCompleteUpdate(UpdateView):
     form_class = ProjectCompleteForm
 
 
+class ProjectCompleteDetail(DetailView):
+
+    model = ProjectComplete
+    context_object_name = 'complete'
+    try:
+        queryset =  ProjectComplete.objects.all()
+    except ProjectComplete.DoesNotExist:
+        queryset = None
+
+    def get_context_data(self, **kwargs):
+
+        context = super(ProjectCompleteDetail, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        try:
+            data = ProjectComplete.objects.all().filter(id=self.kwargs['pk'])
+        except ProjectComplete.DoesNotExist:
+            data = None
+        getData = serializers.serialize('python', data)
+        #return just the fields and skip the object name
+        justFields = [d['fields'] for d in getData]
+        #handle date exceptions with date_handler
+        jsonData =json.dumps(justFields, default=date_handler)
+        context.update({'jsonData': jsonData})
+        context.update({'id':self.kwargs['pk']})
+
+        return context
+
+
 class ProjectCompleteDelete(DeleteView):
     """
     Project Complete Delete
@@ -811,6 +856,14 @@ class CommunityList(ListView):
     model = Community
     template_name = 'activitydb/community_list.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.GET.has_key('report'):
+            template_name = 'activitydb/community_report.html'
+        else:
+            template_name = 'activitydb/community_list.html'
+        return super(CommunityList, self).dispatch(request, *args, **kwargs)
+
+
     def get(self, request, *args, **kwargs):
 
         project_proposal_id = self.kwargs['pk']
@@ -821,6 +874,28 @@ class CommunityList(ListView):
             getCommunity = Community.objects.all().filter(projectproposal__id=self.kwargs['pk'])
 
         return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': project_proposal_id})
+
+
+class CommunityReport(ListView):
+    """
+    Community
+    """
+    model = Community
+    template_name = 'activitydb/community_report.html'
+
+
+    def get(self, request, *args, **kwargs):
+
+        project_proposal_id = self.kwargs['pk']
+
+        if int(self.kwargs['pk']) == 0:
+            getCommunity = Community.objects.all()
+        else:
+            getCommunity = Community.objects.all().filter(projectproposal__id=self.kwargs['pk'])
+
+        id=self.kwargs['pk']
+
+        return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': project_proposal_id,'id':id})
 
 
 class CommunityCreate(CreateView):

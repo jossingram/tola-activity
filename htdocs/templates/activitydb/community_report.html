@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block bread_crumb %}
+<ol class="breadcrumb">
+  <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
+  <li><a href="/activitydb/report/">Activity Report</a></li>
+  <li class="active">Report</li>
+</ol>
+
+{% endblock bread_crumb %}
+{% load render_table from django_tables2 %}
+
+{% block page_title %}Activity Report{% endblock %}
+
+{% block content %}
+<ul class="nav nav-tabs">
+  <li role="presentation"><a href="/activitydb/projectproposal_detail/{{ id }}/">Proposal</a></li>
+  <li role="presentation"><a href="/activitydb/projectagreement_detail/{{ id }}/">Agreement</a></li>
+  <li role="presentation"><a href="/activitydb/projectcomplete_detail/{{ id }}/">Complete</a></li>
+  <li role="presentation" class="active"><a href="/activitydb/community_report/{{ id }}/">Communities</a></li>
+</ul>
+<h3>{{ proposal.project_name }}</h3>
+<style>
+    #map { height: 480px; }
+</style>
+
+<p><b>Communities</b></p>
+<div id="map"></div>
+
+<script src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
+
+<script type="text/javascript">
+    var country = "30,80";
+
+    var osmLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>',
+        thunLink = '<a href="http://thunderforest.com/">Thunderforest</a>';
+
+    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        osmAttrib = '&copy; ' + osmLink + ' Contributors',
+        osmHumURL = "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+        osmHumAttrib = "© OpenStreetMap Contributors. Tiles courtesy of Humanitarian OpenStreetMap Team",
+        landUrl = 'http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png',
+        thunAttrib = '&copy; '+osmLink+' Contributors & '+thunLink;
+
+    var osmMap = L.tileLayer(osmUrl, {attribution: osmAttrib}),
+        landMap = L.tileLayer(landUrl, {attribution: thunAttrib}),
+        osmHumMap = L.tileLayer(osmHumURL, {attribution: osmHumAttrib});
+
+    var map = L.map('map', {
+            layers: [osmMap] // only add one!
+        }).setView([30,80], 4);
+
+    var baseLayers = {
+			"OSM Mapnik": osmMap,
+            "OSM Humanitarian": osmHumMap,
+			"Landscape": landMap
+		};
+
+
+	L.control.layers(baseLayers).addTo(map);
+
+    {% for item in getCommunity %}
+        L.marker([{{ item.latitude }}, {{ item.longitude }}]).addTo(map).bindPopup("" + "<b>{{ item.country }}</b> <a href='/activitydb/community_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ incident.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> Community: {{ item.name }} <br/> ").openPopup();
+    {%   endfor %}
+
+    function ZoomToCountry(region){
+        map.setView([30,80], 4);
+    }
+</script>
+
+<ul class="list-group">
+{% for item in getCommunity %}
+    <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.name }}</b>
+    <div class="btn-group align-right" role="group" aria-label="...">
+        <a href="/activitydb/community_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Community</a>
+    </div>
+    </li>
+{% empty %}
+    <li class="list-group-item">No communities yet.</li>
+{% endfor %}
+</ul>
+{% endblock content %}
