@@ -13,63 +13,317 @@
 
 {% block content %}
 
-<!-- 3rd party dependencies -->
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/jquery/1.7.1/jquery.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/underscore/1.4.4/underscore.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/backbone/1.0.0/backbone.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/mustache/0.5.0-dev/mustache.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/bootstrap/3.2.0/js/bootstrap.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/jquery.event.drag-2.2.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/slick.core.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/slick.grid.js"></script>
-
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/dist/recline.js"></script>
-
-<link rel="stylesheet" href="{{ STATIC_URL }}js/recline/css/slickgrid.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/slick.grid.css">
-
-<!-- vendor -->
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/jquery-ui-1.8.16.custom.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/jquery.event.drag-2.0.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/slick.grid.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/plugins/slick.rowselectionmodel.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/vendor/slickgrid/2.0.1/plugins/slick.rowmovemanager.js"></script>
-
-<!-- Recline (only needed when NOT including the combined JS file as shown above) -->
-<script type="text/javascript" src="{{ STATIC_URL }}js/recline/src/view.slickgrid.js"></script>
-
-<h3>{{ agreement.project_title }} - {{ agreement.activity_code }}</h3>
-
-<div id="mygrid" style="height: 400px"></div>
-
-<script>
-{% autoescape off %}
-var data = {{ jsonData }}
-{% endautoescape %}
-
-  var dataset = new recline.Model.Dataset({
-    records: data
-  });
-
-  var $el = $('#mygrid');
-
-  var grid = new recline.View.SlickGrid({
-    model: dataset,
-    el: $el
-  });
-
-  grid.visible = true;
-  grid.render();
- </script>
-
-
-
-<table>
-    {% for value in agreement.get_field_values %}
+<h3>{{ agreement.project_name }}</h3>
+<p><b>Created:</b> {{ agreement.create_date }} <b>Last Edited:</b> {{ agreement.edit_date }} <span class="btn btn-xs btn-info">Status: <b>{{ agreement.approval }}</b></span></p>
+<div class="panel panel-info">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Part I: Executive Summary</div>
+    <!-- Table -->
+    <table class="table" border="1">
         <tr>
-            <td>{{ value }}</td>
+            <th>Activity Code</th>
+            <th>Sector</th>
+            <th>Office</th>
         </tr>
-    {% endfor %}
-</table>
+        <tr>
+            <td>{{ agreement.activity_code }}</td>
+            <td>{{ agreement.sector }}</td>
+            <td>{{ agreement.office }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Program</th>
+            <th>Project Activity</th>
+            <th>Project Type</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.program }}</td>
+            <td>{{ agreement.project_activity }}</td>
+            <td>{{ agreement.project_type }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Account Code</th>
+            <th>LIN Code</th>
+            <th>Are there partners involved?</th>
+            <th>LIN Code</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.account_code }}</td>
+            <td>{{ agreement.lin_code }}</td>
+            <td>{{ agreement.partners }}</td>
+            <td>{{ agreement.name_of_partners }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Name of Partners</th>
+            <th>External Stakeholder lists(s) attached?</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.name_of_partners }}</td>
+            <td>{{ agreement.external_stakeholder_list }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Expected Start Date</th>
+            <th>Expected End Date</th>
+            <th>Duration</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.expected_start_date }}</td>
+            <td>{{ agreement.expected_end_date }}</td>
+            <td>{{ agreement.expected_duration }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Estimated # of Direct Beneficiaries</th>
+            <th>Average Household Size</th>
+            <th>Estimated # of Indirect Beneficiaries</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.estimated_num_direct_beneficiaries }}</td>
+            <td>{{ agreement.average_household_size }}</td>
+            <td>{{ agreement.estimated_num_indirect_beneficiaries }}</td>
+        </tr>
+    </table>
+</div>
+<div class="panel panel-info">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Part I: Executive Summary (Budget</div>
+    <!-- Table -->
+    <table class="table" border="1">
+        <tr>
+            <th>Total Estimated Budget</th>
+            <th>MC Estimated Budget</th>
+            <th>Estimation Date</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.total_estimated_budget }}</td>
+            <td>{{ agreement.mc_estimated_budget }}</td>
+            <td>{{ agreement.estimation_date }}</td>
+        </tr>
+    </table>
+    <br/>
+    <h4>Other Budget Contributions:</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>Contributor</th>
+            <th>Description of Contribution</th>
+            <th>Processed Value of Contribution</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.program }}</td>
+            <td>{{ agreement.project_activity }}</td>
+            <td>{{ agreement.project_type }}</td>
+        </tr>
+    </table>
+    <br/>
+     <table class="table" border="1">
+        <tr>
+            <th>Project Type Other</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.project_type_other }}</td>
+        </tr>
+    </table>
+    <br/>
+</div>
+<div class="panel panel-info">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Part II: Justification and Description</div>
+    <!-- Table -->
+    <h4> I. Justification</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>What Program Objective does this help fulfill?</th>
+            <th>What Mercy Corps strategic objective does this help fulfill?</th>
+            <th>What is the anticipated outcome or impact of this project?</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.program_objectives }}</td>
+            <td>{{ agreement.mc_objectives }}</td>
+            <td>{{ agreement.effect_or_impact }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>General background and problem statement</th>
+            <th>Description of Community Selection Criteria</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.justification_background }}</td>
+            <td>{{ agreement.justification_description_community_selection }}</td>
+        </tr>
+    </table>
+    <h4> II. Description</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>Description of project and activities</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.description_of_project_activities }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Description of Government involvement/approval</th>
+            <th>Documentation of Government approval attached</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.description_of_government_involvement }}</td>
+            <td>{{ agreement.documentation_government_approval }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Description of Community involvement/approval</th>
+            <th>Documentation of Community approval attached</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.description_of_community_involvement }}</td>
+            <td>{{ agreement.documentation_community_approval }}</td>
+        </tr>
+    </table>
+    <br/>
+</div>
+<div class="panel panel-info">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Part III: Project Planning</div>
+    <!-- Table -->
+    <h4> Expected Indicator Outputs</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>Indicator Name</th>
+            <th>Targeted #</th>
+            <th>Is this Indicator in the Logframe?</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.program_objectives }}</td>
+            <td>{{ agreement.mc_objectives }}</td>
+            <td>{{ agreement.effect_or_impact }}</td>
+        </tr>
+    </table>
+    <h4>Benchmarks</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>Description</th>
+            <th>% Completion</th>
+            <th>% Cumulative completion</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.justification_background }}</td>
+            <td>{{ agreement.justification_description_community_selection }}</td>
+            <td>{{ agreement.justification_description_community_selection }}</td>
+        </tr>
+    </table>
+    <h4>Capacity</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>What capacity is being built to ensure sustainability of this project?</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.capacity }}</td>
+        </tr>
+    </table>
+</div>
+<div class="panel panel-info">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Part IV: Project Monitoring and Evaluation</div>
+    <!-- Table -->
+    <h4>Evaluation</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>How will you monitor the progress of this project? What types of monitoring will
+                take place, who is responsible for it, and how often should it take place?</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.evaluate }}</td>
+        </tr>
+    </table>
+    <h4>Monitoring</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>Type</th>
+            <th>Responsible Person</th>
+            <th>Frequency</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.justification_background }}</td>
+            <td>{{ agreement.justification_description_community_selection }}</td>
+            <td>{{ agreement.justification_description_community_selection }}</td>
+        </tr>
+    </table>
+</div>
+<div class="panel panel-warning">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Part V: Project Approval</div>
+    <!-- Table -->
+    <table class="table" border="1">
+        <tr>
+            <th>Action</th>
+            <th>E-Signature</th>
+            <th>Date</th>
+        </tr>
+        <tr>
+            <td>Submitted By</td>
+            <td>{{ agreement.approval_submitted_by }}</td>
+            <td>{{ agreement.approval_submitted_by_date}}</td>
+        </tr>
+        <tr>
+            <td>Estimated</td>
+            <td>{{ agreement.approved_by }}</td>
+            <td>{{ agreement.approved_date}}</td>
+        </tr>
+        <tr>
+            <td>Checked</td>
+            <td>{{ agreement.estimated_by }}</td>
+            <td>{{ agreement.estimated_by_date}}</td>
+        </tr>
+        <tr>
+            <td>Reviewed by MEL</td>
+            <td>{{ agreement.reviewed_by }}</td>
+            <td>{{ agreement.reviewed_by_date}}</td>
+        </tr>
+        <tr>
+            <td>Reviewed</td>
+            <td>{{ agreement.reviewed_by }}</td>
+            <td>{{ agreement.reviewed_by_date}}</td>
+        </tr>
+        <tr>
+            <td>Approved</td>
+            <td>{{ agreement.approved_by }}</td>
+            <td>{{ agreement.approved_date}}</td>
+        </tr>
+        <tr>
+            <td>Financial Review</td>
+            <td>{{ agreement.approved_by }}</td>
+            <td>{{ agreement.approved_date}}</td>
+        </tr>
+    </table>
+    <table class="table" border="1">
+        <tr>
+            <th>Approval Remarks</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.approval_remarks }}</td>
+        </tr>
+    </table>
+</div>
+
+
+
 
 {% endblock content %}

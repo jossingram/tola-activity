@@ -482,6 +482,8 @@ class ProjectAgreementUpdate(UpdateView):
 class ProjectAgreementDetail(DetailView):
 
     model = ProjectAgreement
+    context_object_name = 'agreement'
+    queryset =  ProjectAgreement.objects.all()
 
     def get_field_values(self):
         return [field.value_to_string(self) for field in ProjectAgreement._meta.fields]
@@ -491,10 +493,14 @@ class ProjectAgreementDetail(DetailView):
         context['now'] = timezone.now()
         data = ProjectAgreement.objects.all().filter(id=self.kwargs['pk'])
         getData = serializers.serialize('python', data)
+        #return just the fields and skip the object name
         justFields = [d['fields'] for d in getData]
         #handle date exceptions with date_handler
         jsonData =json.dumps(justFields, default=date_handler)
         context.update({'jsonData': jsonData})
+
+
+
         return context
 
 

@@ -73,7 +73,7 @@ urlpatterns = patterns('',
                        url(r'^quantitative_update/(?P<pk>\w+)/$', QuantitativeOutputsUpdate.as_view(), name='quantitative_update'),
                        url(r'^quantitative_delete/(?P<pk>\w+)/$', QuantitativeOutputsDelete.as_view(), name='quantitative_delete'),
 
-                       #url(r'^report', 'activitydb.views.report', name='report'),
+                       url(r'^report/', 'activitydb.views.report', name='report'),
 
                        url(r'^doimport/(?P<pk>\w+)/$', 'activitydb.views.doImport', name='doImport'),
                        url(r'^doMerge/(?P<pk>\w+)/$', 'activitydb.views.doMerge', name='doMerge'),
