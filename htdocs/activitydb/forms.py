@@ -249,6 +249,11 @@ class ProjectAgreementForm(forms.ModelForm):
     expected_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     expected_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     estimation_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    approved_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    me_reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    checked_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    estimated_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1', funding_status="Funded"), required=False)
 
@@ -452,7 +457,8 @@ class ProjectAgreementForm(forms.ModelForm):
                 ),
                 Tab('Approval',
                     Fieldset('Approval',
-                             'approval', 'estimated_by', 'checked_by','reviewed_by', 'approved_by', 'approval_submitted_by',
+                             'approval', 'estimated_by','estimated_by_date', 'checked_by','checked_by_date','reviewed_by','reviewed_by_date',
+                             'finance_reviewed_by','finance_reviewed_by_date','me_reviewed_by','me_reviewed_by_date','approved_by', 'approved_by_date', 'approval_submitted_by',
                              Field('approval_remarks', rows="3", css_class='input-xlarge')
                     ),
                 ),
