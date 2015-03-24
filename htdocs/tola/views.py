@@ -8,6 +8,13 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
 from activitydb.models import ProjectAgreement, ProjectProposal
+from djangocosign.models import UserProfile
+from djangocosign.models import Country
+from activitydb.models import Country as ActivityCountry
+from util import getCountry
+from datetime import datetime
+from django.shortcuts import get_object_or_404
+
 
 
 def index(request):
@@ -70,25 +77,14 @@ def profile(request):
     otherwise redirect them to registration version
     """
     if request.user.is_authenticated():
-        temp_post = request.POST.copy()
-        temp_post['last_login'] = request.user.last_login
-        temp_post['is_active'] = request.user.is_active
-        temp_post['is_superuser'] = request.user.is_superuser
-        temp_post['last_login'] = request.user.last_login
-        temp_post['is_staff'] = request.user.is_staff
-        temp_post['date_joined'] = request.user.date_joined
+        obj = get_object_or_404(UserProfile, user=request.user)
+        form = RegistrationForm(request.POST or None, instance=obj,initial={'username': request.user})
 
         if request.method == 'POST':
-            form = RegistrationForm(temp_post, instance=request.user)
-
             if form.is_valid():
                 form.save()
                 messages.error(request, 'Your profile has been updated.', fail_silently=False)
-            else:
-                messages.error(request, 'Invalid', fail_silently=False)
-                print form.errors
-        else:
-            form = RegistrationForm(instance=request.user)
+
         return render(request, "registration/profile.html", {
             'form': form, 'helper': RegistrationForm.helper
         })

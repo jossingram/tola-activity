@@ -6,6 +6,9 @@ import base64
 
 from read.models import Read
 
+from djangocosign.models import UserProfile, Country
+from activitydb.models import Country as ActivityCountry
+
 #CREATE NEW DATA DICTIONARY OBJECT 
 def siloToDict(silo):
     parsed_data = {}
@@ -57,4 +60,18 @@ def getJSON(id):
 
     return get_fields
 
+
+def getCountry(user):
+        """
+        Returns the object the view is displaying.
+
+        """
+        # get users country from django cosign module
+        user_country_id = UserProfile.objects.all().filter(user=user).values('country')
+        # get the country name from django cosign module
+        get_cosign_country = Country.objects.all().filter(id=user_country_id).values('name')
+        # get the id from the activitydb model
+        get_country = ActivityCountry.objects.get(country=get_cosign_country)
+
+        return get_country
 

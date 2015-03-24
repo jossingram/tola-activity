@@ -5,6 +5,8 @@ from crispy_forms.layout import Layout, Submit, Reset
 import floppyforms as forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm
+from activitydb.models import Country
+from djangocosign.models import UserProfile
 
 
 from .models import Feedback
@@ -36,26 +38,19 @@ class FeedbackForm(forms.ModelForm):
     helper.html5_required = True
     helper.layout = Layout(Fieldset('', 'submitter', 'note', 'page', 'severity'),Submit('submit', 'Submit', css_class='btn-default'), Reset('reset', 'Reset', css_class='btn-warning'))
 
-"""
-Form for registering a new account.
-"""
-
 
 class RegistrationForm(UserChangeForm):
+    """
+    Form for registering a new account.
+    """
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
         del self.fields['password']
 
     class Meta:
-        model = User
+        model = UserProfile
         fields = '__all__'
 
-    email = forms.EmailField(widget=forms.TextInput, label="Email")
-    password1 = forms.CharField(widget=forms.PasswordInput, label="Password")
-    password2 = forms.CharField(widget=forms.PasswordInput, label="Password (again)")
-    username = forms.CharField(widget=forms.TextInput, label="User Name")
-    first_name = forms.CharField(widget=forms.TextInput, label="First Name")
-    last_name = forms.CharField(widget=forms.TextInput, label="Last Name")
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -66,7 +61,7 @@ class RegistrationForm(UserChangeForm):
     helper.error_text_inline = True
     helper.help_text_inline = True
     helper.html5_required = True
-    helper.layout = Layout(Fieldset('', 'email', 'username', 'first_name', 'last_name', 'password1', 'password2'), Submit('submit', 'Submit', css_class='btn-default'), Reset('reset', 'Reset', css_class='btn-warning'))
+    helper.layout = Layout(Fieldset('','title', 'name', 'employee_number', 'user', 'username', 'country', 'countries','modified_by','created','updated'), Submit('submit', 'Submit', css_class='btn-default'), Reset('reset', 'Reset', css_class='btn-warning'))
 
 
 

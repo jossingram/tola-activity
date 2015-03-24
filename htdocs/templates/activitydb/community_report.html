@@ -23,13 +23,14 @@
     #map { height: 480px; }
 </style>
 
-<p><b>Communities</b></p>
+<p><b>{{ country.country }} Communities</b></p>
 <div id="map"></div>
 
 <script src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
+<link rel="borders" type="application/json" href="{{ STATIC_URL }}js/world_borders.geojson">
 
 <script type="text/javascript">
-    var country = "30,80";
+    var country = "{{ country.latitude }},{{ country.longitude }}";
 
     var osmLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>',
         thunLink = '<a href="http://thunderforest.com/">Thunderforest</a>';
@@ -40,14 +41,9 @@
         osmHumAttrib = "© OpenStreetMap Contributors. Tiles courtesy of Humanitarian OpenStreetMap Team",
         landUrl = 'http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png',
         thunAttrib = '&copy; '+osmLink+' Contributors & '+thunLink;
-
     var osmMap = L.tileLayer(osmUrl, {attribution: osmAttrib}),
         landMap = L.tileLayer(landUrl, {attribution: thunAttrib}),
         osmHumMap = L.tileLayer(osmHumURL, {attribution: osmHumAttrib});
-
-    var map = L.map('map', {
-            layers: [osmMap] // only add one!
-        }).setView([30,80], 4);
 
     var baseLayers = {
 			"OSM Mapnik": osmMap,
@@ -55,16 +51,93 @@
 			"Landscape": landMap
 		};
 
+    var map = L.map('map', {
+            layers: [osmMap] // only add one!
+        }).setView([{{ country.latitude }},{{ country.longitude }}], 5);
 
-	L.control.layers(baseLayers).addTo(map);
+    L.control.layers(baseLayers).addTo(map);
+    // Load map with geojson fil that contains borders
+    $.getJSON($('link[rel="borders"]').attr("href"), function(data) {
+
+        function style(feature) {
+            return {
+            fillColor: "#E3E3E3",
+            weight: 1,
+            opacity: 0.4,
+            color: 'white',
+            fillOpacity: 0.3
+            };
+        }
+
+        var geojson = L.geoJson(data, {
+        onEachFeature: onEachFeature,
+        style : style
+        }).addTo(map);
+
+        function onEachFeature(feature, layer){
+            layer.on({
+            click : onCountryClick,
+            mouseover : onCountryHighLight,
+            mouseout : onCountryMouseOut
+            });
+        }
+
+        /**
+        * Callback for mouse out of the country border. Will take care of the ui aspects, and will call
+        * other callbacks after done.
+        * @param e the event
+        */
+        function onCountryMouseOut(e){
+            geojson.resetStyle(e.target);
+            // $("#countryHighlighted").text("No selection");
+
+            var countryName = e.target.feature.properties.NAME;
+            var countryCode = e.target.feature.properties.iso_a2;
+            //callback when mouse exits a country polygon goes here, for additional actions
+        }
+
+        /**
+        * Callback for when a country is clicked. Will take care of the ui aspects, and it will call
+        * other callbacks when done
+        * @param e
+        */
+        function onCountryClick(e){
+        //callback for clicking inside a polygon
+            geojson.bindPopup(e.target.feature.properties.NAME);
+        }
+
+        /**
+        * Callback for when a country is highlighted. Will take care of the ui aspects, and it will call
+        * other callbacks after done.
+        * @param e
+        */
+        function onCountryHighLight(e){
+                var layer = e.target;
+
+                layer.setStyle({
+                weight: 2,
+                color: '#666',
+                dashArray: '',
+                fillOpacity: 0.7
+                });
+
+            if (!L.Browser.ie && !L.Browser.opera) {
+            layer.bringToFront();
+            }
+
+            var countryName = e.target.feature.properties.name;
+            var countryCode = e.target.feature.properties.iso_a2;
+            //callback when mouse enters a country polygon goes here, for additional actions
+         }
+
+     });
+
 
     {% for item in getCommunity %}
         L.marker([{{ item.latitude }}, {{ item.longitude }}]).addTo(map).bindPopup("" + "<b>{{ item.country }}</b> <a href='/activitydb/community_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ incident.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> Community: {{ item.name }} <br/> ").openPopup();
     {%   endfor %}
 
-    function ZoomToCountry(region){
-        map.setView([30,80], 4);
-    }
+
 </script>
 
 <ul class="list-group">

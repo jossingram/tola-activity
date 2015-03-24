@@ -315,5 +315,5 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 #Report Builder
 REPORT_BUILDER_INCLUDE = []
-REPORT_BUILDER_EXCLUDE = ['user','groups']
+REPORT_BUILDER_EXCLUDE = ['user','groups','read','template','silo','readtoken']
 REPORT_BUILDER_ASYNC_REPORT = False
