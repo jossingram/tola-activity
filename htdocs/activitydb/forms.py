@@ -10,6 +10,7 @@ from .models import ProjectProposal, ProgramDashboard, ProjectAgreement, Project
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
+from tola.util import getCountry
 
 """
 class Formset(LayoutObject):
@@ -110,13 +111,10 @@ class ProjectProposalForm(forms.ModelForm):
         model = ProjectProposal
         fields = '__all__'
 
-    #hard coded 1 for country for now until configured in the form
-    #TODO: configure country for each form
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1', funding_status="Funded"))
 
     date_of_request = forms.DateField(widget=DatePicker.DateInput())
     rejection_letter = forms.FileField(required=False)
-
+    program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
     approval = forms.ChoiceField(
         choices=APPROVALS,
         initial='in progress',
@@ -171,6 +169,11 @@ class ProjectProposalForm(forms.ModelForm):
 
 
         super(ProjectProposalForm, self).__init__(*args, **kwargs)
+
+        #override the program queryset to use request.user for country
+        country_object = getCountry(self.request.user)
+        country_id = country_object.pk
+        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country=country_id)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
@@ -255,7 +258,7 @@ class ProjectAgreementForm(forms.ModelForm):
     checked_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     estimated_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1', funding_status="Funded"), required=False)
+    program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
 
     documentation_government_approval = forms.FileField(required=False)
     documentation_community_approval = forms.FileField(required=False)
@@ -323,7 +326,7 @@ class ProjectAgreementForm(forms.ModelForm):
                         PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list', 'expected_start_date',
                         'expected_end_date', 'expected_duration', 'beneficiary_type','estimated_num_direct_beneficiaries', 'average_household_size', 'estimated_num_indirect_beneficiaries',
                         PrependedAppendedText('total_estimated_budget','$', '.00'), PrependedAppendedText('mc_estimated_budget','$', '.00'),
-                        'estimation_date', 'estimated_by','checked_by','other_budget','project_type_other',
+                        'estimation_date','other_budget','project_type_other',
                     ),
                 ),
 
@@ -469,6 +472,11 @@ class ProjectAgreementForm(forms.ModelForm):
         )
         super(ProjectAgreementForm, self).__init__(*args, **kwargs)
 
+        #override the program queryset to use request.user for country
+        country_object = getCountry(self.request.user)
+        country_id = country_object.pk
+        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country=country_id)
+
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
@@ -491,7 +499,7 @@ class ProjectCompleteForm(forms.ModelForm):
     actual_start_date = forms.DateField(widget=DatePicker.DateInput())
     actual_end_date = forms.DateField(widget=DatePicker.DateInput())
 
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1', funding_status="Funded"))
+    program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
 
     approval = forms.ChoiceField(
         choices=APPROVALS,
@@ -607,6 +615,11 @@ class ProjectCompleteForm(forms.ModelForm):
 
         )
         super(ProjectCompleteForm, self).__init__(*args, **kwargs)
+
+        #override the program queryset to use request.user for country
+        country_object = getCountry(self.request.user)
+        country_id = country_object.pk
+        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country=country_id)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"

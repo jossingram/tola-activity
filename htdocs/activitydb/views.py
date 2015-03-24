@@ -125,7 +125,7 @@ class ProjectProposalList(ListView):
         getPrograms = Program.objects.all().filter(funding_status="Funded", country=country)
 
         if int(self.kwargs['pk']) == 0:
-            getDashboard = ProjectProposal.objects.all()
+            getDashboard = ProjectProposal.objects.all().filter(program__country=country)
             return render(request, self.template_name, {'form': form, 'getDashboard':getDashboard,'getPrograms':getPrograms})
         else:
             getDashboard = ProjectProposal.objects.all().filter(program__id=self.kwargs['pk'])
@@ -362,6 +362,8 @@ class ProjectAgreementCreate(CreateView):
             'office': getProjectProposal.office,
             'estimated_by': getProjectProposal.estimated_by,
             'sector': getProjectProposal.sector,
+            'project_activity': getProjectProposal.project_activity,
+            'project_type': getProjectProposal.project_type
             }
 
         return initial
@@ -591,7 +593,7 @@ class ProjectCompleteCreate(CreateView):
 
         #add quantitative outputs data to form via context
         try:
-            getQuantitative = QuantitativeOutputs.objects.all().filter(project_agreement__id=self.kwargs['pk'])
+            getQuantitative = QuantitativeOutputs.objects.all().filter(agreement__id=self.kwargs['pk'])
         except QuantitativeOutputs.DoesNotExist:
             getQuantitative = None
         context.update({'getQuantitative': getQuantitative})
@@ -851,7 +853,7 @@ class CommunityList(ListView):
 
 
     def get(self, request, *args, **kwargs):
-
+        country = getCountry(request.user)
         project_proposal_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
@@ -859,7 +861,7 @@ class CommunityList(ListView):
         else:
             getCommunity = Community.objects.all().filter(projectproposal__id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': project_proposal_id})
+        return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': project_proposal_id,'country': country})
 
 
 class CommunityReport(ListView):
@@ -1421,7 +1423,7 @@ def report(request):
     and django-filter
     """
     country=getCountry(request.user)
-    getAgreements = ProjectAgreement.objects.select_related()
+    getAgreements = ProjectAgreement.objects.select_related().filter(program__country=country)
     filtered = ProjectAgreementFilter(request.GET, queryset=getAgreements)
     table = ProjectAgreementTable(filtered.queryset)
     table.paginate(page=request.GET.get('page', 1), per_page=20)

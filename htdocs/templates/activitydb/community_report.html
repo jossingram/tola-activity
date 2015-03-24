@@ -30,7 +30,6 @@
 <link rel="borders" type="application/json" href="{{ STATIC_URL }}js/world_borders.geojson">
 
 <script type="text/javascript">
-    var country = "{{ country.latitude }},{{ country.longitude }}";
 
     var osmLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>',
         thunLink = '<a href="http://thunderforest.com/">Thunderforest</a>';
@@ -51,14 +50,19 @@
 			"Landscape": landMap
 		};
 
+    //Init map with default zoom and coordinates of logged in users country
     var map = L.map('map', {
             layers: [osmMap] // only add one!
         }).setView([{{ country.latitude }},{{ country.longitude }}], 5);
 
     L.control.layers(baseLayers).addTo(map);
-    // Load map with geojson fil that contains borders
+    // Load map with geojson file that contains borders
     $.getJSON($('link[rel="borders"]').attr("href"), function(data) {
 
+        /**
+         * Set the style for each feature(country) to be light grey by default
+         * @param feature (from getJson file)
+        */
         function style(feature) {
             return {
             fillColor: "#E3E3E3",
@@ -74,21 +78,33 @@
         style : style
         }).addTo(map);
 
+        /**
+         * Loops over each feature and creates call back function for events
+         * Also highlights the default country based on user login
+         * @param feature (from getJson file)
+         * @param layer (from geoJson file)
+        */
         function onEachFeature(feature, layer){
+             if (feature.properties.NAME == "{{ country.country }}") {
+                highlightDefault(feature, layer);
+             }
+
             layer.on({
             click : onCountryClick,
             mouseover : onCountryHighLight,
-            mouseout : onCountryMouseOut
+            mouseout : onCountryMouseOut,
             });
         }
 
         /**
         * Callback for mouse out of the country border. Will take care of the ui aspects, and will call
-        * other callbacks after done.
+        * other callbacks after done.  If it's the default highlighted country leave it alone.
         * @param e the event
         */
         function onCountryMouseOut(e){
-            geojson.resetStyle(e.target);
+            if (e.target.feature.properties.NAME != "{{ country.country }}") {
+                geojson.resetStyle(e.target);
+            }
             // $("#countryHighlighted").text("No selection");
 
             var countryName = e.target.feature.properties.NAME;
@@ -97,8 +113,7 @@
         }
 
         /**
-        * Callback for when a country is clicked. Will take care of the ui aspects, and it will call
-        * other callbacks when done
+        * Callback for when a country is clicked.  Pop-up the country name
         * @param e
         */
         function onCountryClick(e){
@@ -108,27 +123,51 @@
 
         /**
         * Callback for when a country is highlighted. Will take care of the ui aspects, and it will call
-        * other callbacks after done.
+        * other callbacks after done. If it's the default highlighted country leave it alone.
         * @param e
         */
         function onCountryHighLight(e){
+
+            if (e.target.feature.properties.NAME != "{{ country.country }}") {
                 var layer = e.target;
 
                 layer.setStyle({
-                weight: 2,
-                color: '#666',
-                dashArray: '',
-                fillOpacity: 0.7
+                    weight: 2,
+                    color: '#666',
+                    dashArray: '',
+                    fillOpacity: 0.7
                 });
 
-            if (!L.Browser.ie && !L.Browser.opera) {
-            layer.bringToFront();
-            }
+                if (!L.Browser.ie && !L.Browser.opera) {
+                    layer.bringToFront();
+                }
 
-            var countryName = e.target.feature.properties.name;
-            var countryCode = e.target.feature.properties.iso_a2;
+                var countryName = e.target.feature.properties.name;
+                var countryCode = e.target.feature.properties.ISO2;
+            }
             //callback when mouse enters a country polygon goes here, for additional actions
          }
+
+
+        /**
+        * Callback for hilighting the logged in users selected country
+        * @param feature
+        * @param layer
+        */
+        function highlightDefault(feature,layer){
+                layer.setStyle({
+                weight: 2,
+                color: 'blue',
+                dashArray: '',
+                fillOpacity: 0.6,
+                borderColor: 'blue'
+                });
+            var countryName = feature.properties.NAME;
+            var countryCode = feature.properties.ISO2;
+
+            //callback when mouse enters a country polygon goes here, for additional actions
+         }
+
 
      });
 
