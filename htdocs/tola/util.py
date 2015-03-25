@@ -67,11 +67,11 @@ def getCountry(user):
 
         """
         # get users country from django cosign module
-        user_country_id = UserProfile.objects.all().filter(user=user).values('country')
+        user_countries = UserProfile.objects.all().filter(user=user).values('countries')
         # get the country name from django cosign module
-        get_cosign_country = Country.objects.all().filter(id=user_country_id).values('name')
+        get_cosign_country = Country.objects.all().filter(id__in=user_countries).values('name')
         # get the id from the activitydb model
-        get_country = ActivityCountry.objects.get(country=get_cosign_country)
+        get_countries = ActivityCountry.objects.all().filter(country__in=get_cosign_country)
 
-        return get_country
+        return get_countries
 

@@ -63,8 +63,8 @@ class ProjectDash(ListView):
     template_name = 'activitydb/projectdashboard_list.html'
 
     def get(self, request, *args, **kwargs):
-        country = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country=country)
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
         form = ProgramDashboardForm
 
         if int(self.kwargs['pk']) == 0:
@@ -94,16 +94,16 @@ class ProgramDash(ListView):
     template_name = 'activitydb/programdashboard_list.html'
 
     def get(self, request, *args, **kwargs):
-        country = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country=country)
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
         form = ProgramDashboardForm
 
         if int(self.kwargs['pk']) == 0:
-            getDashboard = Program.objects.all().filter(funding_status="Funded", country=country).filter(Q(agreement__isnull=False) | Q(proposal__isnull=False) | Q(complete__isnull=False)).order_by('name').values('id', 'name', 'gaitid','agreement__id','proposal__id','complete__id')
+            getDashboard = Program.objects.all().filter(funding_status="Funded", country__in=countries).filter(Q(agreement__isnull=False) | Q(proposal__isnull=False) | Q(complete__isnull=False)).order_by('name').values('id', 'name', 'gaitid','agreement__id','proposal__id','complete__id')
 
         else:
-            getDashboard = Program.objects.all().filter(id=self.kwargs['pk'], funding_status="Funded", country=country).filter(Q(agreement__isnull=False) | Q(proposal__isnull=False) | Q(complete__isnull=False)).order_by('name').values('id', 'name', 'gaitid','agreement__id','proposal__id','complete__id')
+            getDashboard = Program.objects.all().filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).filter(Q(agreement__isnull=False) | Q(proposal__isnull=False) | Q(complete__isnull=False)).order_by('name').values('id', 'name', 'gaitid','agreement__id','proposal__id','complete__id')
 
         return render(request, self.template_name, {'form': form, 'getDashboard': getDashboard, 'getPrograms':getPrograms})
 
@@ -121,11 +121,11 @@ class ProjectProposalList(ListView):
 
     def get(self, request, *args, **kwargs):
         form = ProgramDashboardForm
-        country = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country=country)
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
         if int(self.kwargs['pk']) == 0:
-            getDashboard = ProjectProposal.objects.all().filter(program__country=country)
+            getDashboard = ProjectProposal.objects.all().filter(program__country__in=countries)
             return render(request, self.template_name, {'form': form, 'getDashboard':getDashboard,'getPrograms':getPrograms})
         else:
             getDashboard = ProjectProposal.objects.all().filter(program__id=self.kwargs['pk'])
@@ -303,8 +303,8 @@ class ProjectAgreementList(ListView):
 
     def get(self, request, *args, **kwargs):
         form = ProgramDashboardForm
-        country = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country=country)
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
         if int(self.kwargs['pk']) == 0:
             getDashboard = ProjectAgreement.objects.all()
@@ -495,19 +495,27 @@ class ProjectAgreementDetail(DetailView):
 
     model = ProjectAgreement
     context_object_name = 'agreement'
-    queryset =  ProjectAgreement.objects.all()
+    queryset = ProjectAgreement.objects.all()
+
+
+    def get_object(self, queryset=ProjectAgreement.objects.all()):
+        try:
+            return queryset.get(project_proposal__id=self.kwargs['pk'])
+        except ProjectAgreement.DoesNotExist:
+            return None
 
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementDetail, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
-        data = ProjectAgreement.objects.all().filter(id=self.kwargs['pk'])
+        data = ProjectAgreement.objects.all().filter(project_proposal__id=self.kwargs['pk'])
         getData = serializers.serialize('python', data)
         #return just the fields and skip the object name
         justFields = [d['fields'] for d in getData]
         #handle date exceptions with date_handler
         jsonData =json.dumps(justFields, default=date_handler)
         context.update({'jsonData': jsonData})
-        context.update({'id':self.kwargs['pk']})
+
+        context.update({'id': self.kwargs['pk']})
 
         return context
 
@@ -545,8 +553,8 @@ class ProjectCompleteList(ListView):
 
     def get(self, request, *args, **kwargs):
         form = ProgramDashboardForm
-        country = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country=country)
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
         if int(self.kwargs['pk']) == 0:
             getDashboard = ProjectAgreement.objects.all()
@@ -693,17 +701,19 @@ class ProjectCompleteDetail(DetailView):
 
     model = ProjectComplete
     context_object_name = 'complete'
-    try:
-        queryset =  ProjectComplete.objects.all()
-    except ProjectComplete.DoesNotExist:
-        queryset = None
+
+    def get_object(self, queryset=ProjectComplete.objects.all()):
+        try:
+            return queryset.get(project_proposal__id=self.kwargs['pk'])
+        except ProjectComplete.DoesNotExist:
+            return None
 
     def get_context_data(self, **kwargs):
 
         context = super(ProjectCompleteDetail, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         try:
-            data = ProjectComplete.objects.all().filter(id=self.kwargs['pk'])
+            data = ProjectComplete.objects.all().filter(project_proposal__id=self.kwargs['pk'])
         except ProjectComplete.DoesNotExist:
             data = None
         getData = serializers.serialize('python', data)
@@ -853,7 +863,7 @@ class CommunityList(ListView):
 
 
     def get(self, request, *args, **kwargs):
-        country = getCountry(request.user)
+        countries = getCountry(request.user)
         project_proposal_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
@@ -861,7 +871,7 @@ class CommunityList(ListView):
         else:
             getCommunity = Community.objects.all().filter(projectproposal__id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': project_proposal_id,'country': country})
+        return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': project_proposal_id,'country': countries})
 
 
 class CommunityReport(ListView):
@@ -873,7 +883,7 @@ class CommunityReport(ListView):
 
 
     def get(self, request, *args, **kwargs):
-        country = getCountry(request.user)
+        countries = getCountry(request.user)
         project_proposal_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
@@ -883,7 +893,7 @@ class CommunityReport(ListView):
 
         id=self.kwargs['pk']
 
-        return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': project_proposal_id,'id':id,'country': country})
+        return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': project_proposal_id,'id':id,'country': countries})
 
 
 class CommunityCreate(CreateView):
@@ -1422,8 +1432,8 @@ def report(request):
     Show LIST of submitted incidents with a filtered search view using django-tables2
     and django-filter
     """
-    country=getCountry(request.user)
-    getAgreements = ProjectAgreement.objects.select_related().filter(program__country=country)
+    countries=getCountry(request.user)
+    getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries)
     filtered = ProjectAgreementFilter(request.GET, queryset=getAgreements)
     table = ProjectAgreementTable(filtered.queryset)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
@@ -1441,13 +1451,15 @@ def report(request):
                                            Q(project_name__contains=request.GET["search"]) |
                                            Q(beneficiary_type__contains=request.GET["search"]) |
                                            Q(approval__contains=request.GET["search"]) |
+                                           Q(office__name__contains=request.GET["search"]) |
+                                           Q(sector__name__contains=request.GET["search"]) |
                                            Q(program__name__contains=request.GET["search"])).select_related()
         table = ProjectAgreementTable(queryset)
 
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "activitydb/report.html", {'get_agreements': table, 'country': country, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
+    return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
 
 def doImport(request, pk):
     """

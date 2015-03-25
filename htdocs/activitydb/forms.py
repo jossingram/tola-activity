@@ -171,9 +171,8 @@ class ProjectProposalForm(forms.ModelForm):
         super(ProjectProposalForm, self).__init__(*args, **kwargs)
 
         #override the program queryset to use request.user for country
-        country_object = getCountry(self.request.user)
-        country_id = country_object.pk
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country=country_id)
+        countries = getCountry(self.request.user)
+        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
@@ -473,9 +472,8 @@ class ProjectAgreementForm(forms.ModelForm):
         super(ProjectAgreementForm, self).__init__(*args, **kwargs)
 
         #override the program queryset to use request.user for country
-        country_object = getCountry(self.request.user)
-        country_id = country_object.pk
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country=country_id)
+        countries = getCountry(self.request.user)
+        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
@@ -617,9 +615,8 @@ class ProjectCompleteForm(forms.ModelForm):
         super(ProjectCompleteForm, self).__init__(*args, **kwargs)
 
         #override the program queryset to use request.user for country
-        country_object = getCountry(self.request.user)
-        country_id = country_object.pk
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country=country_id)
+        countries = getCountry(self.request.user)
+        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
