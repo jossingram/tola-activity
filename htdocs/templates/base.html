@@ -25,7 +25,7 @@
         <link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
 
         <!--- Hosted Leaflet CSS --->
-        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
 
         {% block extra_js_in_header %}
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -35,7 +35,7 @@
         <script type="text/javascript" src="{{ STATIC_URL }}js/app.js"></script>
 
         <!-- Hosted Leaflet -->
-        <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+        <script src="{{ STATIC_URL }}js/leaflet.js"></script>
         {% endblock %}
 
     </head>
