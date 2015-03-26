@@ -39,7 +39,6 @@ class GoogleMapsWidget(forms.HiddenInput):
                             mapTypeId: google.maps.MapTypeId.ROADMAP
                         };
                         map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-
                         geocoder = new google.maps.Geocoder();
                         my_point = new google.maps.Marker({
                             position: center,

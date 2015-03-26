@@ -42,6 +42,7 @@
         }).setView([country_lat[1],country_long[1]], 5);
 
     L.control.layers(baseLayers).addTo(map);
+
     // Load map with geojson file that contains borders
     $.getJSON($('link[rel="borders"]').attr("href"), function(data) {
 
@@ -144,8 +145,9 @@
                 layer.setStyle({
                 weight: 2,
                 color: 'blue',
+                fillColor: 'blue',
                 dashArray: '',
-                fillOpacity: 0.6,
+                fillOpacity: 0.1,
                 borderColor: 'blue'
                 });
             var countryName = feature.properties.NAME;
