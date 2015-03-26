@@ -72,10 +72,12 @@ SITE_ID = 1
 USE_I18N = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
-USE_L10N = True
+USE_L10N = False
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
+
+DATE_FORMAT = 'Y-n-d'
 ########## END GENERAL CONFIGURATION
 
 
@@ -269,7 +271,7 @@ LOGGING = {
     'formatters': {
         'verbose': {
             'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt': "%d/%b/%Y %H:%M:%S"
+            'datefmt': "%Y-%d-%b %H:%M:%S"
         },
         'simple': {
             'format': '%(levelname)s %(message)s'

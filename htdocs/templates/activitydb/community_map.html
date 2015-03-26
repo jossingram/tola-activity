@@ -1,3 +1,7 @@
+<script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
+
+<link rel="borders" type="application/json" href="{{ STATIC_URL }}js/world_borders.geojson">
+
 <script type="text/javascript">
 
     var country=[];
@@ -10,8 +14,8 @@
     {% endfor %}
 
 
-    var osmLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>',
-        thunLink = '<a href="http://thunderforest.com/">Thunderforest</a>';
+    var osmLink = '<a href="https://openstreetmap.org">OpenStreetMap</a>',
+        thunLink = '<a href="https://thunderforest.com/">Thunderforest</a>';
 
     var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         osmAttrib = '&copy; ' + osmLink + ' Contributors',
