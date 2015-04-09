@@ -39,6 +39,6 @@ htdocs/tola/settings/local.py
 client_secrets.json
 djangocosign
 htdocs/djangocosign
-
+ssl.tola-activity.conf
 *.crt
 *.key

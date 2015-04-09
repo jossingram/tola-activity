@@ -1551,7 +1551,7 @@ def doMerge(request, pk):
                 getSourceFrom = ValueStore.objects.get(field__silo__id=from_silo_id, field__name=str(column), row_number=row['row_number'])
             except Exception as e:
                 getSourceFrom = None
-                
+
 
             if request.POST[column] != "Ignore" and request.POST[column] != "0" and str(column) != "csrfmiddlewaretoken" and str(column) != "from_column_id" and str(column) != "from_silo_id":
                 fields_to_insert[str(request.POST[column])] = str(getSourceFrom.char_store)
