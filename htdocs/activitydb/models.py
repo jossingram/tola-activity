@@ -434,7 +434,7 @@ class ProjectAgreement(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True, related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255, blank=True, null=True)
-    project_type = models.CharField("Project Type", help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
+    project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
     community = models.ManyToManyField(Community, blank=True, null=True)
     activity_code = models.CharField("Activity Code", help_text='Please request Activity Code from Kabul MEL', max_length=255, blank=True, null=True)

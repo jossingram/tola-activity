@@ -13,7 +13,7 @@ from activitydb.models import Program
 from indicators.forms import IndicatorForm
 from django.shortcuts import render_to_response
 from django.contrib import messages
-
+from tola.util import getCountry
 
 
 def home(request, id):
@@ -23,10 +23,14 @@ def home(request, id):
     #set country to afghanistan for now until we have user data on country
     #use self.request.user to get users country
     #self.kwargs.pk = ID of program from dropdown
-    set_country = "1"
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country=set_country)
-    getIndicators = Indicator.objects.all().filter(program__id=id)
-
+    countries = getCountry(request.user)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    print id
+    if id:
+        print "YES"
+        getIndicators = Indicator.objects.all()
+    else:
+        getIndicators = Indicator.objects.all().filter(program__id=id)
     return render(request, 'indicators/home.html',{'getPrograms':getPrograms, 'getIndicators': getIndicators})
 
 def dashboard(request):

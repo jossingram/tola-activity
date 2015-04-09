@@ -348,6 +348,7 @@ class ProjectAgreementCreate(CreateView):
     #get shared data from project agreement and pre-populate form with it
     def get_initial(self):
         getProjectProposal = ProjectProposal.objects.get(id=self.kwargs['pk'])
+
         initial = {
             'approved_by': self.request.user,
             'estimated_by': self.request.user,
@@ -363,8 +364,15 @@ class ProjectAgreementCreate(CreateView):
             'estimated_by': getProjectProposal.estimated_by,
             'sector': getProjectProposal.sector,
             'project_activity': getProjectProposal.project_activity,
-            'project_type': getProjectProposal.project_type
+            'project_type': getProjectProposal.project_type,
             }
+
+        try:
+            getCommunites = Community.objects.get(projectproposal__id=self.kwargs['pk'])
+            communites = {'community': [o for o in getCommunites.name],}
+            initial = initial + communites
+        except Community.DoesNotExist:
+            getCommunites = None
 
         return initial
 
@@ -590,7 +598,19 @@ class ProjectCompleteCreate(CreateView):
             'project_agreement': getProjectAgreement.id,
             'project_name': getProjectAgreement.project_name,
             'activity_code': getProjectAgreement.activity_code,
+            'expected_start_date': getProjectAgreement.expected_start_date,
+            'expected_end_date': getProjectAgreement.expected_end_date,
+            'expected_duration': getProjectAgreement.expected_duration,
+            'estimated_budget': getProjectAgreement.total_estimated_budget,
         }
+
+        try:
+            getCommunites = Community.objects.get(projectproposal__id=self.kwargs['pk'])
+            communites = {'community': [o for o in getCommunites.name],}
+            initial = initial + communites
+        except Community.DoesNotExist:
+            getCommunites = None
+
         return initial
 
     def get_context_data(self, **kwargs):
@@ -1531,7 +1551,7 @@ def doMerge(request, pk):
                 getSourceFrom = ValueStore.objects.get(field__silo__id=from_silo_id, field__name=str(column), row_number=row['row_number'])
             except Exception as e:
                 getSourceFrom = None
-                pass
+                
 
             if request.POST[column] != "Ignore" and request.POST[column] != "0" and str(column) != "csrfmiddlewaretoken" and str(column) != "from_column_id" and str(column) != "from_silo_id":
                 fields_to_insert[str(request.POST[column])] = str(getSourceFrom.char_store)

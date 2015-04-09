@@ -1,17 +1,18 @@
 from django.forms import ModelForm
 from indicators.models import Indicator
-from activitydb.models import Program
-import floppyforms as forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, Submit, Reset, HTML, Button, Row, Field, Hidden, Fieldset
-from crispy_forms.bootstrap import FormActions
+from crispy_forms.layout import *
+from crispy_forms.bootstrap import *
+from crispy_forms.layout import Layout, Submit, Reset, Field
+
+import floppyforms as forms
 
 
 class IndicatorForm(forms.ModelForm):
 
     class Meta:
         model = Indicator
-        fields = ['indicator_type', 'name', 'description', 'sector', 'owner', 'program']
+        exclude = ['create_date','edit_date']
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -26,16 +27,40 @@ class IndicatorForm(forms.ModelForm):
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
-            Fieldset(
-                    'indicator_type','name', 'description','sector','owner','program'
+            TabHolder(
+                Tab('Performance',
+                     Fieldset('Performance',
+                        'type', 'number', 'source', 'definition', 'disaggregation','owner','program','sector','indicator_type'
+                        ),
                 ),
+                Tab('Targets',
+                    Fieldset('Targets',
+                             'baseline','lop_target',
+                             ),
+                ),
+                Tab('Data Acquisition',
+                    Fieldset('Data Acquisition',
+                        'means_of_verification','data_collection_method','responsible_person',
+                        ),
+                ),
+                Tab('Analyses and Reporting',
+                    Fieldset('Analyses and Reporting',
+                        'method_of_analysis','information_use', 'reporting_frequency','comments'
+                    ),
+                ),
+                Tab('Approval',
+                    Fieldset('Approval',
+                        'approval', 'filled_by', 'approved_by',
+                    ),
+                ),
+            ),
+
+            HTML("""<br/>"""),
+            FormActions(
+                Submit('submit', 'Save', css_class='btn-default'),
+                Reset('reset', 'Reset', css_class='btn-warning')
             )
+        )
 
         super(IndicatorForm, self).__init__(*args, **kwargs)
 
-        # If you pass FormHelper constructor a form instance
-        # It builds a default layout with all its fields
-        self.helper = FormHelper(self)
-
-        # Append the read_id for edits and save button
-        self.helper.layout.append(Submit('save', 'save'))
