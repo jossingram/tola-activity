@@ -170,8 +170,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
-        self.helper.add_input(Reset('submit', 'Save & Close', css_class='btn-warning', onclick='window.close()'))
-        self.helper.add_input(Submit('submit', 'Save & Add Another'))
+        self.helper.form_tag = False
 
         super(QuantitativeOutputsForm, self).__init__(*args, **kwargs)
 
@@ -195,7 +194,6 @@ class BudgetForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
-        self.helper.form_tag = False
         self.helper.layout = Layout(
             Field('contributor', required=False), Field('description_of_contribution', required=False), PrependedAppendedText('proposed_value','$', '.00'), 'agreement',
         )
@@ -210,6 +208,55 @@ class BudgetForm(forms.ModelForm):
 
 
 BudgetFormSet = modelformset_factory(Budget, form=BudgetForm, extra=1)
+
+class ProjectAgreementCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = ProjectAgreement
+        fields = '__all__'
+
+    program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
+
+    project_type_other = forms.ChoiceField(
+        choices=TYPE_OTHER,
+        initial='',
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+
+        #get the user object from request to check permissions
+        self.request = kwargs.pop('request')
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = True
+        self.helper.layout = Layout(
+
+            HTML("""<p>Create a Summary first then add additional fields after saving</p><br/>"""),
+            TabHolder(
+                Tab('Executive Summary',
+                    Fieldset('Program', 'program', 'project_proposal','community', 'activity_code', 'office_code', 'project_name', 'sector', 'project_activity',
+                             'project_type', 'account_code', 'sub_code','mc_staff_responsible'
+                    ),
+                ),
+            ),
+
+            HTML("""<br/>"""),
+
+        )
+        super(ProjectAgreementCreateForm, self).__init__(*args, **kwargs)
+
+        #override the program queryset to use request.user for country
+        countries = getCountry(self.request.user)
+        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+
 
 
 class ProjectAgreementForm(forms.ModelForm):
@@ -355,13 +402,13 @@ class ProjectAgreementForm(forms.ModelForm):
                                                 <td>{{ item.description}}</td>
                                                 <td>{{ item.logframe_indicator}}</td>
                                                 <td>{{ item.non_logframe_indicator}}</td>
-                                                <td><a href='/activitydb/quantitative_update/{{ item.id }}/' target="_new">View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a href="/activitydb/quantitative_add/{{ id }}" target="_new">Add Quantitative Outputs</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ id }}">Add Quantitative Outputs</a>
                                       </div>
                                     </div>
                                      """),
@@ -385,13 +432,13 @@ class ProjectAgreementForm(forms.ModelForm):
                                                 <td>{{ item.responsible_person}}</td>
                                                 <td>{{ item.frequency}}</td>
                                                 <td>{{ item.type}}</td>
-                                                <td><a href='/activitydb/monitor_update/{{ item.id }}/' target="_new">View</a> | <a href='/activitydb/monitor_delete/{{ item.id }}/' target="_new">Delete</a>
+                                                <td><a data-toggle="modal" data-target="#myModal" href='/activitydb/monitor_update/{{ item.id }}/'>View</a> | <a href='/activitydb/monitor_delete/{{ item.id }}/' target="_new">Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a href="/activitydb/monitor_add/{{ id }}" target="_new">Add Monitoring Data</a>
+                                        <a class="monitoring" data-toggle="modal" data-target="#myModal" href="/activitydb/monitor_add/{{ id }}">Add Monitoring Data</a>
                                       </div>
                                     </div>
                                      """),
@@ -415,13 +462,13 @@ class ProjectAgreementForm(forms.ModelForm):
                                                 <td>{{ item.percent_complete}}</td>
                                                 <td>{{ item.percent_cumlative}}</td>
                                                 <td>{{ item.description}}</td>
-                                                <td><a href='/activitydb/benchmark_update/{{ item.id }}/' target="_new">View</a> | <a href='/activitydb/benchmark_delete/{{ item.id }}/' target="_new">Delete</a></td>
+                                                <td><a class="benchamrks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>View</a> | <a href='/activitydb/benchmark_delete/{{ item.id }}/' target="_new">Delete</a></td>
                                             </tr>
                                             {% endfor %}
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a href="/activitydb/benchmark_add/{{ id }}" target="_new">Add Benchmarks</a>
+                                        <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ id }}">Add Benchmarks</a>
                                       </div>
                                     </div>
                                      """),
@@ -727,15 +774,12 @@ class BenchmarkForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
+        self.helper.form_tag = False
         self.helper.layout = Layout(
 
                 'percent_complete', 'percent_cumulative', Field('description', rows="3", css_class='input-xlarge'), 'agreement',
                 'file_field','project',
 
-            FormActions(
-                Reset('submit', 'Close', css_class='btn-warning', onclick='submitClose()'),
-                Submit('submit', 'Save & Add Another'),
-            )
         )
 
         super(BenchmarkForm, self).__init__(*args, **kwargs)
@@ -758,16 +802,13 @@ class MonitorForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
+        self.helper.form_tag = False
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
 
                 'responsible_person', 'frequency', Field('type', rows="3", css_class='input-xlarge'), 'agreement',
 
-            FormActions(
-                Reset('submit', 'Close', css_class='btn-warning', onclick='submitClose()'),
-                Submit('submit', 'Save & Add Another'),
-            )
         )
 
         super(MonitorForm, self).__init__(*args, **kwargs)

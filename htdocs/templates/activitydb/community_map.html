@@ -27,6 +27,8 @@
         landMap = L.tileLayer(landUrl, {attribution: thunAttrib}),
         osmHumMap = L.tileLayer(osmHumURL, {attribution: osmHumAttrib});
 
+    var googleLayer = new L.Google('ROADMAP');
+
     var positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'});
 
     var baseLayers = {
@@ -34,11 +36,12 @@
             "OSM Humanitarian": osmHumMap,
 			"Landscape": landMap,
             "CartoDB Positron": positron
+            "Google Roads": googleLayer
 		};
 
     //Init map with default zoom and coordinates of logged in users country
     var map = L.map('map', {
-            layers: [osmHumMap] // only add one!
+            layers: [googleLayer] // only add one!
         }).setView([country_lat[1],country_long[1]], 5);
 
     L.control.layers(baseLayers).addTo(map);

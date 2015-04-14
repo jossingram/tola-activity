@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectCompleteForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, QuantitativeOutputsForm, BudgetFormSet, FilterForm
+from .forms import ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, QuantitativeOutputsForm, BudgetFormSet, FilterForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from tola.util import getCountry
+from mixins import AjaxableResponseMixin
 """
 project_proposal_id is the key to link each related form
 ProjectProposal, ProjectAgreement, ProjectComplete, Community (Main Forms and Workflow)
@@ -367,13 +368,6 @@ class ProjectAgreementCreate(CreateView):
             'project_type': getProjectProposal.project_type,
             }
 
-        try:
-            getCommunites = Community.objects.get(projectproposal__id=self.kwargs['pk'])
-            communites = {'community': [o for o in getCommunites.name],}
-            initial = initial + communites
-        except Community.DoesNotExist:
-            getCommunites = None
-
         return initial
 
     def get_context_data(self, **kwargs):
@@ -404,8 +398,6 @@ class ProjectAgreementCreate(CreateView):
         context = self.get_context_data()
         budget_form = context['budget_form']
         self.object = form.save()
-        budget_form.instance = self.object
-        budget_form.save()
 
         latest = ProjectAgreement.objects.latest('id')
         getAgreement = ProjectAgreement.objects.get(id=latest.id)
@@ -416,7 +408,7 @@ class ProjectAgreementCreate(CreateView):
         redirect_url = '/activitydb/projectagreement_update/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
-    form_class = ProjectAgreementForm
+    form_class = ProjectAgreementCreateForm
 
 
 class ProjectAgreementUpdate(UpdateView):
@@ -466,13 +458,32 @@ class ProjectAgreementUpdate(UpdateView):
 
     #get shared data from project agreement and pre-populate form with it
     def get_initial(self):
+        getProjectProposal = ProjectProposal.objects.get(projectagreement__id=self.kwargs['pk'])
+
         initial = {
             'approved_by': self.request.user,
             'estimated_by': self.request.user,
             'checked_by': self.request.user,
             'reviewed_by': self.request.user,
             'approval_submitted_by': self.request.user,
-        }
+            'program': getProjectProposal.program,
+            'project_proposal': getProjectProposal.id,
+            'project_name': getProjectProposal.project_name,
+            'proposal_num': getProjectProposal.proposal_num,
+            'activity_code': getProjectProposal.activity_code,
+            'office': getProjectProposal.office,
+            'estimated_by': getProjectProposal.estimated_by,
+            'sector': getProjectProposal.sector,
+            'project_activity': getProjectProposal.project_activity,
+            'project_type': getProjectProposal.project_type,
+            }
+
+        try:
+            getCommunites = Community.objects.get(projectproposal__id=self.kwargs['pk'])
+            communites = {'community': [o for o in getCommunites.name],}
+            initial = initial + communites
+        except Community.DoesNotExist:
+            getCommunites = None
 
         return initial
 
@@ -1026,7 +1037,7 @@ class MonitorList(ListView):
         return render(request, self.template_name, {'getMonitorData': getMonitorData, 'getBenchmarkData': getBenchmarkData,'project_proposal_id': project_proposal_id})
 
 
-class MonitorCreate(CreateView):
+class MonitorCreate(AjaxableResponseMixin,CreateView):
     """
     Monitor Form
     """
@@ -1034,6 +1045,11 @@ class MonitorCreate(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         return super(MonitorCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(MonitorCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        return context
 
     def get_initial(self):
         initial = {
@@ -1056,7 +1072,7 @@ class MonitorCreate(CreateView):
     form_class = MonitorForm
 
 
-class MonitorUpdate(UpdateView):
+class MonitorUpdate(AjaxableResponseMixin, UpdateView):
     """
     Monitor Form
     """
@@ -1076,7 +1092,7 @@ class MonitorUpdate(UpdateView):
     form_class = MonitorForm
 
 
-class MonitorDelete(DeleteView):
+class MonitorDelete(AjaxableResponseMixin, DeleteView):
     """
     Monitor Form
     """
@@ -1099,7 +1115,7 @@ class MonitorDelete(DeleteView):
     form_class = MonitorForm
 
 
-class BenchmarkCreate(CreateView):
+class BenchmarkCreate(AjaxableResponseMixin, CreateView):
     """
     Benchmark Form
     """
@@ -1107,6 +1123,11 @@ class BenchmarkCreate(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         return super(BenchmarkCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(BenchmarkCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        return context
 
     def get_initial(self):
         initial = {
@@ -1129,7 +1150,7 @@ class BenchmarkCreate(CreateView):
     form_class = BenchmarkForm
 
 
-class BenchmarkUpdate(UpdateView):
+class BenchmarkUpdate(AjaxableResponseMixin, UpdateView):
     """
     Benchmark Form
     """
@@ -1148,7 +1169,7 @@ class BenchmarkUpdate(UpdateView):
     form_class = BenchmarkForm
 
 
-class BenchmarkDelete(DeleteView):
+class BenchmarkDelete(AjaxableResponseMixin, DeleteView):
     """
     Benchmark Form
     """
@@ -1372,11 +1393,16 @@ class QuantitativeOutputsList(ListView):
         return render(request, self.template_name, {'getQuantitativeOutputs': getQuantitativeOutputs, 'project_proposal_id': project_proposal_id})
 
 
-class QuantitativeOutputsCreate(CreateView):
+class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
     """
     QuantitativeOutput Form
     """
     model = QuantitativeOutputs
+
+    def get_context_data(self, **kwargs):
+        context = super(QuantitativeOutputsCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        return context
 
     def dispatch(self, request, *args, **kwargs):
         return super(QuantitativeOutputsCreate, self).dispatch(request, *args, **kwargs)
@@ -1397,16 +1423,14 @@ class QuantitativeOutputsCreate(CreateView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Success, Quantitative Output Created!')
-        if 'Save & Add Another >>' in self.request.POST:
-            form = ""
-            return self.render_to_response(self.get_context_data(form=form))
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
+        form = ""
+        return self.render_to_response(self.get_context_data(form=form))
+
 
     form_class = QuantitativeOutputsForm
 
 
-class QuantitativeOutputsUpdate(UpdateView):
+class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
     """
     QuantitativeOutput Form
     """
@@ -1425,7 +1449,7 @@ class QuantitativeOutputsUpdate(UpdateView):
     form_class = QuantitativeOutputsForm
 
 
-class QuantitativeOutputsDelete(DeleteView):
+class QuantitativeOutputsDelete(AjaxableResponseMixin, DeleteView):
     """
     QuantitativeOutput Delete
     """
