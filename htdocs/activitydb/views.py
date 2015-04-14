@@ -70,6 +70,9 @@ class ProjectDash(ListView):
 
         if int(self.kwargs['pk']) == 0:
             getDashboard = ProgramDashboard.objects.all()
+            getDocumentCount = 0
+            getCommunityCount = 0
+            getTrainingCount = 0
         else:
             getDashboard = ProgramDashboard.objects.all().filter(project_proposal__id=self.kwargs['pk'])
 
@@ -77,7 +80,10 @@ class ProjectDash(ListView):
             getCommunityCount = Community.objects.all().filter(projectproposal__id=self.kwargs['pk']).count()
             getTrainingCount = TrainingAttendance.objects.all().filter(project_proposal_id=self.kwargs['pk']).count()
 
-        getProgram =Program.objects.get(proposal__id=self.kwargs['pk'])
+        if int(self.kwargs['pk']) == 0:
+            getProgram =Program.objects.all().filter(funding_status="Funded", country__in=countries)
+        else:
+            getProgram =Program.objects.get(proposal__id=self.kwargs['pk'])
 
         return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getDashboard': getDashboard,
                                                     'getPrograms':getPrograms, 'getDocumentCount':getDocumentCount,

@@ -1,5 +1,6 @@
 from django.forms import ModelForm
 from indicators.models import Indicator
+from activitydb.models import Program
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
@@ -13,6 +14,8 @@ class IndicatorForm(forms.ModelForm):
     class Meta:
         model = Indicator
         exclude = ['create_date','edit_date']
+
+    program = forms.ModelMultipleChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -30,7 +33,7 @@ class IndicatorForm(forms.ModelForm):
             TabHolder(
                 Tab('Performance',
                      Fieldset('Performance',
-                        'type', 'number', 'source', 'definition', 'disaggregation','owner','program','sector','indicator_type'
+                        'name','type', 'number', 'source', 'definition', 'disaggregation','owner','program','sector','indicator_type'
                         ),
                 ),
                 Tab('Targets',

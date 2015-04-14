@@ -1,4 +1,6 @@
 <script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
+<script src="https://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
+<script src="{{ STATIC_URL }}js/leaflet-google.js"></script>
 
 <link rel="borders" type="application/json" href="{{ STATIC_URL }}js/world_borders.geojson">
 
@@ -36,7 +38,7 @@
             "OSM Humanitarian": osmHumMap,
 			"Landscape": landMap,
             "CartoDB Positron": positron,
-            "Google Roads": googleLayer,
+            "Google Roads": googleLayer
 		};
 
     //Init map with default zoom and coordinates of logged in users country

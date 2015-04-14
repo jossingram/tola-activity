@@ -25,12 +25,11 @@ def home(request, id):
     #self.kwargs.pk = ID of program from dropdown
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    print id
-    if id:
-        print "YES"
-        getIndicators = Indicator.objects.all()
-    else:
+    print int(id)
+    if int(id) != 0:
         getIndicators = Indicator.objects.all().filter(program__id=id)
+    else:
+        getIndicators = Indicator.objects.all()
     return render(request, 'indicators/home.html',{'getPrograms':getPrograms, 'getIndicators': getIndicators})
 
 def dashboard(request):

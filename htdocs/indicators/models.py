@@ -39,7 +39,7 @@ class DisaggregationTypeAdmin(admin.ModelAdmin):
 class Indicator(models.Model):
     owner = models.ForeignKey('auth.User')
     indicator_type = models.ForeignKey(IndicatorType)
-    name = models.TextField(null=True, blank=True)
+    name = models.CharField(max_length=255)
     number = models.CharField(max_length=255, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
     definition = models.CharField(max_length=255, null=True, blank=True)
