@@ -1,4 +1,4 @@
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from .models import ProjectProposal, ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, QuantitativeOutputs, Budget
@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, QuantitativeOutputsForm, BudgetFormSet, FilterForm
+from .forms import ProjectCompleteTable, ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, QuantitativeOutputsForm, BudgetFormSet, FilterForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -734,34 +734,18 @@ class ProjectCompleteUpdate(UpdateView):
     form_class = ProjectCompleteForm
 
 
-class ProjectCompleteDetail(DetailView):
+class ProjectCompleteDetail(FormView):
 
     model = ProjectComplete
     context_object_name = 'complete'
+    form_class = ProjectCompleteTable
+    template_name = 'activitydb/projectcomplete_detail.html'
 
-    def get_object(self, queryset=ProjectComplete.objects.all()):
-        try:
-            return queryset.get(project_proposal__id=self.kwargs['pk'])
-        except ProjectComplete.DoesNotExist:
-            return None
-
-    def get_context_data(self, **kwargs):
-
-        context = super(ProjectCompleteDetail, self).get_context_data(**kwargs)
-        context['now'] = timezone.now()
-        try:
-            data = ProjectComplete.objects.all().filter(project_proposal__id=self.kwargs['pk'])
-        except ProjectComplete.DoesNotExist:
-            data = None
-        getData = serializers.serialize('python', data)
-        #return just the fields and skip the object name
-        justFields = [d['fields'] for d in getData]
-        #handle date exceptions with date_handler
-        jsonData =json.dumps(justFields, default=date_handler)
-        context.update({'jsonData': jsonData})
-        context.update({'id':self.kwargs['pk']})
-
-        return context
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        form.send_email()
+        return super(ContactView, self).form_valid(form)
 
 
 class ProjectCompleteDelete(DeleteView):

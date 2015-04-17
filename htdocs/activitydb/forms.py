@@ -863,3 +863,10 @@ class FilterForm(forms.Form):
     helper.form_method = 'get'
     helper.form_class = 'form-inline'
     helper.layout = Layout(FieldWithButtons('search', StrictButton('Submit', type='submit', css_class='btn-primary')))
+
+
+class ProjectCompleteTable(forms.ModelForm):
+
+    class Meta:
+        model = ProjectComplete
+        fields = '__all__'
