@@ -356,7 +356,7 @@ class ProjectAgreementCreate(CreateView):
     def get_initial(self):
         getProjectProposal = ProjectProposal.objects.get(id=self.kwargs['pk'])
 
-        initial = {
+        pre_initial = {
             'approved_by': self.request.user,
             'estimated_by': self.request.user,
             'checked_by': self.request.user,
@@ -374,6 +374,14 @@ class ProjectAgreementCreate(CreateView):
             'project_type': getProjectProposal.project_type,
             }
 
+        try:
+            getCommunites = Community.objects.filter(projectproposal__id=self.kwargs['pk']).values_list('id',flat=True)
+            communites = {'community': [o for o in getCommunites],}
+            initial = pre_initial.copy()
+            initial.update(communites)
+        except Community.DoesNotExist:
+            getCommunites = None
+        print initial
         return initial
 
     def get_context_data(self, **kwargs):
@@ -756,7 +764,7 @@ class ProjectCompleteDetail(DetailView):
         getData = serializers.serialize('python', data)
         #return just the fields and skip the object name
         justFields = [d['fields'] for d in getData]
-        #handle date exceptions with date_handler
+        #temp name fiels
         jsonData =json.dumps(justFields, default=date_handler)
         context.update({'jsonData': jsonData})
         context.update({'id':self.kwargs['pk']})
