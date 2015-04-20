@@ -30,53 +30,27 @@
     <!-- Table -->
     <table class="table" border="1">
         <tr>
-            <th>Activity Code</th>
-            <th>Sector</th>
-            <th>Office</th>
-        </tr>
-        <tr>
-            <td>{{ complete.activity_code }}</td>
-            <td>{{ complete.sector }}</td>
-            <td>{{ complete.office }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
             <th>Program</th>
-            <th>Project Activity</th>
-            <th>Project Type</th>
+            <th>Project Proposal</th>
+            <th>Project Agreement</th>
         </tr>
         <tr>
             <td>{{ complete.program }}</td>
-            <td>{{ complete.project_activity }}</td>
-            <td>{{ complete.project_type }}</td>
+            <td>{{ complete.project_proposal }}</td>
+            <td>{{ complete.project_agreement }}</td>
         </tr>
     </table>
     <br/>
     <table class="table" border="1">
         <tr>
-            <th>Account Code</th>
-            <th>LIN Code</th>
-            <th>Are there partners involved?</th>
-            <th>LIN Code</th>
+            <th>Activity Code</th>
+            <th>Office</th>
+            <th>Project Name</th>
         </tr>
         <tr>
-            <td>{{ complete.account_code }}</td>
-            <td>{{ complete.lin_code }}</td>
-            <td>{{ complete.partners }}</td>
-            <td>{{ complete.name_of_partners }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>Name of Partners</th>
-            <th>External Stakeholder lists(s) attached?</th>
-        </tr>
-        <tr>
-            <td>{{ complete.name_of_partners }}</td>
-            <td>{{ complete.external_stakeholder_list }}</td>
+            <td>{{ complete.activity_code }}</td>
+            <td>{{ complete.office }}</td>
+            <td>{{ complete.project_name }}</td>
         </tr>
     </table>
     <br/>
@@ -93,16 +67,28 @@
         </tr>
     </table>
     <br/>
+     <br/>
     <table class="table" border="1">
         <tr>
-            <th>Estimated # of Direct Beneficiaries</th>
-            <th>Average Household Size</th>
-            <th>Estimated # of Indirect Beneficiaries</th>
+            <th>Actual Start Date</th>
+            <th>Actual End Date</th>
+            <th>Actual Duration</th>
         </tr>
         <tr>
-            <td>{{ complete.estimated_num_direct_beneficiaries }}</td>
-            <td>{{ complete.average_household_size }}</td>
-            <td>{{ complete.estimated_num_indirect_beneficiaries }}</td>
+            <td>{{ complete.actual_start_date }}</td>
+            <td>{{ complete.actual_end_date }}</td>
+            <td>{{ complete.actual_duration }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>On Time</th>
+            <th>If not explain</th>
+        </tr>
+        <tr>
+            <td>{{ complete.on_time }}</td>
+            <td>{{ complete.on_time_explain }}</td>
         </tr>
     </table>
 </div>
@@ -112,14 +98,62 @@
     <!-- Table -->
     <table class="table" border="1">
         <tr>
-            <th>Total Estimated Budget</th>
-            <th>MC Estimated Budget</th>
-            <th>Estimation Date</th>
+            <th>Estimated Budget</th>
+            <th>Actual Budget</th>
+            <th>Budget Variance</th>
         </tr>
         <tr>
-            <td>{{ complete.total_estimated_budget }}</td>
-            <td>{{ complete.mc_estimated_budget }}</td>
-            <td>{{ complete.estimation_date }}</td>
+            <td>{{ complete.estimated_budget }}</td>
+            <td>{{ complete.actual_budget }}</td>
+            <td>{{ complete.budget_variance }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Explanation of Budget Variance</th>
+            <th>Actual Direct Beneficiaries</th>
+        </tr>
+        <tr>
+            <td>{{ complete.budget_variance_explanation }}</td>
+            <td>{{ complete.direct_beneficiaries }}</td>
+        </tr>
+    </table>
+    <br/>
+    <h4>Jobs</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>Number of Jobs Created</th>
+            <th>Part Time Jobs</th>
+            <th>Full Time Jobs</th>
+        </tr>
+        <tr>
+            <td>{{ complete.jobs_created }}</td>
+            <td>{{ complete.jobs_part_time }}</td>
+            <td>{{ complete.jobs_full_time }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Government Involvement</th>
+            <th>What capacity was built to ensure sustainability?</th>
+        </tr>
+        <tr>
+            <td>{{ complete.government_involvement }}</td>
+            <td>{{ complete.sustainability }}</td>
+        </tr>
+    </table>
+    <br/>
+    <h4>Issues</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>List any issues or challenges faced(include reasons for dealys)</th>
+            <th>Lessons learned</th>
+        </tr>
+        <tr>
+            <td>{{ complete.issues_challenges }}</td>
+            <td>{{ complete.lessones_learned }}</td>
         </tr>
     </table>
     <br/>
@@ -149,67 +183,6 @@
 </div>
 <div class="panel panel-info">
     <!-- Default panel contents -->
-    <div class="panel-heading">Part II: Justification and Description</div>
-    <!-- Table -->
-    <h4> I. Justification</h4>
-    <table class="table" border="1">
-        <tr>
-            <th>What Program Objective does this help fulfill?</th>
-            <th>What Mercy Corps strategic objective does this help fulfill?</th>
-            <th>What is the anticipated outcome or impact of this project?</th>
-        </tr>
-        <tr>
-            <td>{{ complete.program_objectives }}</td>
-            <td>{{ complete.mc_objectives }}</td>
-            <td>{{ complete.effect_or_impact }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>General background and problem statement</th>
-            <th>Description of Community Selection Criteria</th>
-        </tr>
-        <tr>
-            <td>{{ complete.justification_background }}</td>
-            <td>{{ complete.justification_description_community_selection }}</td>
-        </tr>
-    </table>
-    <h4> II. Description</h4>
-    <table class="table" border="1">
-        <tr>
-            <th>Description of project and activities</th>
-        </tr>
-        <tr>
-            <td>{{ complete.description_of_project_activities }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>Description of Government involvement/approval</th>
-            <th>Documentation of Government approval attached</th>
-        </tr>
-        <tr>
-            <td>{{ complete.description_of_government_involvement }}</td>
-            <td>{{ complete.documentation_government_approval }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>Description of Community involvement/approval</th>
-            <th>Documentation of Community approval attached</th>
-        </tr>
-        <tr>
-            <td>{{ complete.description_of_community_involvement }}</td>
-            <td>{{ complete.documentation_community_approval }}</td>
-        </tr>
-    </table>
-    <br/>
-</div>
-<div class="panel panel-info">
-    <!-- Default panel contents -->
     <div class="panel-heading">Part III: Project Planning</div>
     <!-- Table -->
     <h4> Expected Indicator Outputs</h4>
@@ -223,56 +196,6 @@
             <td>{{ complete.program_objectives }}</td>
             <td>{{ complete.mc_objectives }}</td>
             <td>{{ complete.effect_or_impact }}</td>
-        </tr>
-    </table>
-    <h4>Benchmarks</h4>
-    <table class="table" border="1">
-        <tr>
-            <th>Description</th>
-            <th>% Completion</th>
-            <th>% Cumulative completion</th>
-        </tr>
-        <tr>
-            <td>{{ complete.justification_background }}</td>
-            <td>{{ complete.justification_description_community_selection }}</td>
-            <td>{{ complete.justification_description_community_selection }}</td>
-        </tr>
-    </table>
-    <h4>Capacity</h4>
-    <table class="table" border="1">
-        <tr>
-            <th>What capacity is being built to ensure sustainability of this project?</th>
-        </tr>
-        <tr>
-            <td>{{ complete.capacity }}</td>
-        </tr>
-    </table>
-</div>
-<div class="panel panel-info">
-    <!-- Default panel contents -->
-    <div class="panel-heading">Part IV: Project Monitoring and Evaluation</div>
-    <!-- Table -->
-    <h4>Evaluation</h4>
-    <table class="table" border="1">
-        <tr>
-            <th>How will you monitor the progress of this project? What types of monitoring will
-                take place, who is responsible for it, and how often should it take place?</th>
-        </tr>
-        <tr>
-            <td>{{ complete.evaluate }}</td>
-        </tr>
-    </table>
-    <h4>Monitoring</h4>
-    <table class="table" border="1">
-        <tr>
-            <th>Type</th>
-            <th>Responsible Person</th>
-            <th>Frequency</th>
-        </tr>
-        <tr>
-            <td>{{ complete.justification_background }}</td>
-            <td>{{ complete.justification_description_community_selection }}</td>
-            <td>{{ complete.justification_description_community_selection }}</td>
         </tr>
     </table>
 </div>

@@ -608,13 +608,13 @@ class ProjectCompleteForm(forms.ModelForm):
                                                 <td>{{ item.description}}</td>
                                                 <td>{{ item.logframe_indicator}}</td>
                                                 <td>{{ item.non_logframe_indicator}}</td>
-                                                <td><a href='/activitydb/quantitative_update/{{ item.id }}/' target="_new">View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a href="/activitydb/quantitative_add/{{ id }}" target="_new">Add Quantitative Outputs</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ id }}">Add Quantitative Outputs</a>
                                       </div>
                                     </div>
                               """),

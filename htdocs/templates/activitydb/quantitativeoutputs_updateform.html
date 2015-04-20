@@ -34,11 +34,8 @@
 
     </div>
     <div class="modal-body">
-    {% if request.get_full_path = "/activitydb/quantitative_add/" %}
-        <form class="form-horizontal" method="post" id="outputForm" action="/activitydb/quantitative_add/{{ id }}/">
-    {% else %}
-        <form class="form-horizontal" method="post" id="outputForm" action="/activitydb/quantitative_update/{{ id }}/">
-    {% endif %}
+    <form class="form-horizontal" method="post" id="outputForm" action="/activitydb/quantitative_update/{{ id }}/">
+
     {% load crispy_forms_tags %}
     {% csrf_token %}
     {% crispy form %}

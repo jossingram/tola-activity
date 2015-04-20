@@ -36,10 +36,25 @@ class DisaggregationTypeAdmin(admin.ModelAdmin):
     display = 'Disaggregation Type'
 
 
+class ReportingFrequency(models.Model):
+    frequency= models.CharField(max_length=135, blank=True)
+    description = models.CharField(max_length=765, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.disaggregation_type
+
+
+class ReportingFrequencyAdmin(admin.ModelAdmin):
+    list_display = ('frequency','description','create_date','edit_date')
+    display = 'Reporting Frequency'
+
+
 class Indicator(models.Model):
     owner = models.ForeignKey('auth.User')
-    indicator_type = models.ForeignKey(IndicatorType)
-    name = models.CharField(max_length=255)
+    indicator_type = models.ForeignKey(IndicatorType, null=True, blank=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
     number = models.CharField(max_length=255, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
     definition = models.CharField(max_length=255, null=True, blank=True)
@@ -51,7 +66,7 @@ class Indicator(models.Model):
     responsible_person = models.CharField(max_length=255, null=True, blank=True)
     method_of_analysis = models.CharField(max_length=255, null=True, blank=True)
     information_use = models.CharField(max_length=255, null=True, blank=True)
-    reporting_frequency = models.CharField(max_length=255, null=True, blank=True)
+    reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True)
     comments = models.CharField(max_length=255, null=True, blank=True)
     program = models.ManyToManyField(Program)
     sector = models.ForeignKey(Sector)

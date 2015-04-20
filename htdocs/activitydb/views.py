@@ -381,7 +381,7 @@ class ProjectAgreementCreate(CreateView):
             initial.update(communites)
         except Community.DoesNotExist:
             getCommunites = None
-        print initial
+
         return initial
 
     def get_context_data(self, **kwargs):
@@ -644,13 +644,6 @@ class ProjectCompleteCreate(CreateView):
         id = getAgreement.project_proposal_id
         context.update({'id': id})
 
-        #add quantitative outputs data to form via context
-        try:
-            getQuantitative = QuantitativeOutputs.objects.all().filter(agreement__id=self.kwargs['pk'])
-        except QuantitativeOutputs.DoesNotExist:
-            getQuantitative = None
-        context.update({'getQuantitative': getQuantitative})
-
         #add formsets to context
         if self.request.POST:
             context['budget_form'] = BudgetFormSet(self.request.POST)
@@ -697,6 +690,16 @@ class ProjectCompleteUpdate(UpdateView):
         getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
         id = getComplete.project_proposal_id
         context.update({'id': id})
+
+         #update quantitative with new agreement
+        try:
+            getQuantitative = QuantitativeOutputs.objects.all().filter(complete_id=self.kwargs['pk'])
+            #if there aren't any quantitative try importing from the agreement
+            if not getQuantitative:
+                QuantitativeOutputs.update(complete_id=self.kwargs['pk']).filter(agreement__id=getQuantitative.agreement_id)
+        except QuantitativeOutputs.DoesNotExist:
+            getQuantitative = None
+        context.update({'getQuantitative': getQuantitative})
         return context
 
     # add the request to the kwargs
@@ -711,6 +714,15 @@ class ProjectCompleteUpdate(UpdateView):
             'approved_by': self.request.user,
             'approval_submitted_by': self.request.user,
         }
+
+        #update quantitative with new agreement
+        try:
+            getQuantitative = QuantitativeOutputs.objects.all().filter(complete_id=self.kwargs['pk'])
+            #if there aren't any quantitative try importing from the agreement
+            if not getQuantitative:
+                QuantitativeOutputs.update(complete_id=self.kwargs['pk']).filter(agreement__id=getQuantitative.agreement_id)
+        except QuantitativeOutputs.DoesNotExist:
+            getQuantitative = None
 
         return initial
 
@@ -1450,6 +1462,11 @@ class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
     """
     model = QuantitativeOutputs
 
+    def get_context_data(self, **kwargs):
+        context = super(QuantitativeOutputsUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
@@ -1468,7 +1485,7 @@ class QuantitativeOutputsDelete(AjaxableResponseMixin, DeleteView):
     QuantitativeOutput Delete
     """
     model = QuantitativeOutputs
-    success_url = reverse_lazy('quantitative_list')
+    success_url = '/'
 
     def form_invalid(self, form):
 
