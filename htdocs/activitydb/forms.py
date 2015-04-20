@@ -194,6 +194,7 @@ class BudgetForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
+        self.helper.form_tag = False
         self.helper.layout = Layout(
             Field('contributor', required=False), Field('description_of_contribution', required=False), PrependedAppendedText('proposed_value','$', '.00'), 'agreement',
         )
@@ -206,8 +207,6 @@ class BudgetForm(forms.ModelForm):
         obj = super(BudgetForm, self).save(*args, **kwargs)
         return obj
 
-
-BudgetFormSet = modelformset_factory(Budget, form=BudgetForm, extra=1)
 
 class ProjectAgreementCreateForm(forms.ModelForm):
 
@@ -352,8 +351,36 @@ class ProjectAgreementForm(forms.ModelForm):
                 Tab('Budget Other',
                     Fieldset("Other Budget Contributions:",
                         MultiField(
-                                "Describe and quantify in dollars (Save to add another):",
-                                Formset(BudgetFormSet),
+                                "",
+                                HTML("""
+
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Budget Contributions</div>
+                                      {% if getBudget %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Contributor</th>
+                                            <th>Description</th>
+                                            <th>Proposed Value</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getBudget %}
+                                            <tr>
+                                                <td>{{ item.contributor}}</td>
+                                                <td>{{ item.description_of_contribution}}</td>
+                                                <td>{{ item.proposed_value}}</td>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ id }}">Add Budget Contribution</a>
+                                      </div>
+                                    </div>
+                                     """),
                         ),
                     ),
 
@@ -576,8 +603,36 @@ class ProjectCompleteForm(forms.ModelForm):
                 Tab('Budget Other',
                     Fieldset("Other Budget Contributions:",
                         MultiField(
-                                "This should match the Contributions from the Project Agreement Form:",
-                                Formset(BudgetFormSet),
+                                "",
+                                HTML("""
+
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Budget Contributions</div>
+                                      {% if getBudget %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Contributor</th>
+                                            <th>Description</th>
+                                            <th>Proposed Value</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getBudget %}
+                                            <tr>
+                                                <td>{{ item.contributor}}</td>
+                                                <td>{{ item.contributor_description}}</td>
+                                                <td>{{ item.oroposed_value}}</td>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ id }}">Add Budget Contribution</a>
+                                      </div>
+                                    </div>
+                                     """),
                         ),
                     ),
 

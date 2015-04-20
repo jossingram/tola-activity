@@ -30,12 +30,15 @@
         <strong>{{ error|escape }}</strong>
     </div>
 
-    <h4 class="modal-title">{% block page_title %}Quantitative Outputs Form {{ id }} {% endblock %}</h4>
-
+    <h4 class="modal-title">{% block page_title %}Other Budget Contributions Form {{ id }} {% endblock %}</h4>
+    <p>Describe and quantify in dollars:</p>
     </div>
     <div class="modal-body">
-    <form class="form-horizontal" method="post" id="outputForm" action="/activitydb/quantitative_update/{{ id }}/">
-
+    {% if "/activitydb/budget_add/" in request.get_full_path  %}
+        <form class="form-horizontal" method="post" id="outputForm" action="/activitydb/budget_add/{{ id }}/">
+    {% else %}
+        <form class="form-horizontal" method="post" id="outputForm" action="/activitydb/budget_update/{{ id }}/">
+    {% endif %}
     {% load crispy_forms_tags %}
     {% csrf_token %}
     {% crispy form %}
@@ -44,7 +47,7 @@
     </form>
     </div>
     <div class="modal-footer">
-       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/activitydb/projectagreement_update/{{ id }}/#project-planning';parent.location.reload();">Close</button>
+       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="parent.location.reload();">Close</button>
     </div>
 
 </body>

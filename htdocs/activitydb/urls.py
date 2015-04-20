@@ -4,7 +4,7 @@ from .views import ProjectProposalImport, ProjectProposalList, ProjectProposalCr
     DocumentationList, DocumentationCreate, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
     BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
     BeneficiaryDelete, QuantitativeOutputsList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete, ProjectCompleteDetail, ProjectProposalDetail,\
-    CommunityReport
+    CommunityReport, BudgetCreate, BudgetDelete, BudgetUpdate, BudgetList
 
 
 try:
@@ -76,6 +76,11 @@ urlpatterns = patterns('',
                        url(r'^quantitative_add/(?P<id>\w+)/$', QuantitativeOutputsCreate.as_view(), name='quantitative_add'),
                        url(r'^quantitative_update/(?P<pk>\w+)/$', QuantitativeOutputsUpdate.as_view(), name='quantitative_update'),
                        url(r'^quantitative_delete/(?P<pk>\w+)/$', QuantitativeOutputsDelete.as_view(), name='quantitative_delete'),
+
+                       url(r'^budget_list/(?P<pk>\w+)/$', BudgetList.as_view(), name='budget_list'),
+                       url(r'^budget_add/(?P<id>\w+)/$', BudgetCreate.as_view(), name='budget_add'),
+                       url(r'^budget_update/(?P<pk>\w+)/$', BudgetUpdate.as_view(), name='budget_update'),
+                       url(r'^budget_delete/(?P<pk>\w+)/$', BudgetDelete.as_view(), name='budget_delete'),
 
                        url(r'^report/', 'activitydb.views.report', name='report'),
 
