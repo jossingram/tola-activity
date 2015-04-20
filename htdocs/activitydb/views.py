@@ -487,7 +487,7 @@ class ProjectAgreementUpdate(UpdateView):
             }
 
         try:
-            getCommunites = Community.objects.get(projectproposal__id=getProjectProposal.id).values_list('id',flat=True)
+            getCommunites = Community.objects.filter(projectproposal__id=getProjectProposal.id).values_list('id',flat=True)
             communites = {'community': [o for o in getCommunites],}
             initial = pre_initial.copy()
             initial.update(communites)
@@ -610,7 +610,7 @@ class ProjectCompleteCreate(CreateView):
     #get shared data from project agreement and pre-populate form with it
     def get_initial(self):
         getProjectAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
-        initial = {
+        pre_initial = {
             'approved_by': self.request.user,
             'approval_submitted_by': self.request.user,
             'program': getProjectAgreement.program,
@@ -625,9 +625,10 @@ class ProjectCompleteCreate(CreateView):
         }
 
         try:
-            getCommunites = Community.objects.get(projectproposal__id=self.kwargs['pk'])
-            communites = {'community': [o for o in getCommunites.name],}
-            initial = initial + communites
+            getCommunites = Community.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
+            communites = {'community': [o for o in getCommunites],}
+            initial = pre_initial.copy()
+            initial.update(communites)
         except Community.DoesNotExist:
             getCommunites = None
 
