@@ -404,8 +404,6 @@ class ProjectAgreementCreate(CreateView):
 
         #save formset from context
         context = self.get_context_data()
-        budget_form = context['budget_form']
-        self.object = form.save()
 
         latest = ProjectAgreement.objects.latest('id')
         getAgreement = ProjectAgreement.objects.get(id=latest.id)
