@@ -377,7 +377,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ id }}">Add Budget Contribution</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ pk }}">Add Budget Contribution</a>
                                       </div>
                                     </div>
                                      """),
@@ -435,7 +435,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ id }}">Add Quantitative Outputs</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
                                       </div>
                                     </div>
                                      """),
@@ -465,7 +465,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="monitoring" data-toggle="modal" data-target="#myModal" href="/activitydb/monitor_add/{{ id }}">Add Monitoring Data</a>
+                                        <a class="monitoring" data-toggle="modal" data-target="#myModal" href="/activitydb/monitor_add/{{ pk }}">Add Monitoring Data</a>
                                       </div>
                                     </div>
                                      """),
@@ -495,7 +495,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ id }}">Add Benchmarks</a>
+                                        <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ pk }}">Add Benchmarks</a>
                                       </div>
                                     </div>
                                      """),
@@ -629,7 +629,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ id }}">Add Budget Contribution</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ pk }}">Add Budget Contribution</a>
                                       </div>
                                     </div>
                                      """),
@@ -669,7 +669,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ id }}">Add Quantitative Outputs</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
                                       </div>
                                     </div>
                               """),

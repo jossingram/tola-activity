@@ -430,6 +430,8 @@ class ProjectAgreementUpdate(UpdateView):
         getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
         id = getAgreement.project_proposal_id
         context.update({'id': id})
+        pk = self.kwargs['pk']
+        context.update({'pk': pk})
         try:
             getQuantitative = QuantitativeOutputs.objects.all().filter(agreement__id=self.kwargs['pk'])
         except QuantitativeOutputs.DoesNotExist:
@@ -485,7 +487,7 @@ class ProjectAgreementUpdate(UpdateView):
             }
 
         try:
-            getCommunites = Community.objects.get(projectproposal__id=self.kwargs['pk'])
+            getCommunites = Community.objects.get(projectproposal__id=getProjectProposal.id)
             communites = {'community': [o for o in getCommunites.name],}
             initial = initial + communites
         except Community.DoesNotExist:
@@ -635,6 +637,9 @@ class ProjectCompleteCreate(CreateView):
         getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
         id = getAgreement.project_proposal_id
         context.update({'id': id})
+
+        pk = self.kwargs['pk']
+        context.update({'pk': pk})
 
         return context
 
