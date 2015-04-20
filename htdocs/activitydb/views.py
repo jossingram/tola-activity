@@ -468,7 +468,7 @@ class ProjectAgreementUpdate(UpdateView):
     def get_initial(self):
         getProjectProposal = ProjectProposal.objects.get(projectagreement__id=self.kwargs['pk'])
 
-        initial = {
+        pre_initial = {
             'approved_by': self.request.user,
             'estimated_by': self.request.user,
             'checked_by': self.request.user,
@@ -487,9 +487,10 @@ class ProjectAgreementUpdate(UpdateView):
             }
 
         try:
-            getCommunites = Community.objects.get(projectproposal__id=getProjectProposal.id)
-            communites = {'community': [o for o in getCommunites.name],}
-            initial = initial + communites
+            getCommunites = Community.objects.get(projectproposal__id=getProjectProposal.id).values_list('id',flat=True)
+            communites = {'community': [o for o in getCommunites],}
+            initial = pre_initial.copy()
+            initial.update(communites)
         except Community.DoesNotExist:
             getCommunites = None
 
