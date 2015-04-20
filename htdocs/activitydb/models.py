@@ -848,7 +848,7 @@ class ContributionAdmin(admin.ModelAdmin):
 class QuantitativeOutputs(models.Model):
     targeted = models.CharField("Targeted #", max_length=255, blank=True, null=True)
     achieved = models.CharField("Achieved #", max_length=255, blank=True, null=True)
-    description = models.CharField("Description of Contribution", max_length=255, blank=True, null=True)
+    description = models.CharField("Description", max_length=255, blank=True, null=True)
     logframe_indicator = models.ForeignKey('indicators.Indicator', blank=True, null=True)
     non_logframe_indicator = models.CharField("Non-Logframe Indicator", max_length=255, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement")

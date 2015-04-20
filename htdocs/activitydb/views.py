@@ -1496,7 +1496,7 @@ class QuantitativeOutputsDelete(AjaxableResponseMixin, DeleteView):
 
 class BudgetList(ListView):
     """
-    QuantitativeOutput List
+    Budget List
     """
     model = Budget
     template_name = 'activitydb/budget_list.html'
