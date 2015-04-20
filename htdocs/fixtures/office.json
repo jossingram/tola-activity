@@ -1,1 +1,1 @@
-[{"fields": {"province": 13, "code": "AF-01", "create_date": "2015-03-16T16:49:54Z", "name": "Kabul", "edit_date": "2015-03-16T16:49:57Z"}, "model": "activitydb.office", "pk": 1}]
+[{"fields": {"province": 13, "code": "AF-01", "create_date": "2015-03-16T16:49:54Z", "name": "Kabul", "edit_date": "2015-03-16T16:49:57Z"}, "model": "activitydb.office", "pk": 1}, {"fields": {"province": 14, "code": "KND", "create_date": "2015-04-18T00:25:57Z", "name": "Kandahar", "edit_date": "2015-04-18T00:25:57Z"}, "model": "activitydb.office", "pk": 2}]
