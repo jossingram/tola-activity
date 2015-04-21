@@ -715,7 +715,7 @@ class ProjectCompleteUpdate(UpdateView):
             getQuantitative = QuantitativeOutputs.objects.all().filter(complete_id=self.kwargs['pk'])
             #if there aren't any quantitative try importing from the agreement
             if not getQuantitative:
-                QuantitativeOutputs.update(complete_id=self.kwargs['pk']).filter(agreement__id=getQuantitative.agreement_id)
+                QuantitativeOutputs.objects.filter(agreement__id=getQuantitative.agreement_id).update(complete_id=self.kwargs['pk'])
         except QuantitativeOutputs.DoesNotExist:
             getQuantitative = None
 
