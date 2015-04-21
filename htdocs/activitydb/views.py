@@ -651,10 +651,7 @@ class ProjectCompleteCreate(CreateView):
 
         form.save()
         context = self.get_context_data()
-        budget_form = context['budget_form']
         self.object = form.save()
-        budget_form.instance = self.object
-        budget_form.save()
 
         latest = ProjectComplete.objects.latest('id')
         getComplete = ProjectComplete.objects.get(id=latest.id)
