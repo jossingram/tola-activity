@@ -507,10 +507,7 @@ class ProjectAgreementUpdate(UpdateView):
         form.save()
         #save formset from context
         context = self.get_context_data()
-        budget_form = context['budget_form']
         self.object = form.save()
-        budget_form.instance = self.object
-        budget_form.save()
 
         messages.success(self.request, 'Success, form updated!')
 
