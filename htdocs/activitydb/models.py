@@ -670,6 +670,7 @@ class Budget(models.Model):
     description_of_contribution = models.CharField(max_length=255, blank=True, null=True)
     proposed_value = models.IntegerField(default=0, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True)
+    complete = models.ForeignKey(ProjectComplete, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

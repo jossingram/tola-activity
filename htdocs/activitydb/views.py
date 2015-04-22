@@ -677,6 +677,8 @@ class ProjectCompleteUpdate(UpdateView):
         getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
         id = getComplete.project_proposal_id
         context.update({'id': id})
+        pk = self.kwargs['pk']
+        context.update({'pk': pk})
 
         #get quantitative data
         try:
@@ -716,9 +718,19 @@ class ProjectCompleteUpdate(UpdateView):
             #if there aren't any quantitative try importing from the agreement
             if not getQuantitative:
                 getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
-                QuantitativeOutputs.objects.filter(agreement__id=getComplete.agreement_id).update(complete_id=self.kwargs['pk'])
+                QuantitativeOutputs.objects.filter(agreement=getComplete.project_agreement_id).update(complete_id=self.kwargs['pk'])
         except QuantitativeOutputs.DoesNotExist:
             getQuantitative = None
+
+        #update quantitative with new agreement
+        try:
+            getBudget = Budget.objects.all().filter(complete_id=self.kwargs['pk'])
+            #if there aren't any quantitative try importing from the agreement
+            if not getBudget:
+                getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
+                Budget.objects.filter(agreement=getComplete.project_agreement_id).update(complete_id=self.kwargs['pk'])
+        except Budget.DoesNotExist:
+            getBudget = None
 
         return initial
 
@@ -1517,7 +1529,7 @@ class BudgetList(ListView):
 
 class BudgetCreate(AjaxableResponseMixin, CreateView):
     """
-    QuantitativeOutput Form
+    Budget Form
     """
     model = Budget
 
@@ -1554,7 +1566,7 @@ class BudgetCreate(AjaxableResponseMixin, CreateView):
 
 class BudgetUpdate(AjaxableResponseMixin, UpdateView):
     """
-    QuantitativeOutput Form
+    Budget Form
     """
     model = Budget
 
@@ -1578,7 +1590,7 @@ class BudgetUpdate(AjaxableResponseMixin, UpdateView):
 
 class BudgetDelete(AjaxableResponseMixin, DeleteView):
     """
-    QuantitativeOutput Delete
+    Budget Delete
     """
     model = Budget
     success_url = '/'
