@@ -42,3 +42,4 @@ htdocs/djangocosign
 ssl.tola-activity.conf
 *.crt
 *.key
+error.log

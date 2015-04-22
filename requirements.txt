@@ -1,8 +1,5 @@
-ajaxuploader==0.3.8
-altgraph==0.10.2
-bdist-mpkg==0.5.0
 dicttoxml==1.3.1
-Django==1.7.1
+Django==1.7.3
 django-crispy-forms==1.4.0
 django-debug-toolbar==1.2.2
 django-extensions==1.4.9
@@ -27,17 +24,14 @@ matplotlib==1.3.1
 modulegraph==0.10.4
 mongoengine==0.8.7
 MySQL-python==1.2.5
-numpy==1.8.0rc1
 Pillow==2.5.1
 py2app==0.7.3
 Pygments==2.0.1
 pymongo==2.7
-pyOpenSSL==0.13.1
 pyparsing==2.0.1
 python-dateutil==1.5
 pytz==2013.7
 PyYAML==3.11
-scipy==0.13.0b1
 six==1.8.0
 South==0.8.4
 sqlparse==0.1.14

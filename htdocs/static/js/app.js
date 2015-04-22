@@ -25,9 +25,16 @@ $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
 
-//custom jquery to trigger dat picker, info pop-over and print category text
+//custom jquery to trigger date picker, info pop-over and print category text
 $(document).ready(function() {
-    $('.datepicker').datepicker();
+
+
+    //Check for chrome and don't provide a datetime pickers for it
+    var browser = navigator.userAgent;
+
+    if(browser.indexOf("Chrome") < 0){
+       $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
+    }
 });
 
 
