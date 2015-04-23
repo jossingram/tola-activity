@@ -2,11 +2,16 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('indicators', '__first__'),
+        ('read', '0002_auto_20150202_1342'),
+        ('silo', '__first__'),
     ]
 
     operations = [
@@ -119,6 +124,7 @@ class Migration(migrations.Migration):
                 ('approval', models.CharField(default=b'in progress', max_length=255, null=True, verbose_name=b'Approval', blank=True)),
                 ('create_date', models.DateTimeField(null=True, blank=True)),
                 ('edit_date', models.DateTimeField(null=True, blank=True)),
+                ('approved_by', models.ForeignKey(related_name='comm_approving', blank=True, to=settings.AUTH_USER_MODEL, help_text=b'This is the Provincial Line Manager', null=True)),
             ],
             options={
                 'ordering': ('name',),
@@ -256,6 +262,7 @@ class Migration(migrations.Migration):
                 ('description', models.CharField(max_length=765, null=True, verbose_name=b'Program Description', blank=True)),
                 ('create_date', models.DateTimeField(null=True, blank=True)),
                 ('edit_date', models.DateTimeField(null=True, blank=True)),
+                ('country', models.ManyToManyField(to='activitydb.Country')),
             ],
             options={
                 'ordering': ('create_date',),
@@ -271,6 +278,7 @@ class Migration(migrations.Migration):
                 ('project_completion_approved', models.IntegerField(null=True, blank=True)),
                 ('create_date', models.DateTimeField(null=True, blank=True)),
                 ('edit_date', models.DateTimeField(null=True, blank=True)),
+                ('program', models.ForeignKey(blank=True, to='activitydb.Program', null=True)),
             ],
             options={
                 'ordering': ('program',),
@@ -326,6 +334,15 @@ class Migration(migrations.Migration):
                 ('documentation_community_approval', models.FileField(upload_to=b'uploads', null=True, verbose_name=b'Upload Community Documentation of Approval', blank=True)),
                 ('create_date', models.DateTimeField(null=True, verbose_name=b'Date Created', blank=True)),
                 ('edit_date', models.DateTimeField(null=True, verbose_name=b'Last Edit Date', blank=True)),
+                ('approval_submitted_by', models.ForeignKey(related_name='submitted_by_agreement', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('approved_by', models.ForeignKey(related_name='approving_agreement', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('checked_by', models.ForeignKey(related_name='checking', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('community', models.ManyToManyField(to='activitydb.Community', null=True, blank=True)),
+                ('estimated_by', models.ForeignKey(related_name='estimating', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('finance_reviewed_by', models.ForeignKey(related_name='finance_reviewing', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('me_reviewed_by', models.ForeignKey(related_name='reviewing_me', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('office', models.ForeignKey(blank=True, to='activitydb.Office', null=True)),
+                ('program', models.ForeignKey(related_name='agreement', blank=True, to='activitydb.Program', null=True)),
             ],
             options={
                 'ordering': ('create_date',),
@@ -345,7 +362,7 @@ class Migration(migrations.Migration):
                 ('expected_duration', models.CharField(help_text=b'Comes from Form-04 Project Agreement', max_length=255, null=True, verbose_name=b'Expected Duration', blank=True)),
                 ('actual_start_date', models.DateTimeField(help_text=b'Comes from Form-04 Project Agreement', null=True, blank=True)),
                 ('actual_end_date', models.DateTimeField(null=True, blank=True)),
-                ('actual_duration', models.DateTimeField(null=True, blank=True)),
+                ('actual_duration', models.CharField(max_length=255, null=True, blank=True)),
                 ('on_time', models.BooleanField(default=None)),
                 ('no_explanation', models.TextField(null=True, verbose_name=b'If not on time explain delay', blank=True)),
                 ('estimated_budget', models.CharField(help_text=b'Comes from Form-04 Project Agreement', max_length=255, null=True, verbose_name=b'Estimated Budget', blank=True)),
@@ -364,6 +381,14 @@ class Migration(migrations.Migration):
                 ('approval_remarks', models.CharField(max_length=255, null=True, verbose_name=b'Approval Remarks', blank=True)),
                 ('create_date', models.DateTimeField(null=True, verbose_name=b'Date Created', blank=True)),
                 ('edit_date', models.DateTimeField(null=True, verbose_name=b'Last Edit Date', blank=True)),
+                ('approval_submitted_by', models.ForeignKey(related_name='submitted_by_complete', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('approved_by', models.ForeignKey(related_name='approving_agreement_complete', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('checked_by', models.ForeignKey(related_name='checking_complete', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('community', models.ManyToManyField(to='activitydb.Community', null=True, blank=True)),
+                ('estimated_by', models.ForeignKey(related_name='estimating_complete', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('office', models.ForeignKey(blank=True, to='activitydb.Office', null=True)),
+                ('program', models.ForeignKey(related_name='complete', blank=True, to='activitydb.Program', null=True)),
+                ('project_agreement', models.ForeignKey(to='activitydb.ProjectAgreement')),
             ],
             options={
                 'ordering': ('create_date',),
@@ -395,6 +420,12 @@ class Migration(migrations.Migration):
                 ('edit_date', models.DateTimeField(null=True, verbose_name=b'Last Edit Date', blank=True)),
                 ('latitude', models.CharField(max_length=255, null=True, verbose_name=b'Latitude (Coordinates)', blank=True)),
                 ('longitude', models.CharField(max_length=255, null=True, verbose_name=b'Longitude (Coordinates)', blank=True)),
+                ('approval_submitted_by', models.ForeignKey(related_name='requesting', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('approved_by', models.ForeignKey(related_name='approving', blank=True, to=settings.AUTH_USER_MODEL, help_text=b'This is the Provincial Line Manager', null=True)),
+                ('community', models.ManyToManyField(to='activitydb.Community', null=True, blank=True)),
+                ('estimated_by', models.ForeignKey(related_name='estimate', blank=True, to=settings.AUTH_USER_MODEL, help_text=b'This is the originator', null=True)),
+                ('office', models.ForeignKey(blank=True, to='activitydb.Office', null=True)),
+                ('program', models.ForeignKey(related_name='proposal', blank=True, to='activitydb.Program', null=True)),
             ],
             options={
                 'ordering': ('create_date',),
@@ -423,6 +454,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255, verbose_name=b'Province Name', blank=True)),
                 ('create_date', models.DateTimeField(null=True, blank=True)),
                 ('edit_date', models.DateTimeField(null=True, blank=True)),
+                ('country', models.ForeignKey(to='activitydb.Country')),
             ],
             options={
                 'ordering': ('name',),
@@ -435,12 +467,13 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('targeted', models.CharField(max_length=255, null=True, verbose_name=b'Targeted #', blank=True)),
                 ('achieved', models.CharField(max_length=255, null=True, verbose_name=b'Achieved #', blank=True)),
-                ('description', models.CharField(max_length=255, null=True, verbose_name=b'Description of Contribution', blank=True)),
+                ('description', models.CharField(max_length=255, null=True, verbose_name=b'Description', blank=True)),
                 ('non_logframe_indicator', models.CharField(max_length=255, null=True, verbose_name=b'Non-Logframe Indicator', blank=True)),
                 ('create_date', models.DateTimeField(null=True, blank=True)),
                 ('edit_date', models.DateTimeField(null=True, blank=True)),
                 ('agreement', models.ForeignKey(related_name='q_agreement', blank=True, to='activitydb.ProjectAgreement', null=True)),
                 ('complete', models.ForeignKey(related_name='q_complete', blank=True, to='activitydb.ProjectComplete', null=True)),
+                ('logframe_indicator', models.ForeignKey(blank=True, to='indicators.Indicator', null=True)),
             ],
             options={
                 'ordering': ('description',),
@@ -525,5 +558,221 @@ class Migration(migrations.Migration):
                 'ordering': ('name',),
             },
             bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='projectproposal',
+            name='project_type',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectType', max_length=255, help_text=b'Please refer to Form 05 - Project Progress Summary', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='projectproposal',
+            name='sector',
+            field=models.ForeignKey(blank=True, to='activitydb.Sector', max_length=255, null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='projectcomplete',
+            name='project_proposal',
+            field=models.ForeignKey(to='activitydb.ProjectProposal'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='projectcomplete',
+            name='reviewed_by',
+            field=models.ForeignKey(related_name='reviewing_complete', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='projectagreement',
+            name='project_proposal',
+            field=models.ForeignKey(to='activitydb.ProjectProposal'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='projectagreement',
+            name='project_type',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectType', max_length=255, help_text=b'Please refer to Form 05 - Project Progress Summary', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='projectagreement',
+            name='reviewed_by',
+            field=models.ForeignKey(related_name='reviewing', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='projectagreement',
+            name='sector',
+            field=models.ForeignKey(blank=True, to='activitydb.Sector', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='programdashboard',
+            name='project_agreement',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectAgreement', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='programdashboard',
+            name='project_completion',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectComplete', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='programdashboard',
+            name='project_proposal',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectProposal', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='office',
+            name='province',
+            field=models.ForeignKey(to='activitydb.Province'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='monitor',
+            name='agreement',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectAgreement', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='monitor',
+            name='complete',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectComplete', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='mergemap',
+            name='project_agreement',
+            field=models.ForeignKey(to='activitydb.ProjectAgreement', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='mergemap',
+            name='project_completion',
+            field=models.ForeignKey(to='activitydb.ProjectComplete', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='mergemap',
+            name='project_proposal',
+            field=models.ForeignKey(to='activitydb.ProjectProposal', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='mergemap',
+            name='read',
+            field=models.ForeignKey(to='read.Read'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='documentation',
+            name='project',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectProposal', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='documentation',
+            name='silo',
+            field=models.ForeignKey(blank=True, to='silo.Silo', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='documentation',
+            name='template',
+            field=models.ForeignKey(blank=True, to='activitydb.Template', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='district',
+            name='province',
+            field=models.ForeignKey(to='activitydb.Province'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='contribution',
+            name='project_agreement',
+            field=models.ForeignKey(related_name='c_agreement', blank=True, to='activitydb.ProjectAgreement', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='contribution',
+            name='project_complete',
+            field=models.ForeignKey(related_name='c_complete', blank=True, to='activitydb.ProjectComplete', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='community',
+            name='country',
+            field=models.ForeignKey(to='activitydb.Country'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='community',
+            name='district',
+            field=models.ForeignKey(blank=True, to='activitydb.District', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='community',
+            name='filled_by',
+            field=models.ForeignKey(related_name='comm_estimate', blank=True, to=settings.AUTH_USER_MODEL, help_text=b'This is the originator', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='community',
+            name='office',
+            field=models.ForeignKey(default=b'1', to='activitydb.Office'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='community',
+            name='province',
+            field=models.ForeignKey(blank=True, to='activitydb.Province', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='community',
+            name='village',
+            field=models.ForeignKey(blank=True, to='activitydb.Village', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='budget',
+            name='agreement',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectAgreement', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='budget',
+            name='complete',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectComplete', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='beneficiary',
+            name='community',
+            field=models.ForeignKey(blank=True, to='activitydb.Community', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='beneficiary',
+            name='training',
+            field=models.ForeignKey(blank=True, to='activitydb.TrainingAttendance', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='benchmarks',
+            name='agreement',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectAgreement', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='benchmarks',
+            name='complete',
+            field=models.ForeignKey(blank=True, to='activitydb.ProjectComplete', null=True),
+            preserve_default=True,
         ),
     ]
