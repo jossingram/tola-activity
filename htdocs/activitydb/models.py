@@ -527,7 +527,7 @@ class ProjectComplete(models.Model):
     expected_duration = models.CharField("Expected Duration", max_length=255, help_text="Comes from Form-04 Project Agreement", blank=True, null=True)
     actual_start_date = models.DateTimeField(help_text="Comes from Form-04 Project Agreement", blank=True, null=True)
     actual_end_date = models.DateTimeField(blank=True, null=True)
-    actual_duration = models.DateTimeField(blank=True, null=True)
+    actual_duration = models.CharField(max_length=255,blank=True, null=True)
     on_time = models.BooleanField(default=None)
     no_explanation = models.TextField("If not on time explain delay", blank=True, null=True)
     estimated_budget = models.CharField("Estimated Budget", help_text="Comes from Form-04 Project Agreement", max_length=255, null=True, blank=True)
