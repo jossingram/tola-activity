@@ -10,18 +10,11 @@ class Migration(migrations.Migration):
     dependencies = [
         ('activitydb', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('indicators', '0001_initial'),
         ('read', '0002_auto_20150202_1342'),
         ('silo', '__first__'),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='quantitativeoutputs',
-            name='logframe_indicator',
-            field=models.ForeignKey(blank=True, to='indicators.Indicator', null=True),
-            preserve_default=True,
-        ),
         migrations.AddField(
             model_name='province',
             name='country',
