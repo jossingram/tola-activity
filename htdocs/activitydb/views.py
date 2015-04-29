@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, QuantitativeOutputsForm, BudgetForm, FilterForm
+from .forms import ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, QuantitativeOutputsForm, BudgetForm, FilterForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -662,7 +662,7 @@ class ProjectCompleteCreate(CreateView):
         redirect_url = '/activitydb/projectcomplete_update/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
-    form_class = ProjectCompleteForm
+    form_class = ProjectCompleteCreateForm
 
 
 class ProjectCompleteUpdate(UpdateView):
@@ -754,7 +754,7 @@ class ProjectCompleteUpdate(UpdateView):
 
         messages.success(self.request, 'Success, form updated!')
 
-        return self.render_to_response(self.get_context_data(form=form, request=request))
+        return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ProjectCompleteForm
 

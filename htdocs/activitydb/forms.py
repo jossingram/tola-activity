@@ -530,6 +530,58 @@ class ProjectAgreementForm(forms.ModelForm):
             self.fields['approval'].help_text = "Approval level permissions required"
 
 
+class ProjectCompleteCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = ProjectComplete
+        fields = '__all__'
+
+    map = forms.CharField(widget=GoogleMapsWidget(
+        attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
+
+    expected_start_date = forms.DateField(widget=DatePicker.DateInput())
+    expected_end_date = forms.DateField(widget=DatePicker.DateInput())
+    actual_start_date = forms.DateField(widget=DatePicker.DateInput())
+    actual_end_date = forms.DateField(widget=DatePicker.DateInput())
+
+    program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
+
+    def __init__(self, *args, **kwargs):
+        #get the user object from request to check permissions
+        self.request = kwargs.pop('request')
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.layout = Layout(
+
+            HTML("""<br/>"""),
+            TabHolder(
+                Tab('Executive Summary',
+                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name'
+                    ),
+                    Fieldset(
+                        'Dates',
+                        'expected_start_date','expected_end_date', 'expected_duration', 'actual_start_date', 'actual_end_date', 'actual_duration',
+                        PrependedText('on_time', ''), 'no_explanation',
+
+                    ),
+                ),
+            ),
+
+        )
+        super(ProjectCompleteCreateForm, self).__init__(*args, **kwargs)
+
+        #override the program queryset to use request.user for country
+        countries = getCountry(self.request.user)
+        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+
+
 class ProjectCompleteForm(forms.ModelForm):
 
     class Meta:
