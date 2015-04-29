@@ -680,14 +680,14 @@ class ProjectCompleteUpdate(UpdateView):
         pk = self.kwargs['pk']
         context.update({'pk': pk})
 
-        #get quantitative data
+        #get quantitative data from the agreement to add to the context
         try:
             getQuantitative = QuantitativeOutputs.objects.all().filter(complete_id=self.kwargs['pk'])
-            #if there aren't any quantitative try importing from the agreement
-            if not getQuantitative:
-                QuantitativeOutputs.update(complete_id=self.kwargs['pk']).filter(agreement__id=getQuantitative.agreement_id)
         except QuantitativeOutputs.DoesNotExist:
-            getQuantitative = None
+            #if there aren't any quantitative try importing from the agreement
+            getQuantitative = QuantitativeOutputs.objects.update(complete_id=self.kwargs['pk']).filter(agreement__id=getQuantitative.agreement_id)
+            if not getQuantitative:
+                getQuantitative = None
         context.update({'getQuantitative': getQuantitative})
 
         #get budget data
