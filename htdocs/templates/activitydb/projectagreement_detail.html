@@ -126,11 +126,14 @@
             <th>Description of Contribution</th>
             <th>Processed Value of Contribution</th>
         </tr>
+
+        {% for budget in getBudget %}
         <tr>
-            <td>{{ agreement.program }}</td>
-            <td>{{ agreement.project_activity }}</td>
-            <td>{{ agreement.project_type }}</td>
+            <td>{{ budget.contributor }}</td>
+            <td>{{ budget.decription }}</td>
+            <td>{{ budget.value }}</td>
         </tr>
+        {% endfor %}
     </table>
     <br/>
      <table class="table" border="1">

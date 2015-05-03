@@ -542,6 +542,30 @@ class ProjectAgreementDetail(DetailView):
 
         context.update({'id': self.kwargs['pk']})
 
+        try:
+            getQuantitative = QuantitativeOutputs.objects.all().filter(agreement__id=self.kwargs['pk'])
+        except QuantitativeOutputs.DoesNotExist:
+            getQuantitative = None
+        context.update({'getQuantitative': getQuantitative})
+
+        try:
+            getMonitor = Monitor.objects.all().filter(agreement__id=self.kwargs['pk'])
+        except Monitor.DoesNotExist:
+            getMonitor = None
+        context.update({'getMonitor': getMonitor})
+
+        try:
+            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk'])
+        except Benchmarks.DoesNotExist:
+            getBenchmark = None
+        context.update({'getBenchmark': getBenchmark})
+
+        try:
+            getBudget = Budget.objects.all().filter(agreement__id=self.kwargs['pk'])
+        except Budget.DoesNotExist:
+            getBudget = None
+        context.update({'getBudget': getBudget})
+
         return context
 
 

@@ -316,7 +316,7 @@ class Evaluate(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.capacity
+        return self.evaluate
 
 
 class EvaluateAdmin(admin.ModelAdmin):
