@@ -730,7 +730,7 @@ class ProgramDashboard(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return unicode(self.program)
+        return unicode("Program: %s  Proposal: %s" % (self.program, self.project_proposal))
 
 
 class ProgramDashboardAdmin(admin.ModelAdmin):
