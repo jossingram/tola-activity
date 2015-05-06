@@ -25,7 +25,7 @@ TYPE_OTHER=(
         ("Women's Project", "Women's Project"),
         ("Youth Project", "Youth Project"),
         ("Pilot Project", "Pilot Project"),
-        ("Energy Efficency Project", "Energy Efficency Project"),
+        ("Energy Efficiency Project", "Energy Efficiency Project"),
     )
 
 #Global for Budget Variance

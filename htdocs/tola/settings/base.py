@@ -209,6 +209,7 @@ THIRD_PARTY_APPS = (
     'floppyforms',
     'django_extensions',
     'report_builder',
+    'mathfilters',
 )
 
 # Apps specific for this project go here.
