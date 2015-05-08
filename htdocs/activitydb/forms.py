@@ -20,14 +20,6 @@ APPROVALS=(
         ('rejected', 'rejected'),
     )
 
-#Global for other
-TYPE_OTHER=(
-        ("Women's Project", "Women's Project"),
-        ("Youth Project", "Youth Project"),
-        ("Pilot Project", "Pilot Project"),
-        ("Energy Efficiency Project", "Energy Efficiency Project"),
-    )
-
 #Global for Budget Variance
 BUDGET_VARIANCE=(
         ("Over Budget", "Over Budget"),
@@ -216,12 +208,6 @@ class ProjectAgreementCreateForm(forms.ModelForm):
 
     program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
 
-    project_type_other = forms.ChoiceField(
-        choices=TYPE_OTHER,
-        initial='',
-        required=False,
-    )
-
     def __init__(self, *args, **kwargs):
 
         #get the user object from request to check permissions
@@ -255,7 +241,6 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
-
 
 
 class ProjectAgreementForm(forms.ModelForm):
@@ -306,12 +291,6 @@ class ProjectAgreementForm(forms.ModelForm):
     approval = forms.ChoiceField(
         choices=APPROVALS,
         initial='in progress',
-        required=False,
-    )
-
-    project_type_other = forms.ChoiceField(
-        choices=TYPE_OTHER,
-        initial='',
         required=False,
     )
 

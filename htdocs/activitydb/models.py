@@ -349,6 +349,31 @@ class ProjectTypeAdmin(admin.ModelAdmin):
     display = 'Project Type'
 
 
+class ProjectTypeOther(models.Model):
+    name = models.CharField("Type of Project", max_length=135)
+    description = models.CharField(max_length=255)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ProjectTypeOther, self).save()
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('name',)
+
+
+class ProjectTypeOtherAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'create_date', 'edit_date')
+    display = 'Project Type Other'
+
+
 class Template(models.Model):
     name = models.CharField("Name of Document", max_length=135)
     documentation_type = models.CharField("Type (File or URL)", max_length=135)
@@ -462,7 +487,7 @@ class ProjectAgreement(models.Model):
     estimated_num_indirect_beneficiaries = models.CharField("Estimated Number of indirect beneficiaries", help_text="This is a calculation - multiply direct beneficiaries by average household size",max_length=255, blank=True, null=True)
     total_estimated_budget = models.CharField(help_text="In USD", max_length=255, blank=True, null=True)
     mc_estimated_budget = models.CharField(help_text="In USD", max_length=255, blank=True, null=True)
-    project_type_other = models.CharField("Select Type", max_length=255, blank=True, null=True)
+    project_type_other = models.ForeignKey(ProjectTypeOther, blank=True, null=True)
     estimation_date = models.DateTimeField(blank=True, null=True)
     estimated_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="estimating")
     estimated_by_date = models.DateTimeField("Date Estimated", null=True, blank=True)

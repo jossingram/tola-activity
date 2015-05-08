@@ -1,5 +1,7 @@
 from django.conf.urls import patterns, include, url
 
+from activitydb.views import QuantitativeOutputsList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete
+
 
 urlpatterns = patterns('',
 
@@ -18,5 +20,14 @@ urlpatterns = patterns('',
     
     #Add Indicators to Program
     url(r'^indicator', 'indicators.views.indicator', name='indicator'),
+
+    #Indicator Report
+    url(r'^report', 'indicators.views.indicatorReport', name='indicatorReport'),
+
+    #Indicator Form
+    url(r'^form/(?P<pk>\w+)/$', QuantitativeOutputsList.as_view(), name='quantitative_list'),
+    url(r'^quantitative_add/(?P<id>\w+)/$', QuantitativeOutputsCreate.as_view(), name='quantitative_add'),
+    url(r'^quantitative_update/(?P<pk>\w+)/$', QuantitativeOutputsUpdate.as_view(), name='quantitative_update'),
+    url(r'^quantitative_delete/(?P<pk>\w+)/$', QuantitativeOutputsDelete.as_view(), name='quantitative_delete'),
     
 )

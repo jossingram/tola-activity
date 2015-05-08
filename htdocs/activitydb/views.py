@@ -1651,17 +1651,11 @@ def report(request):
         #for obj in filtered:
         #    list1.append(obj)
         """
-         fields = ['country','activity_code', 'project_name', 'beneficiary_type', 'project_proposal', 'activity_code',
-         'office', 'program', 'sector','approval_status', 'approved by', 'approved date'
+         fields = 'program', 'project_proposal','community'
         """
         queryset = ProjectAgreement.objects.filter(
-                                           Q(activity_code__contains=request.GET["search"]) |
                                            Q(project_name__contains=request.GET["search"]) |
-                                           Q(beneficiary_type__contains=request.GET["search"]) |
-                                           Q(approval__contains=request.GET["search"]) |
-                                           Q(office__name__contains=request.GET["search"]) |
-                                           Q(sector__name__contains=request.GET["search"]) |
-                                           Q(program__name__contains=request.GET["search"])).select_related()
+                                           Q(activity_code__contains=request.GET["search"]))
         table = ProjectAgreementTable(queryset)
 
     RequestConfig(request).configure(table)
