@@ -15,7 +15,7 @@ from indicators.forms import IndicatorForm
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from tola.util import getCountry
-from tables import IndicatorTable
+from tables import IndicatorTable, IndicatorDataTable
 from django_tables2 import RequestConfig
 from activitydb.forms import FilterForm, QuantitativeOutputsForm
 from django.db.models import Count
@@ -153,6 +153,42 @@ def indicatorReport(request):
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/report.html", {'get_agreements': table, 'program': getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
+
+
+def indicatorDataReport(request,id):
+    """
+    Show LIST of submitted incidents with a filtered search view using django-tables2
+    and django-filter
+    """
+    countries = getCountry(request.user)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    getIndicators = Indicator.objects.select_related()
+    if int(id) != 0:
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(logframe_indicator__id = id).select_related()
+    else:
+        getQuantitativeData = QuantitativeOutputs.objects.all().select_related()
+    table = IndicatorDataTable(getQuantitativeData)
+    table.paginate(page=request.GET.get('page', 1), per_page=20)
+
+    if request.method == "GET" and "search" in request.GET:
+        #list1 = list()
+        #for obj in filtered:
+        #    list1.append(obj)
+        """
+         fields = ('targeted', 'achieved', 'description', 'logframe_indicator', 'non_logframe_indicator', 'agreement', 'complete')
+        """
+        queryset = QuantitativeOutputs.objects.filter(
+                                           Q(agreement__project_name__contains=request.GET["search"]) |
+                                           Q(description__icontains=request.GET["search"]) |
+                                           Q(logframe_indicator__name__contains=request.GET["search"]) |
+                                           Q(non_logframe_indicator__contains=request.GET["search"])
+                                          ).select_related()
+        table = IndicatorDataTable(queryset)
+
+    RequestConfig(request).configure(table)
+
+    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+    return render(request, "indicators/data_report.html", {'get_agreements': table, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
 class QuantitativeOutputsList(ListView):
