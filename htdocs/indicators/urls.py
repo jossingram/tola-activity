@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 
-from activitydb.views import QuantitativeOutputsList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete
+from .views import QuantitativeOutputsList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete
 
 
 urlpatterns = patterns('',

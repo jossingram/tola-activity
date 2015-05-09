@@ -17,7 +17,8 @@ from django.contrib import messages
 from tola.util import getCountry
 from tables import IndicatorTable, IndicatorDataTable
 from django_tables2 import RequestConfig
-from activitydb.forms import FilterForm, QuantitativeOutputsForm
+from activitydb.forms import FilterForm
+from .forms import QuantitativeOutputsForm
 from django.db.models import Count
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -196,7 +197,7 @@ class QuantitativeOutputsList(ListView):
     QuantitativeOutput List
     """
     model = QuantitativeOutputs
-    template_name = 'activitydb/quantitative_list.html'
+    template_name = 'indicators/quantitative_list.html'
 
     def get(self, request, *args, **kwargs):
 
@@ -215,6 +216,7 @@ class QuantitativeOutputsCreate(CreateView):
     QuantitativeOutput Form
     """
     model = QuantitativeOutputs
+    template_name = 'indicators/quantitativeoutputs_form.html'
 
     def get_context_data(self, **kwargs):
         context = super(QuantitativeOutputsCreate, self).get_context_data(**kwargs)
@@ -252,6 +254,8 @@ class QuantitativeOutputsUpdate(UpdateView):
     QuantitativeOutput Form
     """
     model = QuantitativeOutputs
+    template_name = 'indicators/quantitativeoutputs_form.html'
+
 
     def get_context_data(self, **kwargs):
         context = super(QuantitativeOutputsUpdate, self).get_context_data(**kwargs)
