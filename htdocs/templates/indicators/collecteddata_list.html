@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block bread_crumb %}
+<ol class="breadcrumb">
+  <li><a href="/indicators/home/0/">Indicators</a></li>
+  <li class="active">Data</li>
+</ol>
+{% endblock %}
+{% block page_title %}Collected Indicator Ouput/Outcome Data List{% endblock %}
+
+{% block content %}
+<div>
+<a href="/indicators/collecteddata_add/0/" class="btn btn-large btn-success">New Data</a> &nbsp;
+<a href="/indicators/collecteddata_import/0/" class="btn btn-large btn-info">Import Data</a>
+<hr/>
+<br/>
+</div>
+
+<div class='panel panel-default'>
+  <!-- Default panel contents -->
+  <div class='panel-heading'>Non-Activity Indicator Data</div>
+  {% if getCollectedData %}
+      <!-- Table -->
+      <table class="table">
+        <tr>
+        <th>Date Created</th>
+        <th>Logframe Indicator</th>
+        <th>Non-Logframe Indicator</th>
+        <th>Program</th>
+        <th>Sector</th>
+        <th>Community</th>
+        </tr>
+        {% for item in getCollectedData %}
+        <tr>
+            <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.create_date}}</a></td>
+            <td>{{ item.logframe_indicator}}</td>
+            <td>{{ item.nonlogframe_indicator}}</td>
+            <td>{{ item.program}}</td>
+            <td>{{ item.sector}}</td>
+            <td>{{ item.community}}</td>
+            <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a>&nbsp;<a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
+        </tr>
+        {% endfor %}
+      </table>
+  {% else %}
+    No Data
+  {% endif %}
+
+</div>
+{% endblock content %}

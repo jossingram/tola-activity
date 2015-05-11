@@ -8,10 +8,10 @@ import json
 import unicodedata
 from django.http import HttpResponseRedirect
 from django.db import models
-from models import Indicator
+from models import Indicator, CollectedData
 from activitydb.models import QuantitativeOutputs
 from activitydb.models import Program
-from indicators.forms import IndicatorForm
+from indicators.forms import IndicatorForm, CollectedDataForm
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from tola.util import getCountry
@@ -296,6 +296,105 @@ class QuantitativeOutputsDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = QuantitativeOutputsForm
+
+
+class CollectedDataList(ListView):
+    """
+    CollectedData List
+    """
+    model = CollectedData
+    template_name = 'indicators/collecteddata_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        if int(self.kwargs['pk']) == 0:
+            getCollectedData = CollectedData.objects.all()
+        else:
+            getCollectedData = CollectedData.objects.all().filter(project_proposal_id=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getCollectedData': getCollectedData})
+
+
+class CollectedDataCreate(CreateView):
+    """
+    CollectedData Form
+    """
+    model = CollectedData
+    template_name = 'indicators/collecteddata_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CollectedDataCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
+
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Data Created!')
+        form = ""
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+    form_class = CollectedDataForm
+
+
+class CollectedDataUpdate(UpdateView):
+    """
+    CollectedData Form
+    """
+    model = CollectedData
+    template_name = 'indicators/collecteddata_form.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super(CollectedDataUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Data Updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = CollectedDataForm
+
+
+class CollectedDataDelete(DeleteView):
+    """
+    CollectedData Delete
+    """
+    model = CollectedData
+    success_url = '/'
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Data Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = CollectedDataForm
+
 
 def tool(request):
 

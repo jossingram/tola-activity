@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib import admin
 from django.conf import settings
 from silo.models import Silo
-from activitydb.models import Program, Sector
+from activitydb.models import Program, Sector, Community, ProjectAgreement
 from datetime import datetime
 
 
@@ -92,3 +92,37 @@ class Indicator(models.Model):
 class IndicatorAdmin(admin.ModelAdmin):
     list_display = ('owner','indicator_type','name','sector','description', 'program')
     display = 'Indicators'
+
+
+class CollectedData(models.Model):
+    targeted = models.CharField("Targeted #", max_length=255, blank=True, null=True)
+    achieved = models.CharField("Achieved #", max_length=255, blank=True, null=True)
+    description = models.CharField("Description", max_length=255, blank=True, null=True)
+    logframe_indicator = models.ForeignKey('indicators.Indicator', blank=True, null=True)
+    non_logframe_indicator = models.CharField("Non-Logframe Indicator", max_length=255, blank=True, null=True)
+    program = models.ForeignKey(Program, blank=True, null=True, related_name="q_agreement")
+    community = models.ForeignKey(Community, blank=True, null=True, related_name="q_agreement")
+    sector = models.ForeignKey(Sector, blank=True, null=True, related_name="q_agreement")
+    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_complete")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('description',)
+        verbose_name_plural = "Indicator Output/Outcome Collected Data"
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(CollectedData, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.description
+
+
+class CollectedDataAdmin(admin.ModelAdmin):
+    list_display = ('description', 'targeted', 'achieved', 'logframe_indicator', 'non_logframe_indicator', 'create_date', 'edit_date')
+    display = 'Indicator Output/Outcome Collected Data'
