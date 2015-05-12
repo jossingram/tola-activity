@@ -4,7 +4,7 @@ from .views import ProjectProposalImport, ProjectProposalList, ProjectProposalCr
     DocumentationList, DocumentationCreate, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
     BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
     BeneficiaryDelete, QuantitativeOutputsList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete, ProjectCompleteDetail, ProjectProposalDetail,\
-    CommunityReport, BudgetCreate, BudgetDelete, BudgetUpdate, BudgetList
+    CommunityReport, BudgetCreate, BudgetDelete, BudgetUpdate, BudgetList, ProgramDashboardCounts
 
 
 try:
@@ -89,5 +89,8 @@ urlpatterns = patterns('',
 
                        url(r'^doMerge/(?P<pk>\w+)/$', 'activitydb.views.doMerge', name='doMerge'),
                        url(r'^province/(?P<province>[-\w]+)/province_json/', 'activitydb.views.province_json', name='province_json'),
+
+                        url(r'^count/$', 'activitydb.views.ProgramDashboardCounts', name='ProgramDashboardCounts'),
+
 
                        )

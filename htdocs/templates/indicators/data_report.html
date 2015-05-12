@@ -16,6 +16,8 @@
         <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/{{ item.id }}">{{ item.id}} - {{ item.name }}</a></li>
     {% endfor %}
   </ul>
+  <button class="btn btn-default" onClick="location.href='/indicators/data/{{ id }}/map/'" name="map">Map</button>&nbsp;
+  <button class="btn btn-default" onClick="location.href='/indicators/data/{{ id }}/graph/'" name="map">Graph</button>
 </div>
 <br/>
 
@@ -30,8 +32,11 @@
 {% crispy form form.helper %}
 <br/>
 
-{% render_table get_agreements %}
-
+{% if "map" in url %}
+    {% include "indicators/community_map.html" %}
+{% else %}
+    {% render_table get_agreements %}
+{% endif %}
 <br/>
 
 <button type="submit" class="btn btn-success" onClick="location.href=''">Export All</button>

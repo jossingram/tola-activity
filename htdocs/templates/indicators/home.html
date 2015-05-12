@@ -24,12 +24,36 @@
     <br/>
     <div class="jumbotron">
         <h3>Indicators</h3>
-        <ul class="list-group">
-        {% for item in getIndicators %}
-            <li class="list-group-item"><a href="/indicators/editIndicator/{{ item.id }}">{{ item.indicator_type }} - {{ item.name }} - {{ item.source }}</a></li>
-        {% empty %}
-            <li class="list-group-item">No indicators yet.</li>
-        {% endfor %}
-        </ul>
+       <div class='panel panel-default'>
+        <!-- Default panel contents -->
+        <div class='panel-heading'></div>
+        {% if getIndicators %}
+          <!-- Table -->
+          <table class="table">
+            <tr>
+                <th>Date Created</th>
+                <th>Indicator Type</th>
+                <th>Name</th>
+                <th>Number</th>
+                <th>Source</th>
+                <th>Definition</th>
+            </tr>
+            {% for item in getIndicators %}
+            <tr>
+                <td><a href="/indicators/editIndicator/{{ item.id }}">{{ item.create_date}}</a></td>
+                <td>{{ item.indicator_type}}</td>
+                <td>{{ item.name}}</td>
+                <td>{{ item.number}}</td>
+                <td>{{ item.source}}</td>
+                <td>{{ item.definition}}</td>
+                <td><a href="/indicators/editIndicator/{{ item.id }}" class="btn-xs btn-info">Edit</a>&nbsp;<a href="/indicators/indicator_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
+            </tr>
+            {% endfor %}
+          </table>
+        {% else %}
+        No Data
+        {% endif %}
+
+</div>
     </div>
 {% endblock content %}

@@ -350,7 +350,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                                 <td>{{ item.contributor}}</td>
                                                 <td>{{ item.description_of_contribution}}</td>
                                                 <td>{{ item.proposed_value}}</td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>Edit</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
@@ -397,6 +397,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                           <table class="table">
                                             <tr>
                                             <th>Targeted</th>
+                                            <th>Achieved</th>
                                             <th>Description</th>
                                             <th>Logframe Indicator</th>
                                             <th>Non-Logframe Indicator</th>
@@ -405,10 +406,11 @@ class ProjectAgreementForm(forms.ModelForm):
                                             {% for item in getQuantitative %}
                                             <tr>
                                                 <td>{{ item.targeted}}</td>
+                                                <td>{{ item.achieved}}</td>
                                                 <td>{{ item.description}}</td>
                                                 <td>{{ item.logframe_indicator}}</td>
                                                 <td>{{ item.non_logframe_indicator}}</td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
@@ -438,7 +440,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                                 <td>{{ item.responsible_person}}</td>
                                                 <td>{{ item.frequency}}</td>
                                                 <td>{{ item.type}}</td>
-                                                <td><a data-toggle="modal" data-target="#myModal" href='/activitydb/monitor_update/{{ item.id }}/'>View</a> | <a href='/activitydb/monitor_delete/{{ item.id }}/' target="_new">Delete</a>
+                                                <td><a data-toggle="modal" data-target="#myModal" href='/activitydb/monitor_update/{{ item.id }}/'>Edit</a> | <a href='/activitydb/monitor_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
@@ -466,9 +468,9 @@ class ProjectAgreementForm(forms.ModelForm):
                                             {% for item in getBenchmark %}
                                             <tr>
                                                 <td>{{ item.percent_complete}}</td>
-                                                <td>{{ item.percent_cumlative}}</td>
+                                                <td>{{ item.percent_cumulative}}</td>
                                                 <td>{{ item.description}}</td>
-                                                <td><a class="benchamrks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>View</a> | <a href='/activitydb/benchmark_delete/{{ item.id }}/' target="_new">Delete</a></td>
+                                                <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>Edit</a> | <a href='/activitydb/benchmark_delete/{{ item.id }}/' data-target="#myModal">Delete</a></td>
                                             </tr>
                                             {% endfor %}
                                           </table>
@@ -684,8 +686,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                             <tr>
                                             <th>Targeted</th>
                                             <th>Description</th>
-                                            <th>Logframe Indicator</th>
-                                            <th>Non-Logframe Indicator</th>
+                                            <th>Indicator</th>
                                             <th>View</th>
                                             </tr>
                                             {% for item in getQuantitative %}
@@ -693,7 +694,6 @@ class ProjectCompleteForm(forms.ModelForm):
                                                 <td>{{ item.targeted}}</td>
                                                 <td>{{ item.description}}</td>
                                                 <td>{{ item.logframe_indicator}}</td>
-                                                <td>{{ item.non_logframe_indicator}}</td>
                                                 <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
                                             </tr>
                                             {% endfor %}
@@ -742,6 +742,12 @@ class CommunityForm(forms.ModelForm):
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
 
     date_of_firstcontact = forms.DateField(widget=DatePicker.DateInput())
+
+    approval = forms.ChoiceField(
+        choices=APPROVALS,
+        initial='in progress',
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         #get the user object from request to check permissions

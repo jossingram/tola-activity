@@ -199,10 +199,34 @@ class SectorAdmin(admin.ModelAdmin):
     display = 'Sector'
 
 
+class ProfileType(models.Model):
+    profile = models.CharField("Sector Name", max_length=255, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('profile',)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ProfileType, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.profile
+
+
+class SectorAdmin(admin.ModelAdmin):
+    list_display = ('profile', 'create_date', 'edit_date')
+    display = 'ProfileType'
+
+
 class Community(models.Model):
-    name = models.CharField("Community", max_length=255, blank=True, null=True)
-    code = models.CharField("Community Profile Code", help_text="See AIMS Village (Shura) Code", max_length=255, blank=True, null=True)
-    type = models.CharField("Profile Type", max_length=255, blank=True, null=True)
+    name = models.CharField("Profile Name", max_length=255, blank=True, null=True)
+    type = models.ForeignKey(ProfileType, blank=True, null=True)
     office = models.ForeignKey(Office, default="1")
     existing_village = models.BooleanField("Is There an existing shura or CDC?", default="True")
     existing_village_descr = models.CharField("If Yes please describe", max_length=255, blank=True, null=True)
@@ -241,9 +265,9 @@ class Community(models.Model):
     country = models.ForeignKey(Country)
     province = models.ForeignKey(Province, null=True, blank=True)
     district = models.ForeignKey(District, null=True, blank=True)
-    village = models.ForeignKey(Village, null=True, blank=True)
-    latitude = models.CharField("Latitude (Coordinates)", max_length=255, blank=True, null=True)
-    longitude = models.CharField("Longitude (Coordinates)", max_length=255, blank=True, null=True)
+    village = models.CharField("Village", help_text="", max_length=255, null=True, blank=True)
+    latitude = models.DecimalField("Latitude (Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
+    longitude = models.DecimalField("Longitude (Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
     approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(settings.AUTH_USER_MODEL,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="comm_approving")
     filled_by = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='This is the originator', blank=True, null=True, related_name="comm_estimate")
@@ -325,7 +349,7 @@ class EvaluateAdmin(admin.ModelAdmin):
 
 
 class ProjectType(models.Model):
-    name = models.CharField("Type of Project", max_length=135)
+    name = models.CharField("Type of Activity", max_length=135)
     description = models.CharField(max_length=255)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -350,7 +374,7 @@ class ProjectTypeAdmin(admin.ModelAdmin):
 
 
 class ProjectTypeOther(models.Model):
-    name = models.CharField("Type of Project", max_length=135)
+    name = models.CharField("Type of Activity", max_length=135)
     description = models.CharField(max_length=255)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -371,7 +395,7 @@ class ProjectTypeOther(models.Model):
 
 class ProjectTypeOtherAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'create_date', 'edit_date')
-    display = 'Project Type Other'
+    display = 'Activity Type Other'
 
 
 class Template(models.Model):
@@ -405,7 +429,7 @@ class ProjectProposal(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True, related_name="proposal")
     proposal_num = models.CharField("Proposal Number", max_length=255, blank=True, null=True)
     date_of_request = models.DateTimeField("Date of Request", null=True, blank=True)
-    project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255)
+    project_name = models.CharField("Activity Name", help_text='Please be specific in your name.  Consider that your Activity Name includes WHO, WHAT, WHERE, HOW', max_length=255)
     sector = models.ForeignKey(Sector, max_length=255, blank=True, null=True)
     project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
@@ -458,7 +482,7 @@ class ProjectAgreement(models.Model):
     project_proposal = models.ForeignKey(ProjectProposal, null=False, blank=False)
     program = models.ForeignKey(Program, null=True, blank=True, related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
-    project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255, blank=True, null=True)
+    project_name = models.CharField("Activity Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255, blank=True, null=True)
     project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
     community = models.ManyToManyField(Community, blank=True, null=True)
@@ -467,8 +491,7 @@ class ProjectAgreement(models.Model):
     cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
     sector = models.ForeignKey("Sector", blank=True, null=True)
     external_stakeholder_list = models.FileField("External stakeholder list", help_text="Please refer to PM@MC Section 01: Identification and Design under 1.1", upload_to='uploads', blank=True, null=True)
-    project_activity = models.CharField("Project Activity", max_length=255, blank=True, null=True)
-    project_design = models.CharField("Project design for", max_length=255, blank=True, null=True)
+    project_design = models.CharField("Activity design for", max_length=255, blank=True, null=True)
     account_code = models.CharField("Account Code", help_text='optional - request from finance', max_length=255, blank=True, null=True)
     lin_code = models.CharField("LIN Sub Code", help_text='optional - request from finance', max_length=255, blank=True, null=True)
     community = models.ManyToManyField(Community, blank=True, null=True)
@@ -544,7 +567,7 @@ class ProjectComplete(models.Model):
     project_proposal = models.ForeignKey(ProjectProposal)
     project_agreement = models.ForeignKey(ProjectAgreement)
     activity_code = models.CharField("Activity Code", max_length=255, blank=True, null=True)
-    project_name = models.CharField("Project Name", max_length=255, blank=True, null=True)
+    project_name = models.CharField("Activity Name", max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     expected_start_date = models.DateTimeField(help_text="Comes from Form-04 Project Agreement", blank=True, null=True)
@@ -580,7 +603,7 @@ class ProjectComplete(models.Model):
 
     class Meta:
         ordering = ('create_date',)
-        verbose_name_plural = "Project Completions"
+        verbose_name_plural = "Activity Completions"
 
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
@@ -662,7 +685,7 @@ class BenchmarksAdmin(admin.ModelAdmin):
 
 class Monitor(models.Model):
     responsible_person = models.CharField("Person Responsible", max_length=25, blank=True, null=True)
-    frequency = models.IntegerField("Frequency", max_length=25, blank=True, null=True)
+    frequency = models.CharField("Frequency", max_length=25, blank=True, null=True)
     type = models.TextField("Type", null=True, blank=True)
     agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True)
     complete = models.ForeignKey(ProjectComplete,blank=True, null=True)
@@ -735,11 +758,14 @@ class MergeMapAdmin(admin.ModelAdmin):
 class ProgramDashboard(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True)
     project_proposal = models.ForeignKey(ProjectProposal, null=True, blank=True)
-    project_proposal_approved = models.IntegerField(null=True,blank=True)
+    project_proposal_count = models.IntegerField(null=True,blank=True)
+    project_proposal_count_approved = models.IntegerField(null=True,blank=True)
     project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
-    project_agreement_approved = models.IntegerField(null=True,blank=True)
+    project_agreement_count = models.IntegerField(null=True,blank=True)
+    project_agreement_count_approved = models.IntegerField(null=True,blank=True)
     project_completion = models.ForeignKey(ProjectComplete, null=True, blank=True)
-    project_completion_approved = models.IntegerField(null=True,blank=True)
+    project_completion_count = models.IntegerField(null=True,blank=True)
+    project_completion_count_approved = models.IntegerField(null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

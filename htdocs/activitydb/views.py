@@ -1707,6 +1707,33 @@ def district_json(request, district):
     villages_json = serializers.serialize("json", village)
     return HttpResponse(villages_json, content_type="application/json")
 
+def ProgramDashboardCounts(request):
+    """
+    Loop over each program and increment that count for completes and
+    regular program proposals, agreements and completes
+    :param request:
+    :return:
+    """
+    getDashboard = ProgramDashboard.objects.all()
+
+    for program in getDashboard:
+        getProposalsOpen = ProjectProposal.objects.all().filter(id=program.id).count()
+        getProposalsApproved = ProjectProposal.objects.all().filter(id=program.id,approval='approved').count()
+        getAgreementOpen = ProjectAgreement.objects.all().filter(id=program.id).count()
+        getAgreementApproved = ProjectAgreement.objects.all().filter(id=program.id,approval='approved').count()
+        getCompleteOpen = ProjectComplete.objects.all().filter(id=program.id).count()
+        getCompleteApproved = ProjectComplete.objects.all().filter(id=program.id,approval='approved').count()
+
+        ProgramDashboard.objects.filter(id=program.id).update(project_proposal_count=getProposalsOpen,
+                                                              project_proposal_count_approved=getProposalsApproved,
+                                                              project_agreement_count=getAgreementOpen,
+                                                              project_agreement_count_approved=getAgreementApproved,
+                                                              project_completion_count=getCompleteOpen,
+                                                              project_completion_count_approved=getCompleteApproved,
+                                                              )
+    return HttpResponseRedirect('/')
+
+
 def doMerge(request, pk):
     """
     Copy the selected Silo data into the Project Proposal tables letting the user map

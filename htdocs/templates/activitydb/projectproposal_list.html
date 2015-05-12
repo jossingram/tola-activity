@@ -5,7 +5,7 @@
   <li class="active">Project Proposals</li>
 </ol>
 {% endblock %}
-{% block page_title %}Project Proposal List{% endblock %}
+{% block page_title %}Activity Proposal List{% endblock %}
 
 {% block content %}
 <div class="dropdown">
@@ -21,8 +21,8 @@
   </ul>
   &nbsp;
   {% if user.is_authenticated  %}
-      <a href="/activitydb/projectproposal_add" class="btn btn-large btn-success">New Project Proposal</a>&nbsp;
-      <a href="/activitydb/projectproposal_import" class="btn btn-large btn-info">Import Project Proposal</a>
+      <a href="/activitydb/projectproposal_add" class="btn btn-large btn-success">New Activity Proposal</a>&nbsp;
+      <a href="/activitydb/projectproposal_import" class="btn btn-large btn-info">Import Activity Proposal</a>
   {% endif %}
 </div>
 <br/>
@@ -36,7 +36,7 @@
 {% for proposal in getDashboard %}
     <li class="list-group-item"><b>{{ proposal.create_date|date }} - <a href="/activitydb/projectproposal_update/{{ proposal.id }}/">{{ proposal.project_name }} {{ proposal.activity_code }}</a></b>
     <div class="btn-group align-right" role="group" aria-label="...">
-        <a href="/activitydb/dashboard/project/{{ proposal.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
+        <a href="/activitydb/dashboard/project/{{ proposal.id }}" class="btn btn-xs btn-success">Activity Dashboard</a>
         <a href="/activitydb/projectproposal_delete/{{ proposal.id }}" class="btn btn-xs btn-danger">Delete Proposal</a>
     </div>
     </li>

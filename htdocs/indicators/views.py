@@ -189,7 +189,7 @@ def indicatorDataReport(request,id):
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/data_report.html", {'get_agreements': table, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper})
+    return render(request, "indicators/data_report.html", {'get_agreements': table, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id})
 
 
 class QuantitativeOutputsList(ListView):
