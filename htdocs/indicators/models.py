@@ -98,7 +98,7 @@ class CollectedData(models.Model):
     targeted = models.CharField("Targeted #", max_length=255, blank=True, null=True)
     achieved = models.CharField("Achieved #", max_length=255, blank=True, null=True)
     description = models.CharField("Description", max_length=255, blank=True, null=True)
-    indicator = models.ForeignKey('indicators.Indicator', blank=True, null=True)
+    indicator = models.ForeignKey(Indicator, blank=True, null=True)
     program = models.ForeignKey(Program, blank=True, null=True, related_name="q_agreement")
     community = models.ForeignKey(Community, blank=True, null=True, related_name="q_agreement")
     sector = models.ForeignKey(Sector, blank=True, null=True, related_name="q_agreement")

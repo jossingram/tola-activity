@@ -266,8 +266,8 @@ class ProjectAgreementForm(forms.ModelForm):
     documentation_government_approval = forms.FileField(required=False)
     documentation_community_approval = forms.FileField(required=False)
 
-    program_objectives = forms.CharField(help_text="This comes from your Logframe", widget=forms.Textarea, required=False)
-    mc_objectives = forms.CharField(help_text="This comes from MC Strategic Objectives", widget=forms.Textarea, required=False)
+    program_objectives = forms.CharField(label="What program objectives does this help?",help_text="This comes from your Logframe", widget=forms.Textarea, required=False)
+    mc_objectives = forms.CharField(label="What MC strategic Objectives does this help fulfill?",help_text="This comes from MC Strategic Objectives", widget=forms.Textarea, required=False)
     effect_or_impact = forms.CharField(help_text="Please do not include outputs and keep less than 120 words", widget=forms.Textarea, required=False)
     justification_background = forms.CharField(help_text="As someone would write a background and problem statement in a proposal, this should be described here. What is the situation in this community where the project is proposed and what is the problem facing them that this project will help solve", widget=forms.Textarea, required=False)
     justification_description_community_selection = forms.CharField(help_text="How was this community selected for this project. It may be it was already selected as part of the project (like CDP-2, KIWI-2), but others may need to describe, out of an entire cluster, why this community? This can't be just 'because they wanted it', or 'because they are poor.' It must refer to a needs assessment, some kind of selection criteria, maybe identification by the government, or some formal process.", widget=forms.Textarea, required=False)
@@ -836,8 +836,8 @@ class DocumentationForm(forms.ModelForm):
 
             HTML("""<br/>"""),
 
-                'name', 'url', Field('description', rows="3", css_class='input-xlarge'), 'template', 'silo',
-                'file_field','project',
+                'name', 'url', Field('description', rows="3", css_class='input-xlarge'),'silo',
+                'project',
 
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
