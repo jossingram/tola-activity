@@ -41,8 +41,8 @@
              <button class="btn btn-info disabled" type="button">Activity Agreement 0 </span></button>
         {% endif %}
         {% if item.list.0.complete__id %}
-            {% regroup item.list by complete__id as complete__id %}
-            <button class="btn btn-warning" type="button" onclick="location.href='/activitydb/projectcomplete_list/{{ item.list.0.id }}'">Activity Completion <span class="badge">{{ complete__id |length }}</span></button>
+            {% regroup item.list by complete__id as complete_list %}
+            <button class="btn btn-warning" type="button" onclick="location.href='/activitydb/projectcomplete_list/{{ item.list.0.id }}'">Activity Completion <span class="badge">{{ complete_list |length }}</span></button>
         {% else %}
              <button class="btn btn-warning disabled" type="button">Activity Completion 0 </span></button>
         {% endif %}
