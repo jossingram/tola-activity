@@ -606,10 +606,10 @@ class ProjectCompleteList(ListView):
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
         if int(self.kwargs['pk']) == 0:
-            getDashboard = ProjectAgreement.objects.all()
+            getDashboard = ProjectComplete.objects.all()
             return render(request, self.template_name, {'form': form, 'getDashboard':getDashboard,'getPrograms':getPrograms})
         else:
-            getDashboard = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk'])
+            getDashboard = ProjectComplete.objects.all().filter(program__id=self.kwargs['pk'])
             getProgram =Program.objects.get(id=self.kwargs['pk'])
 
             return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getDashboard':getDashboard,'getPrograms':getPrograms})

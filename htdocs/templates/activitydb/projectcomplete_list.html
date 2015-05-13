@@ -39,13 +39,13 @@
     </tr>
     {% for item in getDashboard %}
     <tr>
-        <td><a href="/activitydb/projectcomplete_update/{{ item.project_completion.id }}">{{ item.create_date}}</a></td>
-        <td><a href="/activitydb/projectcomplete_update/{{ item.project_completion.id }}">{{ item.project_name}}</a></td>
+        <td><a href="/activitydb/projectcomplete_update/{{ item.id }}">{{ item.create_date}}</a></td>
+        <td><a href="/activitydb/projectcomplete_update/{{ item.id }}">{{ item.project_name}}</a></td>
         <td>{{ item.activity_code}}</td>
         <td>{{ item.approval}}</td>
         <td>
-            <a href="/activitydb/projectcomplete_update/{{ item.project_completion.id }}" class="btn btn-xs btn-warning">Update Project Complete</a>
-            <a href="/activitydb/projectcomplete_delete/{{ item.project_completion.id }}" class="btn btn-xs btn-danger">Delete Project Complete</a>
+            <a href="/activitydb/dashboard/project/{{ item.project_proposal.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
+            <a href="/activitydb/projectcomplete_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Project Complete</a>
         </td>
     </tr>
     {% empty %}
@@ -54,4 +54,3 @@
 </table>
 
 {% endblock content %}
-
