@@ -433,25 +433,25 @@ class ProjectAgreementUpdate(UpdateView):
         pk = self.kwargs['pk']
         context.update({'pk': pk})
         try:
-            getQuantitative = QuantitativeOutputs.objects.all().filter(agreement__id=self.kwargs['pk'])
+            getQuantitative = QuantitativeOutputs.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('indicator')
         except QuantitativeOutputs.DoesNotExist:
             getQuantitative = None
         context.update({'getQuantitative': getQuantitative})
 
         try:
-            getMonitor = Monitor.objects.all().filter(agreement__id=self.kwargs['pk'])
+            getMonitor = Monitor.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('type')
         except Monitor.DoesNotExist:
             getMonitor = None
         context.update({'getMonitor': getMonitor})
 
         try:
-            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk'])
+            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('percent_cumulative')
         except Benchmarks.DoesNotExist:
             getBenchmark = None
         context.update({'getBenchmark': getBenchmark})
 
         try:
-            getBudget = Budget.objects.all().filter(agreement__id=self.kwargs['pk'])
+            getBudget = Budget.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('description_of_contribution')
         except Budget.DoesNotExist:
             getBudget = None
         context.update({'getBudget': getBudget})
