@@ -43,7 +43,7 @@ class ReportingFrequency(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.disaggregation_type
+        return self.frequency
 
 
 class ReportingFrequencyAdmin(admin.ModelAdmin):
