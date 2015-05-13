@@ -98,8 +98,7 @@ class CollectedData(models.Model):
     targeted = models.CharField("Targeted #", max_length=255, blank=True, null=True)
     achieved = models.CharField("Achieved #", max_length=255, blank=True, null=True)
     description = models.CharField("Description", max_length=255, blank=True, null=True)
-    logframe_indicator = models.ForeignKey('indicators.Indicator', blank=True, null=True)
-    non_logframe_indicator = models.CharField("Non-Logframe Indicator", max_length=255, blank=True, null=True)
+    indicator = models.ForeignKey('indicators.Indicator', blank=True, null=True)
     program = models.ForeignKey(Program, blank=True, null=True, related_name="q_agreement")
     community = models.ForeignKey(Community, blank=True, null=True, related_name="q_agreement")
     sector = models.ForeignKey(Sector, blank=True, null=True, related_name="q_agreement")
@@ -124,5 +123,5 @@ class CollectedData(models.Model):
 
 
 class CollectedDataAdmin(admin.ModelAdmin):
-    list_display = ('description', 'targeted', 'achieved', 'logframe_indicator', 'non_logframe_indicator', 'create_date', 'edit_date')
+    list_display = ('description', 'targeted', 'achieved', 'indicator', 'create_date', 'edit_date')
     display = 'Indicator Output/Outcome Collected Data'

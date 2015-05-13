@@ -30,8 +30,8 @@ class IndicatorDataTable(tables.Table):
     class Meta:
         model = QuantitativeOutputs
         attrs = {"class": "paleblue"}
-        fields = ('targeted', 'achieved', 'description', 'logframe_indicator', 'non_logframe_indicator', 'agreement', 'complete')
-        sequence = ('targeted', 'achieved', 'description', 'logframe_indicator', 'non_logframe_indicator', 'agreement', 'complete')
+        fields = ('targeted', 'achieved', 'description', 'indicator', 'agreement', 'complete')
+        sequence = ('targeted', 'achieved', 'description', 'indicator', 'agreement', 'complete')
 
 
 class CollectedDataTable(tables.Table):
@@ -41,5 +41,5 @@ class CollectedDataTable(tables.Table):
     class Meta:
         model = CollectedData
         attrs = {"class": "paleblue"}
-        fields = ('targeted', 'achieved', 'description', 'logframe_indicator', 'non_logframe_indicator', 'sector', 'community', 'agreement', 'complete')
-        sequence = ('targeted', 'achieved', 'description', 'logframe_indicator', 'non_logframe_indicator', 'sector', 'community', 'agreement', 'complete')
+        fields = ('targeted', 'achieved', 'description', 'logframe_indicator', 'sector', 'community', 'agreement', 'complete')
+        sequence = ('targeted', 'achieved', 'description', 'logframe_indicator', 'sector', 'community', 'agreement', 'complete')

@@ -32,16 +32,30 @@
 {% if getProgram %}
     <h3>{{getProgram.gaitid }} - {{ getProgram.name }}</h3>
 {% endif %}
-<ul class="list-group">
-{% for proposal in getDashboard %}
-    <li class="list-group-item"><b>{{ proposal.create_date|date }} - <a href="/activitydb/projectproposal_update/{{ proposal.id }}/">{{ proposal.project_name }} {{ proposal.activity_code }}</a></b>
-    <div class="btn-group align-right" role="group" aria-label="...">
-        <a href="/activitydb/dashboard/project/{{ proposal.id }}" class="btn btn-xs btn-success">Activity Dashboard</a>
-        <a href="/activitydb/projectproposal_delete/{{ proposal.id }}" class="btn btn-xs btn-danger">Delete Proposal</a>
-    </div>
-    </li>
-{% empty %}
-    <li class="list-group-item">No proposals yet.</li>
-{% endfor %}
-</ul>
+
+ <!-- Table -->
+<table class="table">
+    <tr>
+        <th>Date Created</th>
+        <th>Activity Name</th>
+        <th>Activity Code</th>
+        <th>Approval Status</th>
+        <th>&nbsp;</th>
+    </tr>
+    {% for item in getDashboard %}
+    <tr>
+        <td><a href="/activitydb/projectproposal_update/{{ item.id }}">{{ item.create_date}}</a></td>
+        <td><a href="/activitydb/projectproposal_update/{{ item.id }}">{{ item.project_name}}</a></td>
+        <td>{{ item.activity_code}}</td>
+        <td>{{ item.approval}}</td>
+        <td>
+            <a href="/activitydb/dashboard/project/{{ item.project_proposal.id }}" class="btn btn-xs btn-success">Activity Dashboard</a>
+            <a href="/activitydb/projectproposal_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Agreement</a>
+        </td>
+    </tr>
+    {% empty %}
+        <li class="list-group-item">No proposals yet.</li>
+    {% endfor %}
+</table>
+
 {% endblock content %}

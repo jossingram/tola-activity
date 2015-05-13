@@ -1134,6 +1134,10 @@ class MonitorUpdate(AjaxableResponseMixin, UpdateView):
 
     model = Monitor
 
+    def get_context_data(self, **kwargs):
+        context = super(MonitorUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
@@ -1210,6 +1214,11 @@ class BenchmarkUpdate(AjaxableResponseMixin, UpdateView):
     Benchmark Form
     """
     model = Benchmarks
+
+    def get_context_data(self, **kwargs):
+        context = super(BenchmarkUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)

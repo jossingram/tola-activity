@@ -32,7 +32,9 @@
 {% crispy form form.helper %}
 <br/>
 
-{% if "map" in url %}
+{% if "map" in request.get_full_path %}
+    <p><b>Communities</b></p>
+    <div id="map"></div>
     {% include "indicators/community_map.html" %}
 {% else %}
     {% render_table get_agreements %}
