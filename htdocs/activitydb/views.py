@@ -1050,7 +1050,7 @@ class CommunityDelete(DeleteView):
     Community Form
     """
     model = Community
-    success_url = reverse_lazy('community_list')
+    success_url = reverse_lazy('community_list',args='0')
 
     def form_invalid(self, form):
 
