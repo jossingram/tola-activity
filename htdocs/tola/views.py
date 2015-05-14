@@ -7,7 +7,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
-from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete, Program, Community
+from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete, Program, Community, Sector
 from djangocosign.models import UserProfile
 from djangocosign.models import Country
 from activitydb.models import Country as ActivityCountry
@@ -25,6 +25,7 @@ def index(request):
     program_id = 0
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    getSectors = Sector.objects.all()
 
     agreement_total_count = ProjectAgreement.objects.all().filter(program__country__in=countries).count()
     proposal_total_count = ProjectProposal.objects.all().filter(program__country__in=countries).count()
@@ -45,7 +46,7 @@ def index(request):
                                           'agreement_approved_count':agreement_approved_count,'proposal_approved_count':proposal_approved_count,\
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
                                           'complete_wait_count':complete_wait_count,'proposal_wait_count':proposal_wait_count,'agreement_wait_count':agreement_wait_count,
-                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries
+                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries, 'getSectors':getSectors
                                           })
 
 def dashboard(request,id):
@@ -58,6 +59,7 @@ def dashboard(request,id):
     getName = getFilteredName.name
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    getSectors = Sector.objects.all()
 
 
     if int(program_id) == 0:
@@ -87,7 +89,7 @@ def dashboard(request,id):
                                           'agreement_approved_count':agreement_approved_count,'proposal_approved_count':proposal_approved_count,\
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
                                           'complete_wait_count':complete_wait_count,'proposal_wait_count':proposal_wait_count,'agreement_wait_count':agreement_wait_count,
-                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries,'getFilteredName':getName
+                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries,'getFilteredName':getName,'getSectors':getSectors
                                           })
 
 def contact(request):

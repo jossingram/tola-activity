@@ -56,10 +56,10 @@ $(function () {
         <div class="panel panel-default">
             <div class="panel-body">
                 <div style="float:left;">
-                    <h3>Tola-Activity Dashboard</h3>
+                    <h4>Tola-Activity Dashboard</h4>
                 </div>
                 <div style="float:right; display: inline-block; vertical-align: middle;">
-                    <a href="/activitydb/projectproposal_add/0/" class="btn btn-lg btn-success">Create a Project Proposal</a>
+                    <a href="/activitydb/projectproposal_add/0/" class="btn btn-sm btn-success">Create a Project Proposal</a>
                 </div>
             </div>
         </div>
@@ -74,7 +74,11 @@ $(function () {
                         Filter Program List by Sector <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu" role="menu">
-                        ...
+                         {%for sector in getSecotrs%}
+                            <li class="list-group-item">
+                                <a href="/activitydb/dashboard/{{ id }}/sector/{{ sector.id }}/">{{ sector.name }}</a>
+                            </li>
+                        {%endfor%}
                       </ul>
                     </div>
                 </div>
