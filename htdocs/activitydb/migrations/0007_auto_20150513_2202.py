@@ -11,16 +11,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='community',
-            name='avg_household_size',
-            field=models.DecimalField(null=True, verbose_name=b'Average Household Size', max_digits=25, decimal_places=14, blank=True),
-            preserve_default=True,
-        ),
-        migrations.AlterField(
-            model_name='profiletype',
-            name='profile',
-            field=models.CharField(max_length=255, verbose_name=b'Profile Name', blank=True),
-            preserve_default=True,
-        ),
+
     ]
