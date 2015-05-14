@@ -1,150 +1,116 @@
 {% extends "base.html" %}
 
-{% block page_title %}Tola-Activity{% endblock %}
-
 {% block content %}
+
 <script src="{{ STATIC_URL }}js/highcharts/js/highcharts.js"></script>
-<script src="{{ STATIC_URL }}js/highcharts/js/highcharts-more.js"></script>
+<script src="{{ STATIC_URL }}js/highcharts/js/modules/exporting.js"></script>
 
-<script src="{{ STATIC_URL }}js/highcharts/js/modules/solid-gauge.js"></script>
 <script>
+
 $(function () {
-
-    var gaugeOptions = {
-
+    $('#container').highcharts({
         chart: {
-            type: 'solidgauge'
+            type: 'bar'
         },
-
-        title: null,
-
-        pane: {
-            center: ['50%', '85%'],
-            size: '140%',
-            startAngle: -90,
-            endAngle: 90,
-            background: {
-                backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
-                innerRadius: '60%',
-                outerRadius: '100%',
-                shape: 'arc'
-            }
+        title: {
+            text: 'Program Activites by Status {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>'
         },
-
-        tooltip: {
-            enabled: false
+        xAxis: {
+            categories: ['Proposals', 'Agreements', 'Completions']
         },
-
-        // the value axis
         yAxis: {
-            stops: [
-                [0.1, '#55BF3B'], // green
-                [0.5, '#DDDF0D'], // yellow
-                [0.9, '#DF5353'] // red
-            ],
-            lineWidth: 0,
-            minorTickInterval: null,
-            tickPixelInterval: 400,
-            tickWidth: 0,
+            min: 0,
             title: {
-                y: -70
-            },
-            labels: {
-                y: 16
+                text: 'Number of Approved, Pending or Open Activities'
             }
         },
-
+        legend: {
+            reversed: true
+        },
         plotOptions: {
-            solidgauge: {
-                dataLabels: {
-                    y: 5,
-                    borderWidth: 0,
-                    useHTML: true
-                }
-            }
-        }
-    };
-
-    // The speed gauge
-    $('#container-speed').highcharts(Highcharts.merge(gaugeOptions, {
-        yAxis: {
-            min: 0,
-            max: {{ proposal_total_count }},
-            title: {
-                text: 'Proposals'
+            series: {
+                stacking: 'normal'
             }
         },
-
-        credits: {
-            enabled: false
+        series: [
+        {
+            name: 'Approved',
+            data: [{{ proposal_approved_count }}, {{ agreement_approved_count }}, {{ complete_approved_count }}]
         },
-
-        series: [{
-            name: 'Proposals',
-            data: [{{ proposal_approved_count }}],
-            dataLabels: {
-                format: '<div style="text-align:center"><span style="font-size:25px;color:' +
-                    ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
-                       '<span style="font-size:12px;color:silver">Approved/Open</span></div>'
-            },
-            tooltip: {
-                valueSuffix: ' Approved/Open'
-            }
-        }]
-
-    }));
-
-    // The RPM gauge
-    $('#container-rpm').highcharts(Highcharts.merge(gaugeOptions, {
-        yAxis: {
-            min: 0,
-            max: {{ agreement_total_count }},
-            title: {
-                text: 'Agreements'
-            }
+        {
+            name: 'Pending',
+            data: [{{ proposal_wait_count }}, {{ agreement_wait_count }}, {{ complete_wait_count }}]
         },
-
-        series: [{
-            name: 'Agreements',
-            data: [{{ agreement_approved_count }}],
-            dataLabels: {
-                format: '<div style="text-align:center"><span style="font-size:25px;color:' +
-                    ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
-                       '<span style="font-size:12px;color:silver">Approved/Open</span></div>'
-            },
-            tooltip: {
-                valueSuffix: '  Approved/Open'
-            }
-        }]
-
-    }));
-
-
+        {
+            name: 'Open',
+            data: [{{ proposal_total_count }}, {{ agreement_total_count }}, {{ complete_total_count }}]
+        },
+        ]
+    });
 });
-
 
 </script>
 
-    <div class="panel panel-default">
-        <div class="panel-heading">Track and complete project activities.</div>
-        <div class="panel-body">
-            <p>This application allows you to track program and project activites from proposal, to compleltion.</p>
-
-            <div class="well">
-                Go to the <a href="/activitydb/projectproposal_add/0/">Create a Project</a> page to start a new Project/Activity.
-                </br><b>OR</b></br>
-                <p>Select an existing project to <a href="/activitydb/dashboard/0/">track progress</a></p>
-                <br>
-                <div style="width: 600px; height: 200px; margin: 0 auto">
-                    <div id="container-speed" style="width: 300px; height: 200px; float: left"></div>
-                    <div id="container-rpm" style="width: 300px; height: 200px; float: left"></div>
+<div class="container">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div style="float:left;">
+                    <h3>Tola-Activity Dashboard</h3>
                 </div>
-                </br>
+                <div style="float:right; display: inline-block; vertical-align: middle;">
+                    <a href="/activitydb/projectproposal_add/0/" class="btn btn-lg btn-success">Create a Project Proposal</a>
+                </div>
             </div>
-
-            <a href="/activitydb/projectproposal_add/0/" class="btn btn-lg btn-success">Project Proposal</a>
-
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <!-- Extra small button group -->
+                    <div class="btn-group">
+                      <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        Filter Program List by Sector <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu">
+                        ...
+                      </ul>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                    {%for program in programs%}
+                        <li class="list-group-item">
+                            <a href="/activitydb/dashboard/{{ program.id }}/">{{ program.name }}</a>&nbsp;
+                            <button type="button" class="btn btn-xs btn-success" style="float:right; vertical-align: middle;" onclick="location.href='/dashboard/{{ program.id }}/'"><span class="glyphicon glyphicon-arrow-right"></span></button>
+                        </li>
+                    {%endfor%}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <p><b>Communities {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>
+                    <style>
+                        #map { height: 350px; }
+                    </style>
+                    <div id="map"></div>
+
+                    {% include "small_community_map.html" %}
+
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="container" style=" width: 100%; height: 400px; margin: 0 auto; float:right"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 {% endblock content %}

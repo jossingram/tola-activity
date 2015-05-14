@@ -200,7 +200,7 @@ class SectorAdmin(admin.ModelAdmin):
 
 
 class ProfileType(models.Model):
-    profile = models.CharField("Sector Name", max_length=255, blank=True)
+    profile = models.CharField("Profile Name", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

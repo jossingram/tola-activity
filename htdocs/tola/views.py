@@ -7,7 +7,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
-from activitydb.models import ProjectAgreement, ProjectProposal
+from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete, Program, Community
 from djangocosign.models import UserProfile
 from djangocosign.models import Country
 from activitydb.models import Country as ActivityCountry
@@ -15,19 +15,80 @@ from util import getCountry
 from datetime import datetime
 from django.shortcuts import get_object_or_404
 
-
+from tola.util import getCountry
 
 def index(request):
     """
     Home page
-    get count of proposals and agreemtns approved and total for progress gauges
+    get count of proposals and agreements approved and total for dashboard
     """
-    agreement_total_count = ProjectAgreement.objects.all().count()
-    proposal_total_count = ProjectProposal.objects.all().count()
-    agreement_approved_count = ProjectAgreement.objects.all().filter(approval='approved').count()
-    proposal_approved_count = ProjectProposal.objects.all().filter(approval='approved').count()
+    program_id = 0
+    countries = getCountry(request.user)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
-    return render(request, "index.html", {'agreement_total_count':agreement_total_count, 'proposal_total_count':proposal_total_count,'agreement_approved_count':agreement_approved_count,'proposal_approved_count':proposal_approved_count })
+    agreement_total_count = ProjectAgreement.objects.all().filter(program__country__in=countries).count()
+    proposal_total_count = ProjectProposal.objects.all().filter(program__country__in=countries).count()
+    complete_total_count = ProjectComplete.objects.all().filter(program__country__in=countries).count()
+    agreement_approved_count = ProjectAgreement.objects.all().filter(approval='approved', program__country__in=countries).count()
+    proposal_approved_count = ProjectProposal.objects.all().filter(approval='approved', program__country__in=countries).count()
+    complete_approved_count = ProjectComplete.objects.all().filter(approval='approved', program__country__in=countries).count()
+    agreement_wait_count = ProjectAgreement.objects.all().filter(approval='in progress', program__country__in=countries).count()
+    proposal_wait_count = ProjectProposal.objects.all().filter(approval='in progress', program__country__in=countries).count()
+    complete_wait_count = ProjectComplete.objects.all().filter(approval='in progress', program__country__in=countries).count()
+
+    if int(program_id) == 0:
+        getCommunity = Community.objects.all().filter(country__in=countries)
+    else:
+        getCommunity = Community.objects.all().filter(projectproposal__program__id=program_id)
+
+    return render(request, "index.html", {'agreement_total_count':agreement_total_count, 'proposal_total_count':proposal_total_count,\
+                                          'agreement_approved_count':agreement_approved_count,'proposal_approved_count':proposal_approved_count,\
+                                          'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
+                                          'complete_wait_count':complete_wait_count,'proposal_wait_count':proposal_wait_count,'agreement_wait_count':agreement_wait_count,
+                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries
+                                          })
+
+def dashboard(request,id):
+    """
+    Home page
+    get count of proposals and agreements approved and total for dashboard
+    """
+    program_id = id
+    getFilteredName=Program.objects.get(id=program_id)
+    getName = getFilteredName.name
+    countries = getCountry(request.user)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+
+
+    if int(program_id) == 0:
+        agreement_total_count = ProjectAgreement.objects.all().filter(program__country__in=countries).count()
+        proposal_total_count = ProjectProposal.objects.all().filter(program__country__in=countries).count()
+        complete_total_count = ProjectComplete.objects.all().filter(program__country__in=countries).count()
+        agreement_approved_count = ProjectAgreement.objects.all().filter(approval='approved', program__country__in=countries).count()
+        proposal_approved_count = ProjectProposal.objects.all().filter(approval='approved', program__country__in=countries).count()
+        complete_approved_count = ProjectComplete.objects.all().filter(approval='approved', program__country__in=countries).count()
+        agreement_wait_count = ProjectAgreement.objects.all().filter(approval='in progress', program__country__in=countries).count()
+        proposal_wait_count = ProjectProposal.objects.all().filter(approval='in progress', program__country__in=countries).count()
+        complete_wait_count = ProjectComplete.objects.all().filter(approval='in progress', program__country__in=countries).count()
+        getCommunity = Community.objects.all().filter(country__in=countries)
+    else:
+        agreement_total_count = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries).count()
+        proposal_total_count = ProjectProposal.objects.all().filter(program__id=program_id, program__country__in=countries).count()
+        complete_total_count = ProjectComplete.objects.all().filter(program__id=program_id, program__country__in=countries).count()
+        agreement_approved_count = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved', program__country__in=countries).count()
+        proposal_approved_count = ProjectProposal.objects.all().filter(program__id=program_id, approval='approved', program__country__in=countries).count()
+        complete_approved_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='approved', program__country__in=countries).count()
+        agreement_wait_count = ProjectAgreement.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
+        proposal_wait_count = ProjectProposal.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
+        complete_wait_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
+        getCommunity = Community.objects.all().filter(projectproposal__program__id=program_id)
+
+    return render(request, "index.html", {'agreement_total_count':agreement_total_count, 'proposal_total_count':proposal_total_count,\
+                                          'agreement_approved_count':agreement_approved_count,'proposal_approved_count':proposal_approved_count,\
+                                          'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
+                                          'complete_wait_count':complete_wait_count,'proposal_wait_count':proposal_wait_count,'agreement_wait_count':agreement_wait_count,
+                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries,'getFilteredName':getName
+                                          })
 
 def contact(request):
     """

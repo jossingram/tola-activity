@@ -165,7 +165,7 @@
 
 
     {% for item in getCommunity %}
-        L.marker([{{ item.latitude }}, {{ item.longitude }}]).addTo(map).bindPopup("" + "<b>{{ item.country }}</b> <a href='/activitydb/community_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ incident.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> Community: {{ item.name }} <br/> ").openPopup();
+        L.marker([{{ item.latitude }}, {{ item.longitude }}]).addTo(map).bindPopup("" + "<b>{{ item.country }}</b> <a href='/activitydb/community_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ incident.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> Community: {{ item.name }} <br/> ");
     {%   endfor %}
 
 

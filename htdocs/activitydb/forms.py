@@ -350,7 +350,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                                 <td>{{ item.contributor}}</td>
                                                 <td>{{ item.description_of_contribution}}</td>
                                                 <td>{{ item.proposed_value}}</td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>Edit</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>

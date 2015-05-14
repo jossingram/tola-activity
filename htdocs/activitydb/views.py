@@ -1156,7 +1156,6 @@ class MonitorDelete(AjaxableResponseMixin, DeleteView):
     Monitor Form
     """
     model = Monitor
-    success_url = reverse_lazy('monitor_list')
 
     def form_invalid(self, form):
 
@@ -1170,8 +1169,6 @@ class MonitorDelete(AjaxableResponseMixin, DeleteView):
 
         messages.success(self.request, 'Success, Monitor Deleted!')
         return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = MonitorForm
 
 
 class BenchmarkCreate(AjaxableResponseMixin, CreateView):
@@ -1238,7 +1235,6 @@ class BenchmarkDelete(AjaxableResponseMixin, DeleteView):
     Benchmark Form
     """
     model = Benchmarks
-    success_url = reverse_lazy('benchmark_list')
 
     def form_invalid(self, form):
 

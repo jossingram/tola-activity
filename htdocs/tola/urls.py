@@ -1,4 +1,5 @@
 from feed import views
+from tola import views
 from feed.views import FeedViewSet,DataFieldViewSet,ValueStoreViewSet, UserViewSet, ReadViewSet, ReadTypeViewSet, SiloViewSet
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
@@ -32,6 +33,9 @@ urlpatterns = patterns('',
 
                         #index
                         url(r'^$', 'tola.views.index', name='index'),
+
+                        #index
+                        url(r'^dashboard/(?P<id>\w+)/$', 'tola.views.dashboard', name='index'),
 
                         #base template for layout
                         url(r'^$', TemplateView.as_view(template_name='base.html')),
