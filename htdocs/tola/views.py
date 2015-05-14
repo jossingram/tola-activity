@@ -49,20 +49,26 @@ def index(request):
                                           'programs':getPrograms,'getCommunity':getCommunity,'country': countries, 'getSectors':getSectors
                                           })
 
-def dashboard(request,id):
+def dashboard(request,id,sector):
     """
     Home page
     get count of proposals and agreements approved and total for dashboard
     """
     program_id = id
-    getFilteredName=Program.objects.get(id=program_id)
-    getName = getFilteredName.name
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
     getSectors = Sector.objects.all()
 
+    if sector:
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries, sector=sector)
+    else:
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+
+
+
 
     if int(program_id) == 0:
+        getFilteredName=None
         agreement_total_count = ProjectAgreement.objects.all().filter(program__country__in=countries).count()
         proposal_total_count = ProjectProposal.objects.all().filter(program__country__in=countries).count()
         complete_total_count = ProjectComplete.objects.all().filter(program__country__in=countries).count()
@@ -74,6 +80,7 @@ def dashboard(request,id):
         complete_wait_count = ProjectComplete.objects.all().filter(approval='in progress', program__country__in=countries).count()
         getCommunity = Community.objects.all().filter(country__in=countries)
     else:
+        getFilteredName=Program.objects.get(id=program_id)
         agreement_total_count = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries).count()
         proposal_total_count = ProjectProposal.objects.all().filter(program__id=program_id, program__country__in=countries).count()
         complete_total_count = ProjectComplete.objects.all().filter(program__id=program_id, program__country__in=countries).count()
@@ -89,7 +96,7 @@ def dashboard(request,id):
                                           'agreement_approved_count':agreement_approved_count,'proposal_approved_count':proposal_approved_count,\
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
                                           'complete_wait_count':complete_wait_count,'proposal_wait_count':proposal_wait_count,'agreement_wait_count':agreement_wait_count,
-                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries,'getFilteredName':getName,'getSectors':getSectors
+                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries,'getFilteredName':getFilteredName,'getSectors':getSectors
                                           })
 
 def contact(request):

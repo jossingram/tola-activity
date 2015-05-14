@@ -37,12 +37,38 @@ class CountryAdmin(admin.ModelAdmin):
     display = 'Country'
 
 
+class Sector(models.Model):
+    sector = models.CharField("Sector Name", max_length=255, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('sector',)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Sector, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.sector
+
+
+class SectorAdmin(admin.ModelAdmin):
+    list_display = ('sector', 'create_date', 'edit_date')
+    display = 'Sector'
+
+
 class Program(models.Model):
     gaitid = models.CharField("GAITID", max_length=255, blank=True, unique=True)
     name = models.CharField("Program Name", max_length=255, blank=True)
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
     description = models.CharField("Program Description", max_length=765, null=True, blank=True)
+    sector = models.ForeignKey(Sector, null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     country = models.ManyToManyField(Country)
@@ -174,31 +200,6 @@ class VillageAdmin(admin.ModelAdmin):
     display = 'Village'
 
 
-class Sector(models.Model):
-    sector = models.CharField("Sector Name", max_length=255, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('sector',)
-
-    #onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Sector, self).save()
-
-    #displayed in admin templates
-    def __unicode__(self):
-        return self.sector
-
-
-class SectorAdmin(admin.ModelAdmin):
-    list_display = ('sector', 'create_date', 'edit_date')
-    display = 'Sector'
-
-
 class ProfileType(models.Model):
     profile = models.CharField("Profile Name", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -239,7 +240,7 @@ class Community(models.Model):
     distance_site_camp = models.IntegerField("Distance from Site Camp", help_text="In KM", null=True, blank=True)
     distance_field_office = models.IntegerField("Distance from MC Field Office", help_text="In KM", null=True, blank=True)
     total_num_households = models.IntegerField("Total # Households", help_text="", null=True, blank=True)
-    avg_household_size = models.IntegerField("Average Household Size", help_text="", null=True, blank=True)
+    avg_household_size = models.DecimalField("Average Household Size", decimal_places=14,max_digits=25, null=True, blank=True)
     male_0_14 = models.IntegerField("Male age 0-14", null=True, blank=True)
     female_0_14 = models.IntegerField("Female age 0-14", null=True, blank=True)
     male_15_24 = models.IntegerField("Male age 15-24 ", null=True, blank=True)

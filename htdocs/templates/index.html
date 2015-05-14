@@ -74,9 +74,9 @@ $(function () {
                         Filter Program List by Sector <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu" role="menu">
-                         {%for sector in getSecotrs%}
+                         {%for sector in getSectors%}
                             <li class="list-group-item">
-                                <a href="/activitydb/dashboard/{{ id }}/sector/{{ sector.id }}/">{{ sector.name }}</a>
+                                <a href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ sector.id }}/">{{ sector.sector }}</a>
                             </li>
                         {%endfor%}
                       </ul>
