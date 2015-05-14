@@ -24,8 +24,8 @@ def index(request):
     """
     program_id = 0
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    getSectors = Sector.objects.all()
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).exclude(proposal__isnull=True)
+    getSectors = Sector.objects.all().exclude(program__isnull=True).select_related()
 
     agreement_total_count = ProjectAgreement.objects.all().filter(program__country__in=countries).count()
     proposal_total_count = ProjectProposal.objects.all().filter(program__country__in=countries).count()
@@ -57,12 +57,12 @@ def dashboard(request,id,sector):
     program_id = id
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    getSectors = Sector.objects.all()
+    getSectors = Sector.objects.all().exclude(program__isnull=True).select_related()
 
     if sector:
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries, sector=sector)
     else:
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).exclude(proposal__isnull=True)
 
 
 

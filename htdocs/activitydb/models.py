@@ -235,7 +235,7 @@ class Community(models.Model):
     head_of_institution = models.CharField("Head of Shura/Institution", max_length=255, blank=True, null=True)
     date_of_firstcontact = models.DateTimeField(null=True, blank=True)
     contact_number = models.CharField("Head of Shura/Institution", max_length=255, blank=True, null=True)
-    num_members = models.CharField("Number of Memebers", max_length=255, blank=True, null=True)
+    num_members = models.CharField("Number of Members", max_length=255, blank=True, null=True)
     distance_district_capital = models.IntegerField("Distance from District Capital", help_text="In KM", null=True, blank=True)
     distance_site_camp = models.IntegerField("Distance from Site Camp", help_text="In KM", null=True, blank=True)
     distance_field_office = models.IntegerField("Distance from MC Field Office", help_text="In KM", null=True, blank=True)

@@ -210,6 +210,7 @@ THIRD_PARTY_APPS = (
     'django_extensions',
     'report_builder',
     'mathfilters',
+    'import_export',
 )
 
 # Apps specific for this project go here.
