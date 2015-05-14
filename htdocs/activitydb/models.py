@@ -229,7 +229,7 @@ class Community(models.Model):
     name = models.CharField("Profile Name", max_length=255, blank=True, null=True)
     type = models.ForeignKey(ProfileType, blank=True, null=True)
     office = models.ForeignKey(Office, default="1")
-    existing_village = models.BooleanField("Is There an existing shura or CDC?", default="True")
+    existing_village = models.BooleanField("Is There an existing shura or CDC?", default="False")
     existing_village_descr = models.CharField("If Yes please describe", max_length=255, blank=True, null=True)
     community_leader = models.CharField("Community Malik/Elder Name", max_length=255, blank=True, null=True)
     head_of_institution = models.CharField("Head of Shura/Institution", max_length=255, blank=True, null=True)

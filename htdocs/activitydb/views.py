@@ -135,7 +135,7 @@ class ProjectProposalList(ListView):
             getDashboard = ProjectProposal.objects.all().filter(program__country__in=countries)
             return render(request, self.template_name, {'form': form, 'getDashboard':getDashboard,'getPrograms':getPrograms})
         else:
-            getDashboard = ProjectProposal.objects.all().filter(program__id=self.kwargs['pk'])
+            getDashboard = ProjectProposal.objects.all().filter(program__id=self.kwargs['pk']).order_by('activity_code')
             getProgram =Program.objects.get(id=self.kwargs['pk'])
 
             return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getDashboard':getDashboard,'getPrograms':getPrograms})

@@ -56,15 +56,12 @@ def dashboard(request,id,sector):
     """
     program_id = id
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
     getSectors = Sector.objects.all().exclude(program__isnull=True).select_related()
 
-    if sector:
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries, sector=sector)
-    else:
+    if int(sector) == 0:
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).exclude(proposal__isnull=True)
-
-
+    else:
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries, sector=sector).exclude(proposal__isnull=True)
 
 
     if int(program_id) == 0:
@@ -96,7 +93,8 @@ def dashboard(request,id,sector):
                                           'agreement_approved_count':agreement_approved_count,'proposal_approved_count':proposal_approved_count,\
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
                                           'complete_wait_count':complete_wait_count,'proposal_wait_count':proposal_wait_count,'agreement_wait_count':agreement_wait_count,
-                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries,'getFilteredName':getFilteredName,'getSectors':getSectors
+                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries,'getFilteredName':getFilteredName,'getSectors':getSectors,
+                                          'sector': sector
                                           })
 
 def contact(request):
