@@ -6,14 +6,24 @@
 </ol>
 
 <div class="dropdown">
-  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
     Indicator
     <span class="caret"></span>
   </button>
-  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
             <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/0">--All--</a></li>
     {% for item in getIndicators %}
         <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/{{ item.id }}">{{ item.id}} - {{ item.name }}</a></li>
+    {% endfor %}
+  </ul>
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
+    Programs
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
+      <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/0">--All--</a></li>
+    {% for item in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/0/{{ item.id }}">{{ item.id}} - {{ item.name }}</a></li>
     {% endfor %}
   </ul>
   <button class="btn btn-default" onClick="location.href='/indicators/data/{{ id }}/map/'" name="map">Map</button>&nbsp;
@@ -33,11 +43,14 @@
 <br/>
 
 {% if "map" in request.get_full_path %}
+    <style>
+        #map { height: 350px; }
+    </style>
     <p><b>Communities</b></p>
     <div id="map"></div>
     {% include "indicators/community_map.html" %}
 {% else %}
-    {% render_table get_agreements %}
+    {% render_table table %}
 {% endif %}
 <br/>
 

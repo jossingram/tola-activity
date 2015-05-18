@@ -5,10 +5,14 @@
 <link rel="borders" type="application/json" href="{{ STATIC_URL }}js/world_borders.geojson">
 
 <script type="text/javascript">
-
     var country=[];
-    var country_lat="45";
-    var country_long="120";
+    var country_lat=[];
+    var country_long=[];
+    {% for item in country %}
+        country[{{forloop.counter}}] = "{{ item.country }}";
+        country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
+        country_long[{{forloop.counter}}] = "{{ item.longitude }}";
+    {% endfor %}
 
 
     var osmLink = '<a href="https://openstreetmap.org">OpenStreetMap</a>',

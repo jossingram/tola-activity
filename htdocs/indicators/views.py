@@ -9,8 +9,8 @@ import unicodedata
 from django.http import HttpResponseRedirect
 from django.db import models
 from models import Indicator, CollectedData
-from activitydb.models import QuantitativeOutputs
-from activitydb.models import Program
+from activitydb.models import QuantitativeOutputs, Community
+from activitydb.models import Program, ProjectAgreement
 from indicators.forms import IndicatorForm, CollectedDataForm
 from django.shortcuts import render_to_response
 from django.contrib import messages
@@ -18,7 +18,7 @@ from tola.util import getCountry
 from tables import IndicatorTable, IndicatorDataTable
 from django_tables2 import RequestConfig
 from activitydb.forms import FilterForm
-from .forms import QuantitativeOutputsForm
+from .forms import QuantitativeOutputsForm, IndicatorForm
 from django.db.models import Count
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -26,106 +26,112 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 
 
-def home(request, id):
+class IndicatorList(ListView):
     """
-    Get all of the Programs
+    indicator List
     """
-    #set country to afghanistan for now until we have user data on country
-    #use self.request.user to get users country
-    #self.kwargs.pk = ID of program from dropdown
-    countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    print int(id)
-    if int(id) != 0:
-        getIndicators = Indicator.objects.all().filter(program__id=id)
-    else:
-        getIndicators = Indicator.objects.all()
-    return render(request, 'indicators/home.html',{'getPrograms':getPrograms, 'getIndicators': getIndicators})
+    model = Indicator
+    template_name = 'indicators/indicator_list.html'
 
-def dashboard(request):
+    def get(self, request, *args, **kwargs):
 
-    return render(request, 'indicators/dashboard.html')
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
 
-def indicator(request):
-    """
-    Create an Indicator
-    """
-    if request.method == 'POST': # If the form has been submitted...
-        form = IndicatorForm(request.POST) # A form bound to the POST data
-        if form.is_valid(): # All validation rules pass
-            # save data to read
-            new = form.save()
-            messages.success(request, 'Success, Indicator Created!')
-            return HttpResponseRedirect('/indicators/indicator') # Redirect after POST to getLogin
-    else:
-        form = IndicatorForm() # An unbound form
-
-    return render(request, 'indicators/indicator.html', {'form': form,})
-
-def editIndicator(request,id):
-    """
-    Edit an Indicator
-    """
-    if request.method == 'POST': # If the form has been submitted...
-        form = IndicatorForm(request.POST) # A form bound to the POST data
-        if form.is_valid(): # All validation rules pass
-            # save data to read
-            update = Indicator.objects.get(pk=id)
-            form = IndicatorForm(request.POST, instance=update)
-            new = form.save(commit=True)
-            messages.success(request, 'Success, Indicator Saved!')
-            return HttpResponseRedirect('/indicators/editIndicator/' + id)
+        if int(self.kwargs['pk']) == 0:
+            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+            getIndicators = Indicator.objects.select_related().all()
         else:
-            print "not valid"
-    else:
-        value= get_object_or_404(Indicator, pk=id)
-        form = IndicatorForm(instance=value) # An unbound form
+            getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk'])
+            getIndicators = Indicator.objects.all().filter(program__id=self.kwargs['pk']).select_related()
 
-    return render(request, 'indicators/indicator.html', {'form': form,'value':value})
+        return render(request, self.template_name, {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
 
 
-
-def programIndicator(request,id):
+class IndicatorCreate(CreateView):
     """
-    View the indicators for a program
+    indicator Form
     """
-    IndicatorFormSet = modelformset_factory(Indicator,extra=0)
-    formset = IndicatorFormSet(queryset=Indicator.objects.all().filter(program__id=id))
+    model = Indicator
+    template_name = 'indicators/indicator_form.html'
 
-    if request.method == 'POST':
-        #deal with posting the data
-        formset = IndicatorFormSet(request.POST)
-        if formset.is_valid():
-            #if it is not valid then the "errors" will fall through and be returned
-            formset.save()
-        return HttpResponseRedirect('/indicators/programIndicator/' + id)
+    def get_context_data(self, **kwargs):
+        context = super(IndicatorCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        return context
 
-    return render(request, 'indicators/programIndicator.html', {'formset': formset})
+    def dispatch(self, request, *args, **kwargs):
+        return super(IndicatorCreate, self).dispatch(request, *args, **kwargs)
 
-def editProgram(request,id):
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Indicator Created!')
+        form = ""
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+    form_class = IndicatorForm
+
+
+class IndicatorUpdate(UpdateView):
     """
-    Edit a program
+    indicator Form
     """
-    if request.method == 'POST': # If the form has been submitted...
-        form = ProgramForm(request.POST) # A form bound to the POST data
-        if form.is_valid(): # All validation rules pass
-            # save data to read
-            update = Program.objects.get(pk=id)
-            form = ProgramForm(request.POST, instance=update)
-            new = form.save(commit=True)
-            return HttpResponseRedirect('indicators/editProgram/' + id)
-        else:
-            print "not valid"
-    else:
-        value= get_object_or_404(Program, pk=id)
-        form = ProgramForm(instance=value) # An unbound form
+    model = Indicator
+    template_name = 'indicators/indicator_form.html'
 
-    return render(request, 'indicators/program.html', {'form': form,'value':value})
+
+    def get_context_data(self, **kwargs):
+        context = super(IndicatorUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Indicator Updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = IndicatorForm
+
+
+class IndicatorDelete(DeleteView):
+    """
+    indicator Delete
+    """
+    model = Indicator
+    success_url = '/'
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Data Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = IndicatorForm
 
 
 def indicatorReport(request):
     """
-    Show LIST of submitted incidents with a filtered search view using django-tables2
+    Show LIST of indicators with a filtered search view using django-tables2
     and django-filter
     """
     countries = getCountry(request.user)
@@ -156,18 +162,32 @@ def indicatorReport(request):
     return render(request, "indicators/report.html", {'get_agreements': table, 'program': getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
-def indicatorDataReport(request,id):
+def indicatorDataReport(request, id=0, program=0, agreement=0):
     """
-    Show LIST of submitted incidents with a filtered search view using django-tables2
+    Show LIST of indicator based quantitative outputs with a filtered search view using django-tables2
     and django-filter
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    getAgreements = ProjectAgreement.objects.all()
     getIndicators = Indicator.objects.select_related()
     if int(id) != 0:
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(logframe_indicator__id = id).select_related()
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__id = id).select_related()
+        getCommunities = Community.objects.all()
     else:
         getQuantitativeData = QuantitativeOutputs.objects.all().select_related()
+        getCommunities = Community.objects.all()
+
+    if int(program) != 0:
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(agreement__program__id = id).select_related()
+    else:
+        getQuantitativeData = QuantitativeOutputs.objects.all().select_related()
+
+    if int(agreement) != 0:
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(agreement__id = id).select_related()
+    else:
+        getQuantitativeData = QuantitativeOutputs.objects.all().select_related()
+
     table = IndicatorDataTable(getQuantitativeData)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
 
@@ -176,20 +196,19 @@ def indicatorDataReport(request,id):
         #for obj in filtered:
         #    list1.append(obj)
         """
-         fields = ('targeted', 'achieved', 'description', 'logframe_indicator', 'non_logframe_indicator', 'agreement', 'complete')
+         fields = ('targeted', 'achieved', 'description', 'indicator', 'agreement', 'complete')
         """
         queryset = QuantitativeOutputs.objects.filter(
                                            Q(agreement__project_name__contains=request.GET["search"]) |
                                            Q(description__icontains=request.GET["search"]) |
-                                           Q(logframe_indicator__name__contains=request.GET["search"]) |
-                                           Q(non_logframe_indicator__contains=request.GET["search"])
+                                           Q(indicator__name__contains=request.GET["search"])
                                           ).select_related()
         table = IndicatorDataTable(queryset)
 
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/data_report.html", {'get_agreements': table, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id})
+    return render(request, "indicators/data_report.html", {'table': table, 'getAgreements': getAgreements,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id})
 
 
 class QuantitativeOutputsList(ListView):

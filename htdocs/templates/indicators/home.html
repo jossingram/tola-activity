@@ -24,36 +24,38 @@
     <br/>
     <div class="jumbotron">
         <h3>Indicators</h3>
-       <div class='panel panel-default'>
-        <!-- Default panel contents -->
-        <div class='panel-heading'></div>
-        {% if getIndicators %}
-          <!-- Table -->
-          <table class="table">
-            <tr>
-                <th>Date Created</th>
-                <th>Indicator Type</th>
-                <th>Name</th>
-                <th>Number</th>
-                <th>Source</th>
-                <th>Definition</th>
-            </tr>
-            {% for item in getIndicators %}
-            <tr>
-                <td><a href="/indicators/editIndicator/{{ item.id }}">{{ item.create_date}}</a></td>
-                <td>{{ item.indicator_type}}</td>
-                <td>{{ item.name}}</td>
-                <td>{{ item.number}}</td>
-                <td>{{ item.source}}</td>
-                <td>{{ item.definition}}</td>
-                <td><a href="/indicators/editIndicator/{{ item.id }}" class="btn-xs btn-info">Edit</a>&nbsp;<a href="/indicators/indicator_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
-            </tr>
-            {% endfor %}
-          </table>
-        {% else %}
-        No Data
-        {% endif %}
-
-</div>
+        {% regroup getIndicators by program.gaitid as programs_by_gaitid %}
+        {{ programs_by_gaitid }}
+        {% for item in programs_by_gaitid %}
+        <div class="jumbotron dashboard">
+            <h4>{{ item.program.gaitid }} - {{ item.program.name }}</h4>
+            {% if item.programs.agreement.indicator.all %}
+                <!-- Table -->
+                <table class="table">
+                    <tr>
+                        <th>Date Created</th>
+                        <th>Indicator Type</th>
+                        <th>Name</th>
+                        <th>Number</th>
+                        <th>Source</th>
+                        <th>Definition</th>
+                    </tr>
+                    {% for indicator in item.programs.agreement.indicator.all %}
+                    <tr>
+                        <td><a href="/indicators/editIndicator/{{ indicator.id }}">{{ indicator.create_date}}</a></td>
+                        <td>{{ indicator.indicator_type}}</td>
+                        <td>{{ indicator.name}}</td>
+                        <td>{{ indicator.number}}</td>
+                        <td>{{ indicator.source}}</td>
+                        <td>{{ indicator.definition}}</td>
+                        <td><a href="/indicators/editIndicator/{{ indicator.id }}" class="btn-xs btn-info">Edit</a>&nbsp;<a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn-xs btn-danger">Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+               <p>No Indicators</p>
+            {% endif %}
+        </div>
+        {% endfor %}
     </div>
 {% endblock content %}

@@ -172,8 +172,7 @@ class ProjectProposalCreate(CreateView):
     #get shared data from project agreement and pre-populate form with it
     def get_initial(self):
         initial = {
-            'approved_by': self.request.user,
-            'approval_submitted_by': self.request.user,
+            'estimated_by': self.request.user,
             }
 
         return initial
@@ -227,8 +226,6 @@ class ProjectProposalUpdate(UpdateView):
     #get shared data from project agreement and pre-populate form with it
     def get_initial(self):
         initial = {
-            'approved_by': self.request.user,
-            'approval_submitted_by': self.request.user,
             }
 
         return initial
@@ -469,11 +466,6 @@ class ProjectAgreementUpdate(UpdateView):
         getProjectProposal = ProjectProposal.objects.get(projectagreement__id=self.kwargs['pk'])
 
         pre_initial = {
-            'approved_by': self.request.user,
-            'estimated_by': self.request.user,
-            'checked_by': self.request.user,
-            'reviewed_by': self.request.user,
-            'approval_submitted_by': self.request.user,
             'program': getProjectProposal.program,
             'project_proposal': getProjectProposal.id,
             'project_name': getProjectProposal.project_name,
