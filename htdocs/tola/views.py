@@ -7,10 +7,11 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
-from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete, Program, Community, Sector
+from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete, Program, Community, Sector, QuantitativeOutputs
 from djangocosign.models import UserProfile
 from djangocosign.models import Country
 from activitydb.models import Country as ActivityCountry
+from .tables import IndicatorDataTable
 from util import getCountry
 from datetime import datetime
 from django.shortcuts import get_object_or_404
@@ -39,15 +40,20 @@ def index(request):
 
     if int(program_id) == 0:
         getCommunity = Community.objects.all().filter(country__in=countries)
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__country__in=countries)
     else:
         getCommunity = Community.objects.all().filter(projectproposal__program__id=program_id)
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__id=program_id)
+
+    table = IndicatorDataTable(getQuantitativeData)
+    table.paginate(page=request.GET.get('page', 1), per_page=20)
 
     return render(request, "index.html", {'agreement_total_count':agreement_total_count, 'proposal_total_count':proposal_total_count,\
                                           'agreement_approved_count':agreement_approved_count,'proposal_approved_count':proposal_approved_count,\
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
                                           'complete_wait_count':complete_wait_count,'proposal_wait_count':proposal_wait_count,'agreement_wait_count':agreement_wait_count,
-                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries, 'getSectors':getSectors
-                                          })
+                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries, 'getSectors':getSectors,
+                                          'table':table})
 
 def dashboard(request,id,sector):
     """
@@ -76,6 +82,7 @@ def dashboard(request,id,sector):
         proposal_wait_count = ProjectProposal.objects.all().filter(approval='in progress', program__country__in=countries).count()
         complete_wait_count = ProjectComplete.objects.all().filter(approval='in progress', program__country__in=countries).count()
         getCommunity = Community.objects.all().filter(country__in=countries)
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__country__in=countries)
     else:
         getFilteredName=Program.objects.get(id=program_id)
         agreement_total_count = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries).count()
@@ -88,13 +95,17 @@ def dashboard(request,id,sector):
         proposal_wait_count = ProjectProposal.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
         complete_wait_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
         getCommunity = Community.objects.all().filter(projectproposal__program__id=program_id)
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__id=program_id)
+
+    table = IndicatorDataTable(getQuantitativeData)
+    table.paginate(page=request.GET.get('page', 1), per_page=20)
 
     return render(request, "index.html", {'agreement_total_count':agreement_total_count, 'proposal_total_count':proposal_total_count,\
                                           'agreement_approved_count':agreement_approved_count,'proposal_approved_count':proposal_approved_count,\
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
                                           'complete_wait_count':complete_wait_count,'proposal_wait_count':proposal_wait_count,'agreement_wait_count':agreement_wait_count,
                                           'programs':getPrograms,'getCommunity':getCommunity,'country': countries,'getFilteredName':getFilteredName,'getSectors':getSectors,
-                                          'sector': sector
+                                          'sector': sector, 'table': table
                                           })
 
 def contact(request):
