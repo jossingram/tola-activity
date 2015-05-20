@@ -15,6 +15,7 @@ from .tables import IndicatorDataTable
 from util import getCountry
 from datetime import datetime
 from django.shortcuts import get_object_or_404
+from django.db.models import Sum
 
 from tola.util import getCountry
 
@@ -40,10 +41,12 @@ def index(request):
 
     if int(program_id) == 0:
         getCommunity = Community.objects.all().filter(country__in=countries)
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__country__in=countries)
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__country__in=countries).order_by('indicator__number')
+        getQuantitativeDataSums = QuantitativeOutputs.objects.all().filter(indicator__program__country__in=countries).order_by('indicator__number').values('indicator__number').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     else:
         getCommunity = Community.objects.all().filter(projectproposal__program__id=program_id)
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__id=program_id)
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__id=program_id).values('indicator_id').annotate(Sum('targeted'), Sum('achieved'))
+        getQuantitativeDataSums = QuantitativeOutputs.objects.all().filter(indicator__program__id=program_id).order_by('indicator__number').values('indicator__number').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
 
     table = IndicatorDataTable(getQuantitativeData)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
@@ -53,7 +56,7 @@ def index(request):
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
                                           'complete_wait_count':complete_wait_count,'proposal_wait_count':proposal_wait_count,'agreement_wait_count':agreement_wait_count,
                                           'programs':getPrograms,'getCommunity':getCommunity,'country': countries, 'getSectors':getSectors,
-                                          'table':table})
+                                          'table':table, 'getQuantitativeDataSums':getQuantitativeDataSums})
 
 def dashboard(request,id,sector):
     """
@@ -82,7 +85,9 @@ def dashboard(request,id,sector):
         proposal_wait_count = ProjectProposal.objects.all().filter(approval='in progress', program__country__in=countries).count()
         complete_wait_count = ProjectComplete.objects.all().filter(approval='in progress', program__country__in=countries).count()
         getCommunity = Community.objects.all().filter(country__in=countries)
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__country__in=countries)
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__country__in=countries).order_by('indicator__number')
+        getQuantitativeDataSums = QuantitativeOutputs.objects.all().filter(indicator__program__country__in=countries).order_by('indicator__number').values('indicator__number').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+
     else:
         getFilteredName=Program.objects.get(id=program_id)
         agreement_total_count = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries).count()
@@ -95,7 +100,8 @@ def dashboard(request,id,sector):
         proposal_wait_count = ProjectProposal.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
         complete_wait_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
         getCommunity = Community.objects.all().filter(projectproposal__program__id=program_id)
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__id=program_id)
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__id=program_id).order_by('indicator__number')
+        getQuantitativeDataSums = QuantitativeOutputs.objects.all().filter(indicator__program__id=program_id).order_by('indicator__number').values('indicator__number').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
 
     table = IndicatorDataTable(getQuantitativeData)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
@@ -105,7 +111,7 @@ def dashboard(request,id,sector):
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
                                           'complete_wait_count':complete_wait_count,'proposal_wait_count':proposal_wait_count,'agreement_wait_count':agreement_wait_count,
                                           'programs':getPrograms,'getCommunity':getCommunity,'country': countries,'getFilteredName':getFilteredName,'getSectors':getSectors,
-                                          'sector': sector, 'table': table
+                                          'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums
                                           })
 
 def contact(request):

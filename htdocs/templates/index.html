@@ -49,8 +49,66 @@ $(function () {
     });
 });
 
-</script>
 
+$(function () {
+
+    $('#indicator').highcharts({
+
+        chart: {
+            polar: true,
+            type: 'line'
+        },
+
+        title: {
+            text: 'Targets vs Actuals',
+            x: -80
+        },
+
+        pane: {
+            size: '80%'
+        },
+
+        xAxis: {
+            categories: [ {% for indicator in getQuantitativeDataSums %}  '{{ indicator.indicator__number }}', {% endfor %} ],
+            tickmarkPlacement: 'on',
+            lineWidth: 0
+        },
+
+        yAxis: {
+            gridLineInterpolation: 'polygon',
+            lineWidth: 0,
+            min: 0
+        },
+
+        tooltip: {
+            shared: true,
+            pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>'
+        },
+
+        legend: {
+            align: 'right',
+            verticalAlign: 'top',
+            y: 70,
+            layout: 'vertical'
+        },
+
+        series: [{
+            name: 'Targets',
+            data: [ {% for indicator in getQuantitativeDataSums %}  {{ indicator.targets }}, {% endfor %}  ],
+            pointPlacement: 'on'
+        }, {
+            name: 'Actuals',
+            data: [ {% for indicator in getQuantitativeDataSums %}  {{ indicator.actuals }}, {% endfor %}   ],
+            pointPlacement: 'on'
+        }]
+
+    });
+});
+
+
+
+
+</script>
 <div class="container">
     <div class="row">
         <div class="panel panel-default">
@@ -93,6 +151,9 @@ $(function () {
                     {%endfor%}
                     </ul>
                 </div>
+                <div class="panel-body">
+                    <div id="indicator" style=" width: 100%; height: 400px; margin: 0 auto; float:right"></div>
+                </div>
             </div>
         </div>
         <div class="col-md-8">
@@ -119,7 +180,7 @@ $(function () {
     <div class="row">
         <div class="col-md-20">
             <div class="panel panel-info">
-                <div class="panel-heading">Indicators</div>
+                <div class="panel-heading">Indicators {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</div>
                 <div class="panel-body">
                 {% load render_table from django_tables2 %}
                 {% render_table table %}
