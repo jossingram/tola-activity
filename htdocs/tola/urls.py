@@ -35,7 +35,7 @@ urlpatterns = patterns('',
                         url(r'^$', 'tola.views.index', name='index'),
 
                         #index
-                        url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', 'tola.views.dashboard', name='index'),
+                        url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', 'tola.views.index', name='index'),
 
                         #base template for layout
                         url(r'^$', TemplateView.as_view(template_name='base.html')),

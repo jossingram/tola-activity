@@ -5,13 +5,13 @@ from django_tables2.utils import A
 
 class IndicatorDataTable(tables.Table):
 
-    agreement = tables.LinkColumn('projectagreement_update', args=[A('agreement_id')])
+    #agreement = tables.LinkColumn('projectagreement_update', args=[A('agreement_id')])
 
     class Meta:
         model = QuantitativeOutputs
         attrs = {"class": "paleblue"}
-        fields = ('targeted', 'achieved', 'indicator', 'agreement', 'complete')
-        sequence = ('targeted', 'achieved', 'indicator', 'agreement', 'complete')
+        fields = ('targets', 'actuals', 'indicator__number', 'indicator__name')
+        sequence = ('targets', 'actuals', 'indicator__number', 'indicator__name')
 
 
 class CollectedDataTable(tables.Table):
