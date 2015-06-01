@@ -40,7 +40,7 @@
                     {% for indicator in program.indicator_set.all %}
                     <tr>
                         <td><a href="/indicators/indicator_update/{{ indicator.id }}">{{ indicator.create_date}}</a></td>
-                        <td>{{ indicator.type}}</td>
+                        <td>{{ indicator.indicator_type}}</td>
                         <td>{{ indicator.name}}</td>
                         <td>{{ indicator.number}}</td>
                         <td>{{ indicator.sector}}</td>
