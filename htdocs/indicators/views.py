@@ -171,27 +171,29 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
     getAgreements = ProjectAgreement.objects.all()
     getIndicators = Indicator.objects.select_related()
+
     if int(id) != 0:
         getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__id = id).select_related()
-        getCommunities = Community.objects.all()
+        getCommunity = Community.objects.all()
+        print "id"
     else:
         getQuantitativeData = QuantitativeOutputs.objects.all().select_related()
-        getCommunities = Community.objects.all()
+        getCommunity = Community.objects.all().filter(q_agreement__indicator__id = id).select_related()
 
     if int(program) != 0:
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(agreement__program__id = id).select_related()
-    else:
-        getQuantitativeData = QuantitativeOutputs.objects.all().select_related()
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(agreement__program__id = program).select_related()
+        getCommunity = Community.objects.all().filter(q_agreement__program__id = program).select_related()
 
     if int(agreement) != 0:
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(agreement__id = id).select_related()
-    else:
-        getQuantitativeData = QuantitativeOutputs.objects.all().select_related()
+        getQuantitativeData = QuantitativeOutputs.objects.all().filter(agreement__id = agreement).select_related()
+        getCommunity = Community.objects.all().filter(q_agreement__id = agreement).select_related()
+
 
     table = IndicatorDataTable(getQuantitativeData)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
 
     if request.method == "GET" and "search" in request.GET:
+        print "search"
         #list1 = list()
         #for obj in filtered:
         #    list1.append(obj)
@@ -208,7 +210,7 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/data_report.html", {'table': table, 'getAgreements': getAgreements,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id})
+    return render(request, "indicators/data_report.html", {'getQuantitativeData':getQuantitativeData,'countries':countries, 'getCommunity':getCommunity, 'table': table, 'getAgreements': getAgreements,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id,'program':program,'agreement':agreement})
 
 
 class QuantitativeOutputsList(ListView):

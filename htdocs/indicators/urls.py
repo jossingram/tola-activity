@@ -37,8 +37,8 @@ urlpatterns = patterns('',
 
     #Indicator Data Report
     url(r'^data/(?P<id>\w+)/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
-    url(r'^data/(?P<id>\w+)/map/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
-    url(r'^data/(?P<id>\w+)/graph/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
+    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/map/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
+    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/graph/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
 
