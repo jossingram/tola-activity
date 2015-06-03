@@ -456,6 +456,7 @@ class ProjectProposal(models.Model):
     latitude = models.CharField("Latitude (Coordinates)", max_length=255, blank=True, null=True)
     longitude = models.CharField("Longitude (Coordinates)", max_length=255, blank=True, null=True)
 
+
     class Meta:
         ordering = ('create_date',)
         permissions = (
@@ -468,6 +469,14 @@ class ProjectProposal(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(ProjectProposal, self).save()
+
+    def agreement_count(self):
+        agree_count = ProjectAgreement.objects.all().filter(project_proposal=self.id).count()
+        return agree_count
+
+    def complete_count(self):
+        complete_count = ProjectComplete.objects.all().filter(project_proposal=self.id).count()
+        return complete_count
 
     #displayed in admin templates
     def __unicode__(self):

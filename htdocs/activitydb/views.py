@@ -104,15 +104,12 @@ class ProgramDash(ListView):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
-        form = ProgramDashboardForm
-
         if int(self.kwargs['pk']) == 0:
-            getDashboard = Program.objects.all().filter(funding_status="Funded", country__in=countries).filter(Q(agreement__isnull=False) | Q(proposal__isnull=False) | Q(complete__isnull=False)).order_by('name').values('id', 'name', 'gaitid','agreement__id','proposal__id','complete__id')
-
+            getDashboard = Program.objects.all().select_related().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('q_agreement'),has_complete=Count('complete'))
         else:
-            getDashboard = Program.objects.all().filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).filter(Q(agreement__isnull=False) | Q(proposal__isnull=False) | Q(complete__isnull=False)).order_by('name').values('id', 'name', 'gaitid','agreement__id','proposal__id','complete__id')
+            getDashboard = Program.objects.all().filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name').select_related()
 
-        return render(request, self.template_name, {'form': form, 'getDashboard': getDashboard, 'getPrograms':getPrograms})
+        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms':getPrograms})
 
 
 class ProjectProposalList(ListView):
