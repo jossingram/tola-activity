@@ -2,9 +2,6 @@ from django.db import models
 from django.contrib import admin
 from django.conf import settings
 from datetime import datetime
-from read.models import Read
-from silo.models import Silo
-
 
 
 class Country(models.Model):
@@ -435,7 +432,7 @@ class ProjectProposal(models.Model):
     project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
-    community = models.ManyToManyField(Community, blank=True, null=True)
+    community = models.ManyToManyField(Community, blank=True)
     community_rep = models.CharField("Community Representative", max_length=255, blank=True, null=True)
     community_rep_contact = models.CharField("Community Representative Contact", help_text='Can have mulitple contact numbers', max_length=255, blank=True, null=True)
     community_mobilizer = models.CharField("MC Community Mobilizer", max_length=255, blank=True, null=True)
@@ -495,7 +492,7 @@ class ProjectAgreement(models.Model):
     project_name = models.CharField("Activity Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255, blank=True, null=True)
     project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
-    community = models.ManyToManyField(Community, blank=True, null=True)
+    community = models.ManyToManyField(Community, blank=True)
     activity_code = models.CharField("Activity Code", help_text='Please request Activity Code from Kabul MEL', max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
@@ -504,7 +501,6 @@ class ProjectAgreement(models.Model):
     project_design = models.CharField("Activity design for", max_length=255, blank=True, null=True)
     account_code = models.CharField("Account Code", help_text='optional - request from finance', max_length=255, blank=True, null=True)
     lin_code = models.CharField("LIN Sub Code", help_text='optional - request from finance', max_length=255, blank=True, null=True)
-    community = models.ManyToManyField(Community, blank=True, null=True)
     staff_responsible = models.CharField("MC Staff Responsible", max_length=255, blank=True, null=True)
     partners = models.BooleanField("Are there partners involved?", default=0)
     name_of_partners = models.CharField("Name of Partners", max_length=255, blank=True, null=True)
@@ -600,7 +596,7 @@ class ProjectComplete(models.Model):
     capacity_built = models.CharField("What capacity was built to ensure sustainability?", max_length=255, blank=True, null=True)
     issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)", blank=True, null=True)
     lessons_learned= models.TextField("Lessons learned", blank=True, null=True)
-    community = models.ManyToManyField(Community, blank=True, null=True)
+    community = models.ManyToManyField(Community, blank=True)
     estimated_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="estimating_complete")
     checked_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="checking_complete")
     reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="reviewing_complete")
@@ -637,7 +633,6 @@ class Documentation(models.Model):
     url = models.CharField("URL (Link to document or document repository)", blank=True, null=True, max_length=135)
     description = models.CharField(max_length=255)
     template = models.ForeignKey(Template, blank=True, null=True)
-    silo = models.ForeignKey(Silo, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
     project = models.ForeignKey(ProjectProposal, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -664,8 +659,8 @@ class DocumentationAdmin(admin.ModelAdmin):
 
 
 class Benchmarks(models.Model):
-    percent_complete = models.IntegerField("% complete", max_length=25, blank=True, null=True)
-    percent_cumulative = models.IntegerField("% cumulative completion", max_length=25, blank=True, null=True)
+    percent_complete = models.IntegerField("% complete", blank=True, null=True)
+    percent_cumulative = models.IntegerField("% cumulative completion", blank=True, null=True)
     description = models.CharField("Description", max_length=255, blank=True)
     agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True)
     complete = models.ForeignKey(ProjectComplete,blank=True, null=True)
@@ -752,7 +747,6 @@ class BudgetAdmin(admin.ModelAdmin):
 
 
 class MergeMap(models.Model):
-    read = models.ForeignKey(Read, null=False, blank=False)
     project_proposal = models.ForeignKey(ProjectProposal, null=True, blank=False)
     project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=False)
     project_completion = models.ForeignKey(ProjectComplete, null=True, blank=False)
@@ -761,7 +755,7 @@ class MergeMap(models.Model):
 
 
 class MergeMapAdmin(admin.ModelAdmin):
-    list_display = ('read', 'project_proposal', 'project_agreement', 'project_completion', 'from_column', 'to_column')
+    list_display = ( 'project_proposal', 'project_agreement', 'project_completion', 'from_column', 'to_column')
     display = 'project_proposal'
 
 

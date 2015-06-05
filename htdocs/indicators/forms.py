@@ -6,7 +6,7 @@ from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset, Field
 
-import floppyforms as forms
+import floppyforms.__future__ as forms
 
 
 class IndicatorForm(forms.ModelForm):
@@ -33,7 +33,7 @@ class IndicatorForm(forms.ModelForm):
             TabHolder(
                 Tab('Performance',
                      Fieldset('Performance',
-                        'name','type', 'number', 'source', 'definition', 'disaggregation','owner','program','sector','indicator_type'
+                        'name', 'type', 'objectives', 'number', 'source', 'definition', 'disaggregation','owner','program','sector','indicator_type'
                         ),
                 ),
                 Tab('Targets',

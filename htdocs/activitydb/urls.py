@@ -84,10 +84,6 @@ urlpatterns = patterns('',
 
                        url(r'^report/', 'activitydb.views.report', name='report'),
 
-                       url(r'^doimport/(?P<pk>\w+)/$', 'activitydb.views.doImport', name='doImport'),
-                       url(r'^doMerge/(?P<pk>\w+)/$', 'activitydb.views.doMerge', name='doMerge'),
-
-                       url(r'^doMerge/(?P<pk>\w+)/$', 'activitydb.views.doMerge', name='doMerge'),
                        url(r'^province/(?P<province>[-\w]+)/province_json/', 'activitydb.views.province_json', name='province_json'),
 
                         url(r'^count/$', 'activitydb.views.ProgramDashboardCounts', name='ProgramDashboardCounts'),

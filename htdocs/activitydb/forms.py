@@ -4,7 +4,7 @@ from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset, Field
 from functools import partial
 from widgets import GoogleMapsWidget
-import floppyforms as forms
+import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
 from .models import ProjectProposal, ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, QuantitativeOutputs, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate
 from django.forms.formsets import formset_factory

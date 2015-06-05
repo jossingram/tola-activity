@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib import admin
 from django.conf import settings
-from silo.models import Silo
 from activitydb.models import Program, Sector, Community, ProjectAgreement
 from datetime import datetime
 
@@ -15,6 +14,16 @@ class IndicatorType(models.Model):
 
     def __unicode__(self):
         return self.indicator_type
+
+
+class Objective(models.Model):
+    name = models.CharField(max_length=135, blank=True)
+    description = models.CharField(max_length=765, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
 
 
 class IndicatorTypeAdmin(admin.ModelAdmin):
@@ -51,16 +60,31 @@ class ReportingFrequencyAdmin(admin.ModelAdmin):
     display = 'Reporting Frequency'
 
 
+class ReportingPeriod(models.Model):
+    frequency = models.ForeignKey(ReportingFrequency)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.frequency
+
+
+class ReportingPeriodAdmin(admin.ModelAdmin):
+    list_display = ('frequency','description','create_date','edit_date')
+    display = 'Reporting Frequency'
+
+
 class Indicator(models.Model):
     owner = models.ForeignKey('auth.User')
     indicator_type = models.ForeignKey(IndicatorType, null=True, blank=True)
+    objectives = models.ManyToManyField(Objective, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     number = models.CharField(max_length=255, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
     definition = models.CharField(max_length=255, null=True, blank=True)
     disaggregation = models.ForeignKey(DisaggregationType, null=True, blank=True)
     baseline = models.CharField(max_length=255, null=True, blank=True)
-    lop_target = models.CharField(max_length=255, null=True, blank=True)
+    lop_target = models.CharField("LOP Target",max_length=255, null=True, blank=True)
     means_of_verification = models.CharField(max_length=255, null=True, blank=True)
     data_collection_method = models.CharField(max_length=255, null=True, blank=True)
     responsible_person = models.CharField(max_length=255, null=True, blank=True)
@@ -95,14 +119,15 @@ class IndicatorAdmin(admin.ModelAdmin):
 
 
 class CollectedData(models.Model):
-    targeted = models.CharField("Targeted #", max_length=255, blank=True, null=True)
-    achieved = models.CharField("Achieved #", max_length=255, blank=True, null=True)
+    data_type = models.CharField("Type of Data (number, percent, text, yes/no)", max_length=255, blank=True, null=True)
+    reporting_period = models.ForeignKey(ReportingPeriod, blank=True, null=True)
+    targeted = models.CharField("Targeted", max_length=255, blank=True, null=True)
+    achieved = models.CharField("Achieved", max_length=255, blank=True, null=True)
     description = models.CharField("Description", max_length=255, blank=True, null=True)
     indicator = models.ForeignKey(Indicator, blank=True, null=True)
-    program = models.ForeignKey(Program, blank=True, null=True, related_name="q_agreement")
-    community = models.ForeignKey(Community, blank=True, null=True, related_name="q_agreement")
-    sector = models.ForeignKey(Sector, blank=True, null=True, related_name="q_agreement")
-    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_complete")
+    community = models.ManyToManyField(Community, blank=True, related_name="q_community")
+    sector = models.ManyToManyField(Sector, blank=True, related_name="q_sector")
+    activity = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_activity")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

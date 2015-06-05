@@ -1,31 +1,7 @@
 from django.forms import widgets
 from rest_framework import serializers
-from read.models import Read, ReadType
-from silo.models import ValueStore, Silo, DataField
+from activitydb.models import ProjectProposal, Program, Sector, ProjectType, Office, Community, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
 from django.contrib.auth.models import User
-
-
-class SiloSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = Silo
-        fields = ('owner', 'name', 'source', 'description', 'create_date', 'id')
-        depth =1
-
-
-class DataFieldSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = DataField
-        fields = ('silo', 'name', 'is_uid', 'create_date', 'edit_date')
-        depth=1
-
-
-class ValueStoreSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = ValueStore
-        fields = ('field', 'char_store', 'create_date', 'edit_date')
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -35,15 +11,60 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'username', 'email', 'is_staff')
 
 
-class ReadSerializer(serializers.HyperlinkedModelSerializer):
+class ProposalSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
-        model = Read
-        fields = ('owner', 'type', 'read_name', 'read_url')
+        model = ProjectProposal
 
-
-class ReadTypeSerializer(serializers.HyperlinkedModelSerializer):
+class ProgramSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
-        model = ReadType
-        fields = ( 'type', 'description')
+        model = Program
+
+
+class SectorSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Sector
+
+
+class ProjectTypeSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = ProjectType
+
+
+class OfficeSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Office
+
+
+class CommunitySerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Community
+
+
+class CompleteSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = ProjectComplete
+
+
+class AgreementSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = ProjectAgreement
+
+
+class CountrySerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Country
+
+
+class ProjectTypeOtherSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = ProjectTypeOther

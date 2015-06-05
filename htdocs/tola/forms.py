@@ -2,7 +2,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset
-import floppyforms as forms
+import floppyforms.__future__ as forms
+
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm
 from activitydb.models import Country

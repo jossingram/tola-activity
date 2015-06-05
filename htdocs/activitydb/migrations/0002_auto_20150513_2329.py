@@ -11,12 +11,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='program',
-            name='sector',
-            field=models.ForeignKey(blank=True, to='activitydb.Sector', null=True),
-            preserve_default=True,
-        ),
+
         migrations.AlterField(
             model_name='community',
             name='avg_household_size',

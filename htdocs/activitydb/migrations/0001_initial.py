@@ -10,8 +10,6 @@ class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('indicators', '__first__'),
-        ('read', '__first__'),
-        ('silo', '__first__'),
     ]
 
     operations = [
@@ -695,21 +693,9 @@ class Migration(migrations.Migration):
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='mergemap',
-            name='read',
-            field=models.ForeignKey(to='read.Read'),
-            preserve_default=True,
-        ),
-        migrations.AddField(
             model_name='documentation',
             name='project',
             field=models.ForeignKey(blank=True, to='activitydb.ProjectProposal', null=True),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='documentation',
-            name='silo',
-            field=models.ForeignKey(blank=True, to='silo.Silo', null=True),
             preserve_default=True,
         ),
         migrations.AddField(

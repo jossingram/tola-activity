@@ -2,7 +2,6 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from .models import ProjectProposal, ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, QuantitativeOutputs, Budget
-from silo.models import Silo, ValueStore, DataField
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -140,9 +139,8 @@ class ProjectProposalList(ListView):
 
 class ProjectProposalImport(ListView):
     """
-    Import project proposal from a Tola data source Silo
+    Import project proposal from a TolaData
     """
-    model = Silo
 
     def get_context_data(self, **kwargs):
         context = super(ProjectProposalImport, self).get_context_data(**kwargs)
@@ -319,9 +317,8 @@ class ProjectAgreementList(ListView):
 
 class ProjectAgreementImport(ListView):
     """
-    Import a project agreement from Tola source Silo
+    Import a project agreement from TolaData
     """
-    model = Silo
 
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementImport, self).get_context_data(**kwargs)
@@ -825,8 +822,6 @@ class ProjectCompleteDelete(DeleteView):
 
 
 class ProjectCompleteImport(ListView):
-
-    model = Silo
 
     def get_context_data(self, **kwargs):
         context = super(ProjectCompleteImport, self).get_context_data(**kwargs)
@@ -1654,25 +1649,9 @@ def report(request):
 
     RequestConfig(request).configure(table)
 
-    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+    # send the keys and vars
     return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
 
-def doImport(request, pk):
-    """
-    Copy the selected Silo data into the Project Proposal tables letting the user map
-    the columns first
-    :param request:
-    :param pk:
-    :return:
-    """
-    from_silo_id = pk
-
-    getSourceFrom = DataField.objects.all().filter(silo__id=from_silo_id).values('name').distinct()
-    getSourceTo = ProjectProposal._meta.get_all_field_names()
-    users = User.objects.all()
-
-
-    return render(request, "activitydb/merge-column-form.html", {'getSourceFrom':getSourceFrom, 'getSourceTo':getSourceTo, 'from_silo_id':from_silo_id, 'users':users})
 
 def country_json(request, country):
     """
@@ -1727,55 +1706,5 @@ def ProgramDashboardCounts(request):
                                                               )
     return HttpResponseRedirect('/')
 
-
-def doMerge(request, pk):
-    """
-    Copy the selected Silo data into the Project Proposal tables letting the user map
-    the columns first
-    :param request:
-    :return:
-    """
-    from_silo_id = pk
-    approved_by = None
-    approval_submitted_by = None
-
-    # Empty dict
-    fields_to_insert = {}
-    fields_to_ignore = {}
-
-    #more then one record might be returning so get the row_numbers as a count and loop over each
-    get_rows = ValueStore.objects.values('row_number').filter(field__silo__id=from_silo_id).distinct()
-    for row in get_rows:
-        #now loop over each column in the post and check if a mapping was made
-        #request.POST[column] = Form field value
-        #column = Form field name(variable)
-        for column in request.POST:
-            try:
-                getSourceFrom = ValueStore.objects.get(field__silo__id=from_silo_id, field__name=str(column), row_number=row['row_number'])
-            except Exception as e:
-                getSourceFrom = None
-
-
-            if request.POST[column] != "Ignore" and request.POST[column] != "0" and str(column) != "csrfmiddlewaretoken" and str(column) != "from_column_id" and str(column) != "from_silo_id":
-                fields_to_insert[str(request.POST[column])] = str(getSourceFrom.char_store)
-            else:
-                fields_to_ignore[str(request.POST[column])] = str(getSourceFrom.char_store)
-
-        #set program ID and throw if not found
-        try:
-            programs, created = Program.objects.get_or_create(name__icontains=program_value)
-            program_id = programs.pk
-        except Exception as e:
-            program_id = None
-            messages.add_message(request, messages.INFO, "Program ID not found, a program is required for each new project proposal.")
-        country = getCountry(request.user)
-        country_id = country
-
-        new_project_proposal = ProjectProposal.objects.create(approved_by=approved_by, approval_submitted_by=approval_submitted_by, **fields_to_insert)
-        new_project_proposal.save()
-
-    redirect_url = "/activitydb/projectproposal_update/" + str(new_project_proposal.id)
-
-    return HttpResponseRedirect(redirect_url)
 
 
