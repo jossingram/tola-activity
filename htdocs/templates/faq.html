@@ -1,7 +1,17 @@
 {% extends "base.html" %}
-{% block page_title %} FAQ {% endblock %}
+{% block page_title %} Frequently Asked Questions {% endblock %}
 
 {% block content %}
-<p>Put your frequently asked questions here</p>
+<ul class="list-group">
+{% for item in getFAQ %}
+    <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.question }}</b>
+    <div class="btn-group align-right" role="group" aria-label="...">
+        <p>{{ item.question}}</p>
+    </div>
+    </li>
+{% empty %}
+    <li class="list-group-item">No FAQ's yet.</li>
+{% endfor %}
+</ul>
 
 {% endblock content %}

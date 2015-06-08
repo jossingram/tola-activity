@@ -11,6 +11,7 @@ from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete
 from djangocosign.models import UserProfile
 from djangocosign.models import Country
 from activitydb.models import Country as ActivityCountry
+from .models import Documentation, FAQ
 from .tables import IndicatorDataTable
 from util import getCountry
 from datetime import datetime
@@ -94,11 +95,23 @@ def contact(request):
 
 
 def faq(request):
-    return render(request, 'faq.html')
+    """
+    Get FAQ and display them on template
+    """
+
+    getFAQ = FAQ.objects.all()
+
+    return render(request, 'faq.html', {'getFAQ': getFAQ})
 
 
 def documentation(request):
-    return render(request, 'documentation.html')
+    """
+    Get Documentation and display them on template
+    """
+
+    getDocumentation = Documentation.objects.all()
+
+    return render(request, 'documentation.html', {'getDocumentation': getDocumentation})
 
 
 def register(request):

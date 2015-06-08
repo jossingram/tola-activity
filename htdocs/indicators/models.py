@@ -30,6 +30,7 @@ class IndicatorTypeAdmin(admin.ModelAdmin):
     list_display = ('indicator_type','description','create_date','edit_date')
     display = 'Indicator Type'
 
+
 class DisaggregationType(models.Model):
     disaggregation_type = models.CharField(max_length=135, blank=True)
     description = models.CharField(max_length=765, blank=True)
@@ -43,6 +44,36 @@ class DisaggregationType(models.Model):
 class DisaggregationTypeAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_type','description','create_date','edit_date')
     display = 'Disaggregation Type'
+
+
+class DisaggregationLabel(models.Model):
+    disaggregation_type = models.ForeignKey(DisaggregationType)
+    label = models.CharField(max_length=765, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.disaggregation_type
+
+
+class DisaggregationLabelAdmin(admin.ModelAdmin):
+    list_display = ('disaggregation_type','label','create_date','edit_date')
+    display = 'Disaggregation Label'
+
+
+class DisaggregationValue(models.Model):
+    disaggregation_label = models.ForeignKey(DisaggregationLabel)
+    value = models.CharField(max_length=765, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.disaggregation_label
+
+
+class DisaggregationValueAdmin(admin.ModelAdmin):
+    list_display = ('disaggregation_label','value','create_date','edit_date')
+    display = 'Disaggregation Value'
 
 
 class ReportingFrequency(models.Model):
