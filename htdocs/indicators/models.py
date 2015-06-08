@@ -109,6 +109,9 @@ class Indicator(models.Model):
         self.edit_date = datetime.now()
         super(Indicator, self).save(*args, **kwargs)
 
+    def program_str(self):
+        return ', '.join([program.name for program in value.all()])
+
     def __unicode__(self):
         return self.name
 

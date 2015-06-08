@@ -14,13 +14,15 @@ TEMPLATE = '''
 class IndicatorTable(tables.Table):
     edit = tables.TemplateColumn(TEMPLATE)
 
+    programs = tables.Column(accessor='program_str')
+
     class Meta:
         model = Indicator
         attrs = {"class": "paleblue"}
-        fields = ('indicator_type', 'name', 'number', 'source', 'definition', 'disaggregation', 'baseline', 'lop_target', 'means_of_verification', 'data_collection_method', 'responsible_person',
-                    'method_of_analysis', 'information_use', 'reporting_frequency', 'comments', 'program', 'sector', 'approved_by', 'approval_submitted_by', 'create_date', 'edit_date')
-        sequence = ('indicator_type', 'name', 'number', 'source', 'definition', 'disaggregation', 'baseline', 'lop_target', 'means_of_verification', 'data_collection_method', 'responsible_person',
-                    'method_of_analysis', 'information_use', 'reporting_frequency', 'comments', 'program', 'sector', 'approved_by', 'approval_submitted_by', 'create_date', 'edit_date')
+        fields = ('programs', 'sector','indicator_type', 'name', 'number', 'source', 'definition', 'disaggregation', 'baseline', 'lop_target', 'means_of_verification', 'data_collection_method', 'responsible_person',
+                    'method_of_analysis', 'information_use', 'reporting_frequency','create_date', 'edit_date')
+        sequence = ('programs', 'sector','indicator_type', 'name', 'number', 'source', 'definition', 'disaggregation', 'baseline', 'lop_target', 'means_of_verification', 'data_collection_method', 'responsible_person',
+                    'method_of_analysis', 'information_use', 'reporting_frequency', 'create_date', 'edit_date')
 
 
 class IndicatorDataTable(tables.Table):

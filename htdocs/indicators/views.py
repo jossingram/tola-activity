@@ -129,14 +129,19 @@ class IndicatorDelete(DeleteView):
     form_class = IndicatorForm
 
 
-def indicatorReport(request):
+def indicatorReport(request, program=0):
     """
     Show LIST of indicators with a filtered search view using django-tables2
     and django-filter
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    getIndicators = Indicator.objects.select_related()
+
+    if int(program) == 0:
+        getIndicators = Indicator.objects.all().select_related()
+    else:
+        getIndicators = Indicator.objects.all().filter(program__id=program).select_related()
+
     table = IndicatorTable(getIndicators)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
 
@@ -159,7 +164,38 @@ def indicatorReport(request):
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/report.html", {'get_agreements': table, 'program': getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
+    return render(request, "indicators/report.html", {'get_agreements': table, 'getPrograms': getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
+
+
+def programIndicatorReport(request, program=0):
+    """
+    Show LIST of indicators with a filtered search view using django-tables2
+    and django-filter
+    """
+    program = int(program)
+    countries = getCountry(request.user)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('indicator_type', 'number')
+    getProgram = Program.objects.get(id=program)
+
+    if request.method == "GET" and "search" in request.GET:
+        #list1 = list()
+        #for obj in filtered:
+        #    list1.append(obj)
+        """
+         fields = (indicator_type, name, number, source, definition, disaggregation, baseline, lop_target, means_of_verification, data_collection_method, responsible_person,
+                    method_of_analysis, information_use, reporting_frequency, comments, program, sector, approved_by, approval_submitted_by, create_date, edit_date)
+        """
+        getIndicators = Indicator.objects.all().filter(
+                                           Q(indicator_type__icontains=request.GET["search"]) |
+                                           Q(name__icontains=request.GET["search"]) |
+                                           Q(number__icontains=request.GET["search"]) |
+                                           Q(definition__startswith=request.GET["search"])
+                                          ).filter(program__id=program).select_related().order_by('indicator_type','number')
+
+
+    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+    return render(request, "indicators/grid_report.html", {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgram': getProgram, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
 def indicatorDataReport(request, id=0, program=0, agreement=0):

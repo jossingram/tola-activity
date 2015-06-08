@@ -104,7 +104,7 @@ class ProgramDash(ListView):
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
         if int(self.kwargs['pk']) == 0:
-            getDashboard = Program.objects.all().select_related().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('q_agreement'),has_complete=Count('complete'))
+            getDashboard = Program.objects.all().select_related().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('agreement'),has_complete=Count('complete'))
         else:
             getDashboard = Program.objects.all().filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name').select_related()
 

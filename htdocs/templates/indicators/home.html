@@ -25,7 +25,6 @@
     <div class="jumbotron">
         <h3>Indicators</h3>
         {% regroup getIndicators by program.gaitid as programs_by_gaitid %}
-        {{ programs_by_gaitid }}
         {% for item in programs_by_gaitid %}
         <div class="jumbotron dashboard">
             <h4>{{ item.program.gaitid }} - {{ item.program.name }}</h4>
@@ -33,7 +32,7 @@
                 <!-- Table -->
                 <table class="table">
                     <tr>
-                        <th>Date Created</th>
+                        <th>Date Createds</th>
                         <th>Indicator Type</th>
                         <th>Name</th>
                         <th>Number</th>

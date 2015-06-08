@@ -26,9 +26,9 @@
     {% for program in getProgramsIndicator %}
         {% if program.indicator_set.all %}
             <div class='panel panel-default'>
-                <div class='panel-heading'><h4>{{ program.gaitid }} - {{ program.name }}</h4></div>
+                <div class='panel-heading'><h4>{{ program.gaitid }} - {{ program.name }}<span style="float: right;"><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-sm btn-info">Grid/Print Report</a></span></h4></div>
                 <!-- Table -->
-                <table class="table">
+                <table class="table table-striped">
                     <tr>
                         <th>Date Created</th>
                         <th>Indicator Type</th>
