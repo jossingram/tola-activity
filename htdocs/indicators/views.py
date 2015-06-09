@@ -63,6 +63,11 @@ class IndicatorCreate(CreateView):
     def dispatch(self, request, *args, **kwargs):
         return super(IndicatorCreate, self).dispatch(request, *args, **kwargs)
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(IndicatorCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_invalid(self, form):
 
@@ -92,6 +97,12 @@ class IndicatorUpdate(UpdateView):
         context = super(IndicatorUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
         return context
+
+        # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(IndicatorUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)

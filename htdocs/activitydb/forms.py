@@ -6,7 +6,7 @@ from functools import partial
 from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
-from .models import ProjectProposal, ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, QuantitativeOutputs, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate
+from .models import ProjectProposal, ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, QuantitativeOutputs, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
@@ -26,6 +26,8 @@ BUDGET_VARIANCE=(
         ("Under Budget", "Under Budget"),
         ("No Variance", "No Variance"),
     )
+
+
 
 class Formset(LayoutObject):
     """
@@ -139,6 +141,13 @@ class ProjectProposalForm(forms.ModelForm):
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
 
+        #override the office queryset to use request.user for country
+        self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
+
+        #override the community queryset to use request.user for country
+        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
+
+
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
@@ -241,6 +250,12 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+
+        #override the office queryset to use request.user for country
+        self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
+
+        #override the community queryset to use request.user for country
+        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
 
 
 class ProjectAgreementForm(forms.ModelForm):
@@ -501,6 +516,12 @@ class ProjectAgreementForm(forms.ModelForm):
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
 
+        #override the office queryset to use request.user for country
+        self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
+
+        #override the community queryset to use request.user for country
+        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
+
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
@@ -559,6 +580,10 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+
+        #override the office queryset to use request.user for country
+        self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
+
 
 
 class ProjectCompleteForm(forms.ModelForm):
@@ -722,6 +747,12 @@ class ProjectCompleteForm(forms.ModelForm):
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
 
+        #override the office queryset to use request.user for country
+        self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
+
+        #override the community queryset to use request.user for country
+        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
+
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
@@ -808,6 +839,10 @@ class CommunityForm(forms.ModelForm):
         )
 
         super(CommunityForm, self).__init__(*args, **kwargs)
+
+        #override the office queryset to use request.user for country
+        self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
+
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"

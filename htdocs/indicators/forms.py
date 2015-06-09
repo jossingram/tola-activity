@@ -7,6 +7,7 @@ from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset, Field
 
 import floppyforms.__future__ as forms
+from tola.util import getCountry
 
 
 class IndicatorForm(forms.ModelForm):
@@ -18,6 +19,8 @@ class IndicatorForm(forms.ModelForm):
     program = forms.ModelMultipleChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
 
     def __init__(self, *args, **kwargs):
+        #get the user object to check permissions with
+        self.request = kwargs.pop('request')
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -66,6 +69,13 @@ class IndicatorForm(forms.ModelForm):
         )
 
         super(IndicatorForm, self).__init__(*args, **kwargs)
+        
+        #override the program queryset to use request.user for country
+        countries = getCountry(self.request.user)
+        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+
+
+
 
 
 class QuantitativeOutputsForm(forms.ModelForm):
