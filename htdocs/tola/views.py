@@ -7,11 +7,9 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
-from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete, Program, Community, Sector, QuantitativeOutputs
+from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete, Program, Community, Sector, QuantitativeOutputs,Country as ActivityCountry, Feedback, FAQ, Documentation
 from djangocosign.models import UserProfile
 from djangocosign.models import Country
-from activitydb.models import Country as ActivityCountry
-from .models import Documentation, FAQ
 from .tables import IndicatorDataTable
 from util import getCountry
 from datetime import datetime

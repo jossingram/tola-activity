@@ -931,3 +931,73 @@ class QuantitativeOutputsAdmin(admin.ModelAdmin):
     list_display = ('description', 'targeted', 'achieved', 'logframe_indicator', 'non_logframe_indicator', 'create_date', 'edit_date')
     display = 'Quantitative Outputs'
 
+
+# collect feedback from users
+class Feedback(models.Model):
+    submitter = models.ForeignKey(settings.AUTH_USER_MODEL)
+    note = models.TextField()
+    page = models.CharField(max_length=135)
+    severity = models.CharField(max_length=135)
+    create_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('create_date',)
+
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(Feedback, self).save()
+
+    def __unicode__(self):
+        return unicode(self.submitter)
+
+
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ('submitter', 'note', 'page', 'severity', 'create_date',)
+    display = 'Feedback'
+
+
+# FAQ
+class FAQ(models.Model):
+    question = models.TextField(null=True, blank=True)
+    answer =  models.TextField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('create_date',)
+
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(FAQ, self).save()
+
+    def __unicode__(self):
+        return unicode(self.question)
+
+
+class FAQAdmin(admin.ModelAdmin):
+    list_display = ( 'question', 'answer', 'create_date',)
+    display = 'FAQ'
+
+
+# Documentation
+class Documentation(models.Model):
+    name = models.CharField(max_length=255,null=True, blank=True)
+    documentation = models.TextField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('create_date',)
+
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(Documentation, self).save()
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+
+class DocumentationAdmin(admin.ModelAdmin):
+    list_display = ( 'name', 'documentation', 'create_date',)
+    display = 'Documentation'

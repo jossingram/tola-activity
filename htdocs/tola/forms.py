@@ -6,11 +6,8 @@ import floppyforms.__future__ as forms
 
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm
-from activitydb.models import Country
+from activitydb.models import Country, Feedback
 from djangocosign.models import UserProfile
-
-
-from .models import Feedback
 
 
 class FeedbackForm(forms.ModelForm):
