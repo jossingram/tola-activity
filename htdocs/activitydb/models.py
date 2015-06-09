@@ -629,9 +629,9 @@ class ProjectCompleteAdmin(admin.ModelAdmin):
 
 
 class Documentation(models.Model):
-    name = models.CharField("Name of Document", max_length=135)
+    name = models.CharField("Name of Document", max_length=135, blank=True, null=True)
     url = models.CharField("URL (Link to document or document repository)", blank=True, null=True, max_length=135)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True, null=True)
     template = models.ForeignKey(Template, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
     project = models.ForeignKey(ProjectProposal, blank=True, null=True)
@@ -932,6 +932,28 @@ class QuantitativeOutputsAdmin(admin.ModelAdmin):
     display = 'Quantitative Outputs'
 
 
+# Documentation
+class DocumentationApp(models.Model):
+    name = models.CharField(max_length=255,null=True, blank=True)
+    documentation = models.TextField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('create_date',)
+
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(DocumentationApp, self).save()
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+
+class DocumentationAppAdmin(admin.ModelAdmin):
+    list_display = ( 'name', 'documentation', 'create_date',)
+    display = 'DocumentationApp'
+
 # collect feedback from users
 class Feedback(models.Model):
     submitter = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -980,24 +1002,3 @@ class FAQAdmin(admin.ModelAdmin):
     display = 'FAQ'
 
 
-# Documentation
-class Documentation(models.Model):
-    name = models.CharField(max_length=255,null=True, blank=True)
-    documentation = models.TextField(null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('create_date',)
-
-    def save(self):
-        if self.create_date is None:
-            self.create_date = datetime.now()
-        super(Documentation, self).save()
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-
-class DocumentationAdmin(admin.ModelAdmin):
-    list_display = ( 'name', 'documentation', 'create_date',)
-    display = 'Documentation'
