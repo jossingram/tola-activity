@@ -710,7 +710,7 @@ class Monitor(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.description
+        return self.responsible_person
 
 
 class MonitorAdmin(admin.ModelAdmin):
