@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from indicators.models import Indicator, CollectedData
-from activitydb.models import Program, QuantitativeOutputs
+from activitydb.models import Program, QuantitativeOutputs, Community
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
@@ -86,6 +86,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
+        self.request = kwargs.pop('request')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -100,6 +101,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         super(QuantitativeOutputsForm, self).__init__(*args, **kwargs)
 
 
+
 class CollectedDataForm(forms.ModelForm):
 
     class Meta:
@@ -108,6 +110,7 @@ class CollectedDataForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
+        self.request = kwargs.pop('request')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -120,3 +123,8 @@ class CollectedDataForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
         super(CollectedDataForm, self).__init__(*args, **kwargs)
+
+        self.fields['indicator'].queryset = Indicator.objects.filter(id=kwargs.get('indicator'))
+
+        countries = getCountry(self.request.user)
+        self.fields['community'].queryset = Community.objects.filter(country__in=countries)

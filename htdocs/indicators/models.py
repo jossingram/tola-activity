@@ -53,7 +53,7 @@ class DisaggregationLabel(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.disaggregation_type
+        return self.label
 
 
 class DisaggregationLabelAdmin(admin.ModelAdmin):
@@ -68,7 +68,7 @@ class DisaggregationValue(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.disaggregation_label
+        return self.value
 
 
 class DisaggregationValueAdmin(admin.ModelAdmin):
@@ -124,7 +124,7 @@ class Indicator(models.Model):
     reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True)
     comments = models.CharField(max_length=255, null=True, blank=True)
     program = models.ManyToManyField(Program)
-    sector = models.ForeignKey(Sector)
+    sector = models.ForeignKey(Sector, null=True, blank=True)
     approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="approving_indicator")
     approval_submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="indicator_submitted_by")
     create_date = models.DateTimeField(null=True, blank=True)
@@ -153,10 +153,10 @@ class IndicatorAdmin(admin.ModelAdmin):
 
 
 class CollectedData(models.Model):
-    data_type = models.CharField("Type of Data (number, percent, text, yes/no)", max_length=255, blank=True, null=True)
     reporting_period = models.ForeignKey(ReportingPeriod, blank=True, null=True)
     targeted = models.CharField("Targeted", max_length=255, blank=True, null=True)
     achieved = models.CharField("Achieved", max_length=255, blank=True, null=True)
+    disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True, null=True)
     description = models.CharField("Description", max_length=255, blank=True, null=True)
     indicator = models.ForeignKey(Indicator, blank=True, null=True)
     community = models.ManyToManyField(Community, blank=True, related_name="q_community")

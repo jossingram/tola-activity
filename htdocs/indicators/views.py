@@ -98,7 +98,7 @@ class IndicatorUpdate(UpdateView):
         context.update({'id': self.kwargs['pk']})
         return context
 
-        # add the request to the kwargs
+    # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(IndicatorUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
@@ -267,16 +267,19 @@ class QuantitativeOutputsList(ListView):
     model = QuantitativeOutputs
     template_name = 'indicators/quantitative_list.html'
 
+
     def get(self, request, *args, **kwargs):
 
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
         project_proposal_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
-            getQuantitativeOutputs = QuantitativeOutputs.objects.all()
+            getQuantitativeOutputs = QuantitativeOutputs.objects.all().order_by('agreement__program__name','indicator__number')
         else:
-            getQuantitativeOutputs = QuantitativeOutputs.objects.all().filter(project_proposal_id=self.kwargs['pk'])
+            getQuantitativeOutputs = QuantitativeOutputs.objects.all().filter(agreement__program__id=self.kwargs['pk']).order_by('indicator__number')
 
-        return render(request, self.template_name, {'getQuantitativeOutputs': getQuantitativeOutputs, 'project_proposal_id': project_proposal_id})
+        return render(request, self.template_name, {'getQuantitativeOutputs': getQuantitativeOutputs, 'project_proposal_id': project_proposal_id, 'getPrograms': getPrograms})
 
 
 class QuantitativeOutputsCreate(CreateView):
@@ -290,6 +293,12 @@ class QuantitativeOutputsCreate(CreateView):
         context = super(QuantitativeOutputsCreate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['id']})
         return context
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(QuantitativeOutputsCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def dispatch(self, request, *args, **kwargs):
         return super(QuantitativeOutputsCreate, self).dispatch(request, *args, **kwargs)
@@ -329,6 +338,12 @@ class QuantitativeOutputsUpdate(UpdateView):
         context = super(QuantitativeOutputsUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
         return context
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(QuantitativeOutputsUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
@@ -375,12 +390,15 @@ class CollectedDataList(ListView):
 
     def get(self, request, *args, **kwargs):
 
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
+
         if int(self.kwargs['pk']) == 0:
             getCollectedData = CollectedData.objects.all()
         else:
-            getCollectedData = CollectedData.objects.all().filter(project_proposal_id=self.kwargs['pk'])
+            getCollectedData = CollectedData.objects.all().filter(program__id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getCollectedData': getCollectedData})
+        return render(request, self.template_name, {'getCollectedData': getCollectedData, 'getPrograms': getPrograms})
 
 
 class CollectedDataCreate(CreateView):
@@ -392,12 +410,18 @@ class CollectedDataCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataCreate, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['id']})
+        context.update({'program': self.kwargs['program']})
+        context.update({'indicator': self.kwargs['indicator']})
         return context
 
     def dispatch(self, request, *args, **kwargs):
         return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(CollectedDataCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_invalid(self, form):
 
@@ -431,6 +455,12 @@ class CollectedDataUpdate(UpdateView):
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(CollectedDataUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_valid(self, form):
         form.save()

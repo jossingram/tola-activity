@@ -21,10 +21,9 @@
     <table class="table table-striped" border="1">
         <tr>
             <th>Indicator type</th>
-            <th>Sector</th>
             <th>Number</th>
             <th>Name</th>
-            <th>source</th>
+            <th>Source</th>
             <th>Definition</th>
             <th>Disaggregation</th>
             <th>Baseline</th>
@@ -35,11 +34,11 @@
             <th>Method of Analysis</th>
             <th>Information Use</th>
             <th>Reporting Frequency</th>
+            <th>Comments</th>
         </tr>
         {% for indicator in getIndicators %}
         <tr>
             <td>{{ indicator.indicator_type }}</td>
-            <td>{{ indicator.sector }}</td>
             <td>{{ indicator.number }}</td>
             <td>{{ indicator.name }}</td>
             <td>{{ indicator.source }}</td>
@@ -53,6 +52,7 @@
             <td>{{ indicator.method_of_analysis }}</td>
             <td>{{ indicator.information_use }}</td>
             <td>{{ indicator.reporting_frequency }}</td>
+            <td>{{ indicator.comments }}</td>
         </tr>
         {% endfor %}
     </table>

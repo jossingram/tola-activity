@@ -44,7 +44,7 @@
                         <td>{{ indicator.name}}</td>
                         <td>{{ indicator.number}}</td>
                         <td>{{ indicator.sector}}</td>
-                        <td><a href="/indicators/indicator_update/{{ indicator.id }}" class="btn-xs btn-info">Edit</a>&nbsp;<a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn-xs btn-danger">Delete</a></td>
+                        <td><a href="/indicators/indicator_update/{{ indicator.id }}" class="btn-xs btn-info">Edit</a>&nbsp;<a href="/indicators/collecteddata_add/{{ program.id }}/{{ indicator.id }}" class="btn-xs btn-success">Data</a>&nbsp;<a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn-xs btn-danger">Delete</a></td>
                     </tr>
                     {% endfor %}
                 </table>

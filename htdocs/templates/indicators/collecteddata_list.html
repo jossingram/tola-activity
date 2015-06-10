@@ -8,12 +8,23 @@
 {% block page_title %}Collected Indicator Ouput/Outcome Data List{% endblock %}
 
 {% block content %}
-<div>
-<a href="/indicators/collecteddata_add/0/" class="btn btn-large btn-success">New Data</a> &nbsp;
-<a href="/indicators/collecteddata_import/0/" class="btn btn-large btn-info">Import Data</a>
-<hr/>
-<br/>
+<div class="dropdown">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+        Programs
+    <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata_list/0/">-- All --</a></li>
+    {% for program in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata_list/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
+    {% endfor %}
+    </ul>
+    <a href="/indicators/collecteddata_add/0/" class="btn btn-large btn-success">New Data</a> &nbsp;
+    <a href="/indicators/collecteddata_import/0/" class="btn btn-large btn-info">Import Data</a>
+    <br/>
+    <br/>
 </div>
+
 
 <div class='panel panel-default'>
   <!-- Default panel contents -->
@@ -23,8 +34,7 @@
       <table class="table">
         <tr>
         <th>Date Created</th>
-        <th>Logframe Indicator</th>
-        <th>Non-Logframe Indicator</th>
+        <th>Indicator</th>
         <th>Program</th>
         <th>Sector</th>
         <th>Community</th>
@@ -32,8 +42,7 @@
         {% for item in getCollectedData %}
         <tr>
             <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.create_date}}</a></td>
-            <td>{{ item.logframe_indicator}}</td>
-            <td>{{ item.nonlogframe_indicator}}</td>
+            <td>{{ item.indicator}}</td>
             <td>{{ item.program}}</td>
             <td>{{ item.sector}}</td>
             <td>{{ item.community}}</td>

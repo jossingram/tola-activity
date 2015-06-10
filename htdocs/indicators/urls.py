@@ -23,7 +23,7 @@ urlpatterns = patterns('',
     url(r'^indicator_delete/(?P<pk>\w+)/$', IndicatorDelete.as_view(), name='indicator_delete'),
 
     #Quantitative Outputs Form
-    url(r'^form/(?P<pk>\w+)/$', QuantitativeOutputsList.as_view(), name='quantitative_list'),
+    url(r'^quantitative_list/(?P<pk>\w+)/$', QuantitativeOutputsList.as_view(), name='quantitative_list'),
     url(r'^quantitative_add/(?P<id>\w+)/$', QuantitativeOutputsCreate.as_view(), name='quantitative_add'),
     url(r'^quantitative_update/(?P<pk>\w+)/$', QuantitativeOutputsUpdate.as_view(), name='quantitative_update'),
     url(r'^quantitative_delete/(?P<pk>\w+)/$', QuantitativeOutputsDelete.as_view(), name='quantitative_delete'),
@@ -33,7 +33,7 @@ urlpatterns = patterns('',
     url(r'^collecteddata/(?P<pk>\w+)/(?P<program>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
     url(r'^collecteddata/(?P<pk>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
 
-    url(r'^collecteddata_add/(?P<id>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
+    url(r'^collecteddata_add/(?P<program>\w+)/(?P<indicator>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
     url(r'^collecteddata_update/(?P<pk>\w+)/$', CollectedDataUpdate.as_view(), name='collecteddata_update'),
     url(r'^collecteddata_delete/(?P<pk>\w+)/$', CollectedDataDelete.as_view(), name='collecteddata_delete'),
 
