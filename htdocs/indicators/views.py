@@ -225,7 +225,7 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
         print "id"
     else:
         getQuantitativeData = QuantitativeOutputs.objects.all().select_related()
-        getCommunity = Community.objects.all().filter(q_agreement__indicator__id = id).select_related()
+        getCommunity = Community.objects.all().select_related()
 
     if int(program) != 0:
         getQuantitativeData = QuantitativeOutputs.objects.all().filter(agreement__program__id = program).select_related()

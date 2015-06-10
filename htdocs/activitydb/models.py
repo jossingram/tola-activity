@@ -492,7 +492,7 @@ class ProjectAgreement(models.Model):
     project_name = models.CharField("Activity Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255, blank=True, null=True)
     project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
-    community = models.ManyToManyField(Community, blank=True, related_name="q_agreement")
+    community = models.ManyToManyField(Community, blank=True)
     activity_code = models.CharField("Activity Code", help_text='Please request Activity Code from Kabul MEL', max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
