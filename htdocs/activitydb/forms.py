@@ -841,6 +841,7 @@ class CommunityForm(forms.ModelForm):
         super(CommunityForm, self).__init__(*args, **kwargs)
 
         #override the office queryset to use request.user for country
+        countries = getCountry(self.request.user)
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
 
