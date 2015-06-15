@@ -901,37 +901,6 @@ class ContributionAdmin(admin.ModelAdmin):
     display = 'Contribution'
 
 
-class QuantitativeOutputs(models.Model):
-    targeted = models.IntegerField("Targeted #", blank=True, null=True)
-    achieved = models.IntegerField("Achieved #", blank=True, null=True)
-    description = models.CharField("Description", max_length=255, blank=True, null=True)
-    indicator = models.ForeignKey('indicators.Indicator', blank=True, null=True)
-    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement")
-    complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete")
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('description',)
-        verbose_name_plural = "Quantitative Outputs"
-
-    #onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(QuantitativeOutputs, self).save()
-
-    #displayed in admin templates
-    def __unicode__(self):
-        return self.description
-
-
-class QuantitativeOutputsAdmin(admin.ModelAdmin):
-    list_display = ('description', 'targeted', 'achieved', 'logframe_indicator', 'non_logframe_indicator', 'create_date', 'edit_date')
-    display = 'Quantitative Outputs'
-
-
 # Documentation
 class DocumentationApp(models.Model):
     name = models.CharField(max_length=255,null=True, blank=True)
