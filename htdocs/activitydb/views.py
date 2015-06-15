@@ -1,12 +1,12 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
-from .models import ProjectProposal, ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, QuantitativeOutputs, Budget
+from .models import ProjectProposal, ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, QuantitativeOutputsForm, BudgetForm, FilterForm
+from .forms import ProjectProposalForm, ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -423,11 +423,6 @@ class ProjectAgreementUpdate(UpdateView):
         context.update({'id': id})
         pk = self.kwargs['pk']
         context.update({'pk': pk})
-        try:
-            getQuantitative = QuantitativeOutputs.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('indicator')
-        except QuantitativeOutputs.DoesNotExist:
-            getQuantitative = None
-        context.update({'getQuantitative': getQuantitative})
 
         try:
             getMonitor = Monitor.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('type')
@@ -527,12 +522,6 @@ class ProjectAgreementDetail(DetailView):
         context.update({'jsonData': jsonData})
 
         context.update({'id': self.kwargs['pk']})
-
-        try:
-            getQuantitative = QuantitativeOutputs.objects.all().filter(agreement__id=self.kwargs['pk'])
-        except QuantitativeOutputs.DoesNotExist:
-            getQuantitative = None
-        context.update({'getQuantitative': getQuantitative})
 
         try:
             getMonitor = Monitor.objects.all().filter(agreement__id=self.kwargs['pk'])
@@ -690,16 +679,6 @@ class ProjectCompleteUpdate(UpdateView):
         pk = self.kwargs['pk']
         context.update({'pk': pk})
 
-        #get quantitative data from the agreement to add to the context
-        try:
-            getQuantitative = QuantitativeOutputs.objects.all().filter(complete_id=self.kwargs['pk'])
-        except QuantitativeOutputs.DoesNotExist:
-            #if there aren't any quantitative try importing from the agreement
-            getQuantitative = QuantitativeOutputs.objects.update(complete_id=self.kwargs['pk']).filter(agreement__id=getQuantitative.agreement_id)
-            if not getQuantitative:
-                getQuantitative = None
-        context.update({'getQuantitative': getQuantitative})
-
         #get budget data
         try:
             getBudget = Budget.objects.all().filter(agreement__id=self.kwargs['pk'])
@@ -722,20 +701,10 @@ class ProjectCompleteUpdate(UpdateView):
             'approval_submitted_by': self.request.user,
         }
 
-        #update quantitative with new agreement
-        try:
-            getQuantitative = QuantitativeOutputs.objects.all().filter(complete_id=self.kwargs['pk'])
-            #if there aren't any quantitative try importing from the agreement
-            if not getQuantitative:
-                getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
-                QuantitativeOutputs.objects.filter(agreement=getComplete.project_agreement_id).update(complete_id=self.kwargs['pk'])
-        except QuantitativeOutputs.DoesNotExist:
-            getQuantitative = None
-
-        #update quantitative with new agreement
+        #update budget with new agreement
         try:
             getBudget = Budget.objects.all().filter(complete_id=self.kwargs['pk'])
-            #if there aren't any quantitative try importing from the agreement
+            #if there aren't any budget try importing from the agreement
             if not getBudget:
                 getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
                 Budget.objects.filter(agreement=getComplete.project_agreement_id).update(complete_id=self.kwargs['pk'])
@@ -1418,108 +1387,6 @@ class BeneficiaryDelete(DeleteView):
     form_class = BeneficiaryForm
 
 
-class QuantitativeOutputsList(ListView):
-    """
-    QuantitativeOutput List
-    """
-    model = QuantitativeOutputs
-    template_name = 'activitydb/quantitative_list.html'
-
-    def get(self, request, *args, **kwargs):
-
-        project_proposal_id = self.kwargs['pk']
-
-        if int(self.kwargs['pk']) == 0:
-            getQuantitativeOutputs = QuantitativeOutputs.objects.all()
-        else:
-            getQuantitativeOutputs = QuantitativeOutputs.objects.all().filter(project_proposal_id=self.kwargs['pk'])
-
-        return render(request, self.template_name, {'getQuantitativeOutputs': getQuantitativeOutputs, 'project_proposal_id': project_proposal_id})
-
-
-class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
-    """
-    QuantitativeOutput Form
-    """
-    model = QuantitativeOutputs
-
-    def get_context_data(self, **kwargs):
-        context = super(QuantitativeOutputsCreate, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['id']})
-        return context
-
-    def dispatch(self, request, *args, **kwargs):
-        return super(QuantitativeOutputsCreate, self).dispatch(request, *args, **kwargs)
-
-    def get_initial(self):
-        initial = {
-            'agreement': self.kwargs['id'],
-            }
-
-        return initial
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Quantitative Output Created!')
-        form = ""
-        return self.render_to_response(self.get_context_data(form=form))
-
-
-    form_class = QuantitativeOutputsForm
-
-
-class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
-    """
-    QuantitativeOutput Form
-    """
-    model = QuantitativeOutputs
-
-    def get_context_data(self, **kwargs):
-        context = super(QuantitativeOutputsUpdate, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['pk']})
-        return context
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Quantitative Output Updated!')
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = QuantitativeOutputsForm
-
-
-class QuantitativeOutputsDelete(AjaxableResponseMixin, DeleteView):
-    """
-    QuantitativeOutput Delete
-    """
-    model = QuantitativeOutputs
-    success_url = '/'
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-
-        form.save()
-
-        messages.success(self.request, 'Success, Quantitative Output Deleted!')
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = QuantitativeOutputsForm
-
 
 class BudgetList(ListView):
     """
@@ -1594,7 +1461,7 @@ class BudgetUpdate(AjaxableResponseMixin, UpdateView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'Success, Quantitative Output Updated!')
+        messages.success(self.request, 'Success, Budget Output Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -1618,7 +1485,7 @@ class BudgetDelete(AjaxableResponseMixin, DeleteView):
 
         form.save()
 
-        messages.success(self.request, 'Success, Quantitative Output Deleted!')
+        messages.success(self.request, 'Success, Budget Deleted!')
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = BudgetForm

@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, include, url
 
-from .views import QuantitativeOutputsList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
-    CollectedDataList, CollectedDataCreate, CollectedDataUpdate, CollectedDataDelete, IndicatorCreate, IndicatorDelete, IndicatorUpdate,\
+from .views import CollectedDataList, CollectedDataCreate, CollectedDataUpdate, CollectedDataDelete, IndicatorCreate, IndicatorDelete, IndicatorUpdate,\
     IndicatorList
 
 
@@ -15,18 +14,11 @@ urlpatterns = patterns('',
     url(r'^report/(?P<program>\w+)/$', 'indicators.views.indicatorReport', name='indicatorReport'),
     url(r'^program_report/(?P<program>\w+)/$', 'indicators.views.programIndicatorReport', name='programIndicatorReport'),
 
-    
     #Indicator Form
     url(r'^indicator_list/(?P<pk>\w+)/$', IndicatorList.as_view(), name='indicator_list'),
     url(r'^indicator_add/(?P<id>\w+)/$', IndicatorCreate.as_view(), name='indicator_add'),
     url(r'^indicator_update/(?P<pk>\w+)/$', IndicatorUpdate.as_view(), name='indicator_update'),
     url(r'^indicator_delete/(?P<pk>\w+)/$', IndicatorDelete.as_view(), name='indicator_delete'),
-
-    #Quantitative Outputs Form
-    url(r'^quantitative_list/(?P<pk>\w+)/$', QuantitativeOutputsList.as_view(), name='quantitative_list'),
-    url(r'^quantitative_add/(?P<id>\w+)/$', QuantitativeOutputsCreate.as_view(), name='quantitative_add'),
-    url(r'^quantitative_update/(?P<pk>\w+)/$', QuantitativeOutputsUpdate.as_view(), name='quantitative_update'),
-    url(r'^quantitative_delete/(?P<pk>\w+)/$', QuantitativeOutputsDelete.as_view(), name='quantitative_delete'),
 
     #Collected Data Form
     url(r'^collecteddata/(?P<pk>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),

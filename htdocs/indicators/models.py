@@ -5,7 +5,6 @@ from activitydb.models import Program, Sector, Community, ProjectAgreement
 from datetime import datetime
 
 
-
 class IndicatorType(models.Model):
     indicator_type = models.CharField(max_length=135, blank=True)
     description = models.CharField(max_length=765, blank=True)
@@ -153,15 +152,14 @@ class IndicatorAdmin(admin.ModelAdmin):
 
 
 class CollectedData(models.Model):
-    reporting_period = models.ForeignKey(ReportingPeriod, blank=True, null=True)
     targeted = models.CharField("Targeted", max_length=255, blank=True, null=True)
     achieved = models.CharField("Achieved", max_length=255, blank=True, null=True)
-    disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True, null=True)
+    disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.CharField("Description", max_length=255, blank=True, null=True)
     indicator = models.ForeignKey(Indicator, blank=True, null=True)
     community = models.ManyToManyField(Community, blank=True, related_name="q_community")
     sector = models.ManyToManyField(Sector, blank=True, related_name="q_sector")
-    activity = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_activity")
+    date_collected = models.DateTimeField(null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -182,5 +180,5 @@ class CollectedData(models.Model):
 
 
 class CollectedDataAdmin(admin.ModelAdmin):
-    list_display = ('description', 'targeted', 'achieved', 'indicator', 'create_date', 'edit_date')
+    list_display = ('description', 'targeted', 'achieved', 'indicator','disaggregation_value','community','sector','date_collected', 'create_date', 'edit_date')
     display = 'Indicator Output/Outcome Collected Data'

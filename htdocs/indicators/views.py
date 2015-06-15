@@ -8,9 +8,8 @@ import json
 import unicodedata
 from django.http import HttpResponseRedirect
 from django.db import models
-from models import Indicator, CollectedData
-from activitydb.models import QuantitativeOutputs, Community
-from activitydb.models import Program, ProjectAgreement
+from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData
+from activitydb.models import Program, ProjectAgreement, Community
 from indicators.forms import IndicatorForm, CollectedDataForm
 from django.shortcuts import render_to_response
 from django.contrib import messages
@@ -18,7 +17,7 @@ from tola.util import getCountry
 from tables import IndicatorTable, IndicatorDataTable
 from django_tables2 import RequestConfig
 from activitydb.forms import FilterForm
-from .forms import QuantitativeOutputsForm, IndicatorForm
+from .forms import IndicatorForm
 from django.db.models import Count
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -220,19 +219,19 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
     getIndicators = Indicator.objects.select_related()
 
     if int(id) != 0:
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__id = id).select_related()
+        getQuantitativeData = CollectedData.objects.all().filter(indicator__id = id).select_related()
         getCommunity = Community.objects.all()
         print "id"
     else:
-        getQuantitativeData = QuantitativeOutputs.objects.all().select_related()
+        getQuantitativeData = CollectedData.objects.all().select_related()
         getCommunity = Community.objects.all().select_related()
 
     if int(program) != 0:
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(agreement__program__id = program).select_related()
+        getQuantitativeData = CollectedData.objects.all().filter(agreement__program__id = program).select_related()
         getCommunity = Community.objects.all().filter(q_agreement__program__id = program).select_related()
 
     if int(agreement) != 0:
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(agreement__id = agreement).select_related()
+        getQuantitativeData = CollectedData.objects.all().filter(agreement__id = agreement).select_related()
         getCommunity = Community.objects.all().filter(q_agreement__id = agreement).select_related()
 
 
@@ -247,7 +246,7 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
         """
          fields = ('targeted', 'achieved', 'description', 'indicator', 'agreement', 'complete')
         """
-        queryset = QuantitativeOutputs.objects.filter(
+        queryset = CollectedData.objects.filter(
                                            Q(agreement__project_name__contains=request.GET["search"]) |
                                            Q(description__icontains=request.GET["search"]) |
                                            Q(indicator__name__contains=request.GET["search"])
@@ -258,127 +257,6 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/data_report.html", {'getQuantitativeData':getQuantitativeData,'countries':countries, 'getCommunity':getCommunity, 'table': table, 'getAgreements': getAgreements,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id,'program':program,'agreement':agreement})
-
-
-class QuantitativeOutputsList(ListView):
-    """
-    QuantitativeOutput List
-    """
-    model = QuantitativeOutputs
-    template_name = 'indicators/quantitative_list.html'
-
-
-    def get(self, request, *args, **kwargs):
-
-        countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
-        project_proposal_id = self.kwargs['pk']
-
-        if int(self.kwargs['pk']) == 0:
-            getQuantitativeOutputs = QuantitativeOutputs.objects.all().order_by('agreement__program__name','indicator__number')
-        else:
-            getQuantitativeOutputs = QuantitativeOutputs.objects.all().filter(agreement__program__id=self.kwargs['pk']).order_by('indicator__number')
-
-        return render(request, self.template_name, {'getQuantitativeOutputs': getQuantitativeOutputs, 'project_proposal_id': project_proposal_id, 'getPrograms': getPrograms})
-
-
-class QuantitativeOutputsCreate(CreateView):
-    """
-    QuantitativeOutput Form
-    """
-    model = QuantitativeOutputs
-    template_name = 'indicators/quantitativeoutputs_form.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(QuantitativeOutputsCreate, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['id']})
-        return context
-
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(QuantitativeOutputsCreate, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def dispatch(self, request, *args, **kwargs):
-        return super(QuantitativeOutputsCreate, self).dispatch(request, *args, **kwargs)
-
-    def get_initial(self):
-        initial = {
-            'agreement': self.kwargs['id'],
-            }
-
-        return initial
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Quantitative Output Created!')
-        form = ""
-        return self.render_to_response(self.get_context_data(form=form))
-
-
-    form_class = QuantitativeOutputsForm
-
-
-class QuantitativeOutputsUpdate(UpdateView):
-    """
-    QuantitativeOutput Form
-    """
-    model = QuantitativeOutputs
-    template_name = 'indicators/quantitativeoutputs_form.html'
-
-
-    def get_context_data(self, **kwargs):
-        context = super(QuantitativeOutputsUpdate, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['pk']})
-        return context
-
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(QuantitativeOutputsUpdate, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Quantitative Output Updated!')
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = QuantitativeOutputsForm
-
-
-class QuantitativeOutputsDelete(DeleteView):
-    """
-    QuantitativeOutput Delete
-    """
-    model = QuantitativeOutputs
-    success_url = '/'
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-
-        form.save()
-
-        messages.success(self.request, 'Success, Quantitative Output Deleted!')
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = QuantitativeOutputsForm
 
 
 class CollectedDataList(ListView):
@@ -407,12 +285,36 @@ class CollectedDataCreate(CreateView):
     """
     model = CollectedData
     template_name = 'indicators/collecteddata_form.html'
+    form_class = CollectedDataForm
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataCreate, self).get_context_data(**kwargs)
-        context.update({'program': self.kwargs['program']})
+
+        try:
+            getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
+        except DisaggregationLabel.DoesNotExist:
+            getDisaggregationLabel = None
+
+        try:
+            getDisaggregationValue = DisaggregationValue.objects.all().filter(disaggregation_label__disaggregation_type__indicator__id=self.kwargs['indicator'])
+        except DisaggregationLabel.DoesNotExist:
+            getDisaggregationValue = None
+
+        context.update({'getDisaggregationValue': getDisaggregationValue})
+        context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'indicator': self.kwargs['indicator']})
         return context
+
+    """
+    def get_initial(self):
+        initial = {
+            'indicator': self.kwargs['indicator'],
+            'program': self.kwargs['program'],
+
+        }
+
+        return initial
+    """
 
     def dispatch(self, request, *args, **kwargs):
         return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
@@ -430,13 +332,38 @@ class CollectedDataCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
+
+        latest = CollectedData.objects.latest('id')
+        getCollectedData = CollectedData.objects.get(id=latest.id)
+        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
+
+        for label in getDisaggregationLabel:
+            for key, value in self.request.POST.iteritems():
+                if key == label.id:
+                    value_to_insert = value
+                else:
+                    value_to_insert = None
+            if value_to_insert:
+                insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert)
+                insert_disaggregationvalue.save()
+
+        for label in getDisaggregationLabel:
+            for key, value in self.request.POST.iteritems():
+                if key == "update_" + str(label.id):
+                    value_to_update = value
+                else:
+                    value_to_update = None
+            if value_to_update:
+                update_disaggregatedvalue = DisaggregationValue.objects.filter(disaggregation_label=label).update(value=value_to_update)
+                update_disaggregatedvalue.save()
+
         form.save()
         messages.success(self.request, 'Success, Data Created!')
+
         form = ""
         return self.render_to_response(self.get_context_data(form=form))
 
 
-    form_class = CollectedDataForm
 
 
 class CollectedDataUpdate(UpdateView):

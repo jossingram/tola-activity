@@ -7,7 +7,8 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
-from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete, Program, Community, Sector, QuantitativeOutputs,Country as ActivityCountry, Feedback, FAQ, Documentation
+from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete, Program, Community, Sector,Country as ActivityCountry, Feedback, FAQ, Documentation
+from indicators.models import CollectedData
 from djangocosign.models import UserProfile
 from djangocosign.models import Country
 from .tables import IndicatorDataTable
@@ -45,8 +46,8 @@ def index(request,id=0,sector=0):
         proposal_wait_count = ProjectProposal.objects.all().filter(approval='in progress', program__country__in=countries).count()
         complete_wait_count = ProjectComplete.objects.all().filter(approval='in progress', program__country__in=countries).count()
         getCommunity = Community.objects.all().filter(country__in=countries)
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__country__in=countries).order_by('indicator__number')
-        getQuantitativeDataSums = QuantitativeOutputs.objects.all().filter(indicator__program__country__in=countries).order_by('indicator__number').values('indicator__number','indicator__name').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+        getQuantitativeData = CollectedData.objects.all().filter(indicator__program__country__in=countries).order_by('indicator__number')
+        getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__country__in=countries).order_by('indicator__number').values('indicator__number','indicator__name').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
 
     else:
         getFilteredName=Program.objects.get(id=program_id)
@@ -60,8 +61,8 @@ def index(request,id=0,sector=0):
         proposal_wait_count = ProjectProposal.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
         complete_wait_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
         getCommunity = Community.objects.all().filter(projectproposal__program__id=program_id)
-        getQuantitativeData = QuantitativeOutputs.objects.all().filter(indicator__program__id=program_id).order_by('indicator__number')
-        getQuantitativeDataSums = QuantitativeOutputs.objects.all().filter(indicator__program__id=program_id).order_by('indicator__number').values('indicator__number','indicator__name').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+        getQuantitativeData = CollectedData.objects.all().filter(indicator__program__id=program_id).order_by('indicator__number')
+        getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id).order_by('indicator__number').values('indicator__number','indicator__name').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
 
     table = IndicatorDataTable(getQuantitativeDataSums)
     table.paginate(page=request.GET.get('page', 1), per_page=20)

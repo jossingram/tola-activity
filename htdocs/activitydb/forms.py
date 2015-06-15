@@ -6,7 +6,7 @@ from functools import partial
 from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
-from .models import ProjectProposal, ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, QuantitativeOutputs, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office
+from .models import ProjectProposal, ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
@@ -154,29 +154,6 @@ class ProjectProposalForm(forms.ModelForm):
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
 
-
-class QuantitativeOutputsForm(forms.ModelForm):
-
-    class Meta:
-        model = QuantitativeOutputs
-        exclude = ['create_date', 'edit_date']
-
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-6'
-        self.helper.form_error_title = 'Form Errors'
-        self.helper.error_text_inline = True
-        self.helper.help_text_inline = True
-        self.helper.html5_required = True
-        self.helper.form_tag = False
-
-        super(QuantitativeOutputsForm, self).__init__(*args, **kwargs)
-
-
-QuantitativeOutputsFormSet = formset_factory(QuantitativeOutputsForm)
 
 
 class BudgetForm(forms.ModelForm):
@@ -678,7 +655,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                             <tr>
                                                 <td>{{ item.contributor}}</td>
                                                 <td>{{ item.contributor_description}}</td>
-                                                <td>{{ item.oroposed_value}}</td>
+                                                <td>{{ item.proposed_value}}</td>
                                                 <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
                                             </tr>
                                             {% endfor %}
@@ -692,44 +669,6 @@ class ProjectCompleteForm(forms.ModelForm):
                         ),
                     ),
 
-                ),
-                 Tab('Project Planning',
-                    Fieldset(
-                        'Additional Planning Data Added via links below after save',
-                        MultiField(
-                            '',
-                             HTML("""
-
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Quantitative Outputs</div>
-                                      {% if getQuantitative %}
-                                          <!-- Table -->
-                                          <table class="table">
-                                            <tr>
-                                            <th>Targeted</th>
-                                            <th>Description</th>
-                                            <th>Indicator</th>
-                                            <th>View</th>
-                                            </tr>
-                                            {% for item in getQuantitative %}
-                                            <tr>
-                                                <td>{{ item.targeted}}</td>
-                                                <td>{{ item.description}}</td>
-                                                <td>{{ item.logframe_indicator}}</td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
-                                            </tr>
-                                            {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
-                                      </div>
-                                    </div>
-                              """),
-
-                            ),
-                        ),
                 ),
 
                 Tab('Approval',
