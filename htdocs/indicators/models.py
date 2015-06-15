@@ -157,6 +157,8 @@ class CollectedData(models.Model):
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.CharField("Description", max_length=255, blank=True, null=True)
     indicator = models.ForeignKey(Indicator, blank=True, null=True)
+    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement")
+    complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete")
     community = models.ManyToManyField(Community, blank=True, related_name="q_community")
     sector = models.ManyToManyField(Sector, blank=True, related_name="q_sector")
     date_collected = models.DateTimeField(null=True, blank=True)
