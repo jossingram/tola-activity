@@ -98,7 +98,7 @@ class CollectedDataForm(forms.ModelForm):
 
             HTML("""<br/>"""),
 
-            Fieldset('Approval',
+            Fieldset('Collected Data',
                 'targeted', 'achieved', 'description','indicator','community','sector',
             ),
 
@@ -124,7 +124,7 @@ class CollectedDataForm(forms.ModelForm):
                                             {% endfor %}
                                           </table>
                                     </div>
-                                {% else % }
+                                {% else %}
                                     <h4>Disaggregation Levels Not Entered</h4>
                                     <a href="/indicators/indicator_update/{{ indicator }}">Add a Disaggregation</a>
                                 {% endif %}
