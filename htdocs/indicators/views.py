@@ -164,10 +164,10 @@ def indicatorReport(request, program=0):
                     method_of_analysis, information_use, reporting_frequency, comments, program, sector, approved_by, approval_submitted_by, create_date, edit_date)
         """
         queryset = Indicator.objects.filter(
-                                           Q(indicator_type__icontains=request.GET["search"]) |
-                                           Q(name__icontains=request.GET["search"]) |
-                                           Q(number__icontains=request.GET["search"]) |
-                                           Q(definition__startswith=request.GET["search"])
+                                           Q(indicator_type__indicator_type__contains=request.GET["search"]) |
+                                           Q(name__contains=request.GET["search"]) | Q(number__contains=request.GET["search"]) |
+                                           Q(number__contains=request.GET["search"]) | Q(sector__sector__contains=request.GET["search"]) |
+                                           Q(definition__contains=request.GET["search"])
                                           )
         table = IndicatorTable(queryset)
 
