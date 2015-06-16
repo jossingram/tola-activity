@@ -14,9 +14,9 @@
     <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata_list/0/">-- All --</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/0/">-- All --</a></li>
     {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata_list/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
     {% endfor %}
     </ul>
     <a href="/indicators/collecteddata_add/0/0/" class="btn btn-large btn-success">New Data</a> &nbsp;
@@ -26,33 +26,49 @@
 </div>
 
 
-<div class='panel panel-default'>
-  <!-- Default panel contents -->
-  <div class='panel-heading'>Non-Activity Indicator Data</div>
-  {% if getCollectedData %}
-      <!-- Table -->
-      <table class="table">
-        <tr>
-        <th>Date Created</th>
-        <th>Indicator</th>
-        <th>Program</th>
-        <th>Sector</th>
-        <th>Community</th>
-        </tr>
-        {% for item in getCollectedData %}
-        <tr>
-            <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.create_date}}</a></td>
-            <td>{{ item.indicator}}</td>
-            <td>{{ item.program}}</td>
-            <td>{{ item.sector}}</td>
-            <td>{{ item.community}}</td>
-            <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a>&nbsp;<a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
-        </tr>
-        {% endfor %}
-      </table>
-  {% else %}
-    No Data
-  {% endif %}
 
-</div>
+    {% if getCollectedData %}
+    <div class='panel panel-default'>
+    {% regroup getCollectedData by program as DataByProgram %}
+    {% for program in DataByProgram %}
+        <div class='panel-heading'><h4>Program: {{ program.grouper }} </h4></div>
+            <!-- Table -->
+            <table class="table">
+            {% regroup program.list by indicator as indicator_list %}
+            {% for indicator in indicator_list %}
+                <tr class="success">
+                    <td colspan="5"><b>Indicator:</b> {{ indicator.id }} - {{ indicator.grouper }}</td>
+                </tr>
+                <tr>
+                    <th>Date Created</th>
+                    <th>Date Collected</th>
+                    <th>Target</th>
+                    <th>Actual</th>
+                    <th>&nbsp;</th>
+                </tr>
+                {% for item in getCollectedData %}
+                {% if item.indicator == indicator.grouper %}
+                <tr>
+                    <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.date_created}}</a></td>
+                    <td>{{ item.date_collected }}</td>
+                    <td>{{ item.targeted }}</td>
+                    <td>{{ item.achieved }}</td>
+                    <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a>&nbsp;<a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><b>TOTALS:</b></td>
+                    <td>{{ getCollectedData.targeted_sum }}</td>
+                    <td>{{ getCollectedData.achieved_sum }}</td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    {% endfor %}
+    </div>
+    {% else %}
+        <h4>No Data</h4>
+    {% endif %}
 {% endblock content %}

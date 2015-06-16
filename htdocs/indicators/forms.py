@@ -5,9 +5,18 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset, Field
-
+from functools import partial
 import floppyforms.__future__ as forms
 from tola.util import getCountry
+
+
+class DatePicker(forms.DateInput):
+    """
+    Use in form to create a Jquery datepicker element
+    """
+    template_name = 'datepicker.html'
+
+    DateInput = partial(forms.DateInput, {'class': 'datepicker'})
 
 
 class IndicatorForm(forms.ModelForm):
@@ -81,6 +90,8 @@ class CollectedDataForm(forms.ModelForm):
         model = CollectedData
         exclude = ['create_date', 'edit_date']
 
+    date_collected = forms.DateField(widget=DatePicker.DateInput(), required=False)
+
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.request = kwargs.pop('request')
@@ -99,13 +110,13 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved', 'description','indicator','community','sector',
+                'targeted', 'achieved', 'description','indicator','date_collected'
             ),
 
-            Fieldset("Disaggregated Actuals:",
+
                 MultiField(
                         "",
-                        HTML("""
+                        HTML("""<br/>
                                 {% if getDisaggregationLabel %}
                                     <div class='panel panel-default'>
                                         <!-- Default panel contents -->
@@ -125,8 +136,8 @@ class CollectedDataForm(forms.ModelForm):
                                           </table>
                                     </div>
                                 {% else %}
-                                    <h4>Disaggregation Levels Not Entered</h4>
-                                    <a href="/indicators/indicator_update/{{ indicator }}">Add a Disaggregation</a>
+                                    <h4>Disaggregation Levels Not Entered For This Indicator</h4>
+                                    <a href="/indicators/indicator_update/{{ indicator_id }}">Add a Disaggregation</a>
                                 {% endif %}
 
                                 {% if getDisaggregationValue %}
@@ -152,7 +163,7 @@ class CollectedDataForm(forms.ModelForm):
                                 {% endif %}
                              """),
                 ),
-            ),
+
             HTML("""<br/>"""),
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
@@ -162,5 +173,3 @@ class CollectedDataForm(forms.ModelForm):
 
         super(CollectedDataForm, self).__init__(*args, **kwargs)
 
-        countries = getCountry(self.request.user)
-        self.fields['community'].queryset = Community.objects.filter(country__in=countries)

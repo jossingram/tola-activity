@@ -274,7 +274,7 @@ class CollectedDataList(ListView):
         if int(self.kwargs['pk']) == 0:
             getCollectedData = CollectedData.objects.all()
         else:
-            getCollectedData = CollectedData.objects.all().filter(program__id=self.kwargs['pk'])
+            getCollectedData = CollectedData.objects.all().filter(indicator__program__id=self.kwargs['pk'])
 
         return render(request, self.template_name, {'getCollectedData': getCollectedData, 'getPrograms': getPrograms})
 
@@ -305,7 +305,6 @@ class CollectedDataCreate(CreateView):
         context.update({'indicator': self.kwargs['indicator']})
         return context
 
-    """
     def get_initial(self):
         initial = {
             'indicator': self.kwargs['indicator'],
@@ -314,7 +313,6 @@ class CollectedDataCreate(CreateView):
         }
 
         return initial
-    """
 
     def dispatch(self, request, *args, **kwargs):
         return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
@@ -344,7 +342,7 @@ class CollectedDataCreate(CreateView):
                 else:
                     value_to_insert = None
             if value_to_insert:
-                insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert)
+                insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=getCollectedData)
                 insert_disaggregationvalue.save()
 
         for label in getDisaggregationLabel:
@@ -354,7 +352,7 @@ class CollectedDataCreate(CreateView):
                 else:
                     value_to_update = None
             if value_to_update:
-                update_disaggregatedvalue = DisaggregationValue.objects.filter(disaggregation_label=label).update(value=value_to_update)
+                update_disaggregatedvalue = DisaggregationValue.objects.filter(disaggregation_label=label,collecteddata=getCollectedData).update(value=value_to_update)
                 update_disaggregatedvalue.save()
 
         form.save()
@@ -376,6 +374,18 @@ class CollectedDataUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataUpdate, self).get_context_data(**kwargs)
+        try:
+            getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__collecteddata__id=self.kwargs['pk'])
+        except DisaggregationLabel.DoesNotExist:
+            getDisaggregationLabel = None
+
+        try:
+            getDisaggregationValue = DisaggregationValue.objects.all().filter(disaggregation_label__disaggregation_type__indicator__collecteddata__id=self.kwargs['pk'])
+        except DisaggregationLabel.DoesNotExist:
+            getDisaggregationValue = None
+
+        context.update({'getDisaggregationValue': getDisaggregationValue})
+        context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
         return context
 

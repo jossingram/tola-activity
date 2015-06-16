@@ -159,14 +159,12 @@ class CollectedData(models.Model):
     indicator = models.ForeignKey(Indicator, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2")
-    community = models.ManyToManyField(Community, blank=True, related_name="q_community")
-    sector = models.ManyToManyField(Sector, blank=True, related_name="q_sector")
     date_collected = models.DateTimeField(null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('description',)
+        ordering = ('indicator','date_collected','create_date')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"
 
     #onsave add create date or update edit date
@@ -179,6 +177,14 @@ class CollectedData(models.Model):
     #displayed in admin templates
     def __unicode__(self):
         return self.description
+
+    def targeted_sum(self):
+        targets=CollectedData.targeted.filter(indicator__id=self).sum('targeted')
+        return target
+
+    def achieved_sum(self):
+        achieved=CollectedData.targeted.filter(indicator__id=self).sum('achieved')
+        return achieved
 
 
 class CollectedDataAdmin(admin.ModelAdmin):

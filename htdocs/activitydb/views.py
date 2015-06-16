@@ -910,7 +910,16 @@ class CommunityList(ListView):
         else:
             getCommunity = Community.objects.all().filter(projectproposal__id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': project_proposal_id,'country': countries})
+        if request.method == "GET" and "search" in request.GET:
+            print "search"
+            """
+             fields = ('name', 'office')
+            """
+            getCommunity = Community.objects.all().filter(Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
+                                                            Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
+                                                             Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectproposal__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related()
+
+        return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': project_proposal_id,'country': countries, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
 class CommunityReport(ListView):

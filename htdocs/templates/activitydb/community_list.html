@@ -22,7 +22,9 @@
 <style>
     #map { height: 480px; }
 </style>
-
+{% load crispy_forms_tags %}
+{% crispy form form.helper %}
+<br/>
 <form action="#" method="post">
 <p>Zoom to Region: 	<select id="region" onchange="ZoomToCountry(this.value);">
 				<option value="1">All Regions</option>
