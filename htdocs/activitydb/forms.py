@@ -341,7 +341,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                                 <td>{{ item.contributor}}</td>
                                                 <td>{{ item.description_of_contribution}}</td>
                                                 <td>{{ item.proposed_value}}</td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
@@ -378,37 +378,6 @@ class ProjectAgreementForm(forms.ModelForm):
                         'Additional Planning Data Added via links below after save',
                         MultiField(
                             '',
-                            HTML("""
-
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Quantitative Outputs</div>
-                                      {% if getQuantitative %}
-                                          <!-- Table -->
-                                          <table class="table">
-                                            <tr>
-                                            <th>Targeted</th>
-                                            <th>Achieved</th>
-                                            <th>Description</th>
-                                            <th>Indicator</th>
-                                            <th>View</th>
-                                            </tr>
-                                            {% for item in getQuantitative %}
-                                            <tr>
-                                                <td>{{ item.targeted}}</td>
-                                                <td>{{ item.achieved}}</td>
-                                                <td>{{ item.description}}</td>
-                                                <td>{{ item.indicator}}</td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
-                                            </tr>
-                                            {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
-                                      </div>
-                                    </div>
-                                     """),
 
                             HTML("""
 
@@ -429,7 +398,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                                 <td>{{ item.responsible_person}}</td>
                                                 <td>{{ item.frequency}}</td>
                                                 <td>{{ item.type}}</td>
-                                                <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/activitydb/monitor_update/{{ item.id }}/'>Edit</a> | <a class="monitoring" href='/activitydb/monitor_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
+                                                <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/activitydb/monitor_update/{{ item.id }}/'>Edit</a> | <a class="monitoring" href='/activitydb/monitor_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
@@ -459,7 +428,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                                 <td>{{ item.percent_complete}}</td>
                                                 <td>{{ item.percent_cumulative}}</td>
                                                 <td>{{ item.description}}</td>
-                                                <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_delete/{{ item.id }}/' data-target="#myModal">Delete</a></td>
+                                                <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
                                             </tr>
                                             {% endfor %}
                                           </table>
@@ -753,8 +722,8 @@ class CommunityForm(forms.ModelForm):
                 ),
                 Tab('For Geographic Communities',
                     Fieldset('Households',
-                        'total_num_households','avg_household_size', 'male_0_14', 'female_0_14', 'male_15-24', 'female_15_24',
-                        'male_25-59', 'female_25_59', 'male_over_60', 'female_over_60', 'total_population',
+                        'total_num_households','avg_household_size', 'male_0_14', 'female_0_14', 'male_15_24', 'female_15_24',
+                        'male_25_59', 'female_25_59', 'male_over_60', 'female_over_60', 'total_population',
                     ),
                     Fieldset('Land',
                         'total_land','total_agricultural_land','total_rainfed_land','total_horticultural_land',

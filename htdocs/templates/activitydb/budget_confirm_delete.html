@@ -2,12 +2,12 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <title>Delete Monitor</title>
+  <title>Delete Budget</title>
 </head>
 <body>
 
 <script type="text/javascript">
-    var frm = $('#outputForm');
+    var frm = $('#benchmarkForm');
     frm.submit(function () {
         $.ajax({
             type: frm.attr('method'),
@@ -30,16 +30,19 @@
         <strong>{{ error|escape }}</strong>
     </div>
 
-    <h4 class="modal-title">{% block page_title %}Montior Delete {% endblock %}</h4>
+    <h4 class="modal-title">{% block page_title %}Budget Form{% endblock %}</h4>
 
     </div>
     <div class="modal-body">
-
-    <form action="" method="post">{% csrf_token %}
-        <p>Are you sure you want to delete?</p>
-        <input type="submit" value="Confirm" />
-    </form>
+        <form action="{% budget_delete %}" method="post">{% csrf_token %}
+            <p>Are you sure you want to delete "{{ object }}"?</p>
+            <input type="submit" value="Confirm" />
+        </form>
     </div>
+    <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/activitydb/projectagreement_update/{{ id }}/#project-planning';parent.location.reload();">Close</button>
+    </div>
+
 </body>
 </html>
 
