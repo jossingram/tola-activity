@@ -7,7 +7,7 @@
 <body>
 
 <script type="text/javascript">
-    var frm = $('#outputForm');
+    var frm = $('#monitorDelete');
     frm.submit(function () {
         $.ajax({
             type: frm.attr('method'),
@@ -35,10 +35,13 @@
     </div>
     <div class="modal-body">
 
-    <form action="" method="post">{% csrf_token %}
+    <form action="/activitydb/monitor_delete/{{ id }}/" method="post" id="monitorDelete">{% csrf_token %}
         <p>Are you sure you want to delete?</p>
         <input type="submit" value="Confirm" />
     </form>
+    <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/activitydb/projectagreement_update/{{ id }}/#project-planning';parent.location.reload();">Close</button>
+    </div>
     </div>
 </body>
 </html>

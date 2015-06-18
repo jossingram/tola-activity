@@ -1118,6 +1118,12 @@ class MonitorDelete(AjaxableResponseMixin, DeleteView):
     Monitor Form
     """
     model = Monitor
+    success_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(MonitorDelete, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
 
     def form_invalid(self, form):
 
@@ -1197,6 +1203,13 @@ class BenchmarkDelete(AjaxableResponseMixin, DeleteView):
     Benchmark Form
     """
     model = Benchmarks
+    success_url = '/'
+
+
+    def get_context_data(self, **kwargs):
+        context = super(BenchmarkDelete, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
 
     def form_invalid(self, form):
 
@@ -1483,6 +1496,12 @@ class BudgetDelete(AjaxableResponseMixin, DeleteView):
     """
     model = Budget
     success_url = '/'
+
+
+    def get_context_data(self, **kwargs):
+        context = super(BudgetDelete, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
 
     def form_invalid(self, form):
 
