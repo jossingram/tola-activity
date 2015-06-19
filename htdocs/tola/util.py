@@ -36,3 +36,17 @@ def getCountry(user):
 
         return get_countries
 
+def getTolaDataSilos(user):
+        """
+        Returns a list of silos from TolaData that the logged in user has access to
+
+        """
+        # get users country from django cosign module
+        user_countries = UserProfile.objects.all().filter(user=user).values('countries')
+        # get the country name from django cosign module
+        get_cosign_country = Country.objects.all().filter(id__in=user_countries).values('name')
+        # get the id from the activitydb model
+        get_countries = ActivityCountry.objects.all().filter(country__in=get_cosign_country)
+
+        return get_countries
+

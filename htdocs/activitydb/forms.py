@@ -624,7 +624,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                                 <td>{{ item.contributor}}</td>
                                                 <td>{{ item.contributor_description}}</td>
                                                 <td>{{ item.proposed_value}}</td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>View</a> | <a class="output" href='/activitydb/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>

@@ -92,6 +92,35 @@ class ProgramAdmin(admin.ModelAdmin):
     display = 'Program'
 
 
+class ApprovalAuthority(models.Model):
+    approval_user = models.ForeignKey(settings.AUTH_USER_MODEL,help_text='User with Approval Authority', blank=True, null=True, related_name="auth_approving")
+    budget_limit = models.IntegerField(null=True, blank=True)
+    fund = models.IntegerField("Fund",null=True, blank=True)
+    country = models.ForeignKey("Country", null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('approval_user',)
+        verbose_name_plural = "Approval Authority"
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ApprovalAuthority, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.approval_user
+
+
+class ApprovalAuthorityAdmin(admin.ModelAdmin):
+    list_display = ('approval_user')
+    display = 'Approval Authority'
+
+
 class Province(models.Model):
     name = models.CharField("Province Name", max_length=255, blank=True)
     country = models.ForeignKey(Country)

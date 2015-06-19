@@ -1,6 +1,7 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
+from django.views.generic import TemplateView
 from .models import ProjectProposal, ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
@@ -137,17 +138,19 @@ class ProjectProposalList(ListView):
             return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getDashboard':getDashboard,'getPrograms':getPrograms})
 
 
-class ProjectProposalImport(ListView):
+class ProjectProposalImport(AjaxableResponseMixin,TemplateView):
     """
     Import project proposal from a TolaData
     """
+
+    template_name = 'activitydb/import_form.html'
 
     def get_context_data(self, **kwargs):
         context = super(ProjectProposalImport, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
 
-    template_name = 'activitydb/projectproposal_import.html'
+
 
 
 class ProjectProposalCreate(CreateView):
