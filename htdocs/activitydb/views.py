@@ -918,7 +918,8 @@ class CommunityList(ListView):
         if activity_id != 0:
             getCommunity = Community.objects.all().filter(projectproposal__id=activity_id).distinct()
         elif program_id != 0:
-            getCommunity = Community.objects.all().filter(projectproposal__program__id=program_id).distinct()
+            print "program"
+            getCommunity = Community.objects.all().filter(Q(projectproposal__program__id=program_id) | Q(projectagreement__program__id=program_id)).distinct()
         else:
             getCommunity = Community.objects.all().distinct()
 

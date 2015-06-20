@@ -20,7 +20,7 @@
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/community_list/0/0">-- All --</a></li>
     {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/community_list/0/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/community_list/{{ program.id }}/0/">{{ program.gaitid}} - {{ program.name }}</a></li>
     {% endfor %}
   </ul>
     <a href="/activitydb/community_add" class="btn btn-large btn-success">New Community</a>
