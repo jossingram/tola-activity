@@ -3,6 +3,7 @@ import datetime
 import urllib2
 import json
 import base64
+import sys
 
 from djangocosign.models import UserProfile, Country
 from activitydb.models import Country as ActivityCountry
@@ -41,12 +42,40 @@ def getTolaDataSilos(user):
         Returns a list of silos from TolaData that the logged in user has access to
 
         """
-        # get users country from django cosign module
-        user_countries = UserProfile.objects.all().filter(user=user).values('countries')
-        # get the country name from django cosign module
-        get_cosign_country = Country.objects.all().filter(id__in=user_countries).values('name')
-        # get the id from the activitydb model
-        get_countries = ActivityCountry.objects.all().filter(country__in=get_cosign_country)
+        url="https://tola-data.mercycorps.org/api/silo/?format=json"
+        # set url for json feed here
+        json_file = urllib2.urlopen(url)
 
-        return get_countries
+        print "JSON FILE:"
+        print json_file.read()
+
+        #load data
+        data = json.load(json_file)
+        json_file.close()
+
+        for row in data:
+            print row
+            vars_to_sql = []
+            keys_to_sql = []
+            for new_key, new_value in row.iteritems():
+                try:
+                    new_key = new_key.encode('ascii','ignore')
+                    new_value = new_value.encode('ascii','ignore')
+                except Exception, err:
+                    sys.stderr.write('ERROR: %s\n' % str(err))
+                print new_key
+                print new_value
+
+                if new_value:
+                    #country or region related columns only
+                    if new_key in ('country','region','iso_code'):
+                        #change iso_code to code for DB table
+                        if new_key == 'iso_code':
+                            new_key = 'code'
+                        keys_to_sql.append(new_key)
+                        vars_to_sql.append(new_value)
+            silos = keys_to_sql + vars_to_sql
+
+
+        return silos
 

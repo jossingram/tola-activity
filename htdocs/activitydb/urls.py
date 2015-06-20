@@ -42,7 +42,7 @@ urlpatterns = patterns('',
                        url(r'^projectcomplete_import', ProjectCompleteImport.as_view(), name='projectcomplete_import'),
                        url(r'^projectcomplete_detail/(?P<pk>\w+)/$', ProjectCompleteDetail.as_view(), name='projectcomplete_detail'),
 
-                       url(r'^community_list/(?P<pk>\w+)/$', CommunityList.as_view(), name='community_list'),
+                       url(r'^community_list/(?P<program_id>\w+)/(?P<activity_id>\w+)/$', CommunityList.as_view(), name='community_list'),
                        url(r'^community_report/(?P<pk>\w+)/$', CommunityReport.as_view(), name='community_report'),
                        url(r'^community_add', CommunityCreate.as_view(), name='community_add'),
                        url(r'^community_update/(?P<pk>\w+)/$', CommunityUpdate.as_view(), name='community_update'),

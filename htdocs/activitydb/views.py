@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
-from tola.util import getCountry
+from tola.util import getCountry, getTolaDataSilos
 from mixins import AjaxableResponseMixin
 """
 project_proposal_id is the key to link each related form
@@ -145,9 +145,11 @@ class ProjectProposalImport(AjaxableResponseMixin,TemplateView):
 
     template_name = 'activitydb/import_form.html'
 
-    def get_context_data(self, **kwargs):
+    def get(self,request, **kwargs):
         context = super(ProjectProposalImport, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
+        context['silos'] = getTolaDataSilos(request.user)
+        context.update
         return context
 
 
@@ -891,7 +893,8 @@ class DocumentationDelete(DeleteView):
 
 class CommunityList(ListView):
     """
-    Community
+    Community list creates a map and list of communites by user country access and filters
+    by either direct link from project or by program dropdown filter
     """
     model = Community
     template_name = 'activitydb/community_list.html'
@@ -906,28 +909,33 @@ class CommunityList(ListView):
 
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
-        project_proposal_id = self.kwargs['pk']
+        activity_id = int(self.kwargs['activity_id'])
+        program_id = int(self.kwargs['program_id'])
 
-        if int(self.kwargs['pk']) == 0:
-            getCommunity = Community.objects.all()
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+        #Filter Community list and map by activity or program
+        if activity_id != 0:
+            getCommunity = Community.objects.all().filter(projectproposal__id=activity_id).distinct()
+        elif program_id != 0:
+            getCommunity = Community.objects.all().filter(projectproposal__program__id=program_id).distinct()
         else:
-            getCommunity = Community.objects.all().filter(projectproposal__id=self.kwargs['pk'])
+            getCommunity = Community.objects.all().distinct()
 
         if request.method == "GET" and "search" in request.GET:
-            print "search"
             """
              fields = ('name', 'office')
             """
             getCommunity = Community.objects.all().filter(Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
                                                             Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
-                                                             Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectproposal__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related()
+                                                             Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectproposal__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related().distinct()
 
-        return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': project_proposal_id,'country': countries, 'form': FilterForm(), 'helper': FilterForm.helper})
+        return render(request, self.template_name, {'getCommunity':getCommunity,'project_proposal_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
 class CommunityReport(ListView):
     """
-    Community
+    Community Report filtered by project
     """
     model = Community
     template_name = 'activitydb/community_report.html'
@@ -949,7 +957,7 @@ class CommunityReport(ListView):
 
 class CommunityCreate(CreateView):
     """
-    Community Form
+    Community Form create a new community
     """
     model = Community
 
@@ -987,7 +995,7 @@ class CommunityCreate(CreateView):
 
 class CommunityUpdate(UpdateView):
     """
-    Community Form
+    Community Form Update an existing community
     """
     model = Community
 
@@ -1012,7 +1020,7 @@ class CommunityUpdate(UpdateView):
 
 class CommunityDelete(DeleteView):
     """
-    Community Form
+    Community Form Delete an existing community
     """
     model = Community
     success_url = reverse_lazy('community_list',args='0')

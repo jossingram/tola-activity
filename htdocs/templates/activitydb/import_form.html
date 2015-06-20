@@ -35,8 +35,9 @@
     </div>
     <div class="modal-body">
         <form class="form-horizontal" method="post" id="importForm" action="/activitydb/budget_add/{{ id }}/">
-
-
+            {% for silo in silos %}
+                <input type="checkbox" name="{{ silo }}"> {{ silo }}<br/>
+            {% endfor %}
 
         <input type="submit" class="btn btn-primary" name="Save changes" value="Save changes"/>
         </form>

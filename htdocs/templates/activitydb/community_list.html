@@ -12,31 +12,29 @@
 {% block page_title %}Community List{% endblock %}
 
 {% block content %}
-<div>
+<div class="dropdown">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+    Programs
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/community_list/0/0">-- All --</a></li>
+    {% for program in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/community_list/0/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
+    {% endfor %}
+  </ul>
+    <a href="/activitydb/community_add" class="btn btn-large btn-success">New Community</a>
+    <a href="/activitydb/community_import" class="btn btn-large btn-info" data-toggle="modal" data-target="#importModal">Import Community</a>
 
-    <a href="/activitydb/community_add" class="btn btn-large btn-success">New Community</a> &nbsp;
-    <a href="/activitydb/community_import" class="btn btn-large btn-info">Import Community</a>
-
-<hr/>
 </div>
+<br/>
+
 <style>
     #map { height: 480px; }
 </style>
 {% load crispy_forms_tags %}
 {% crispy form form.helper %}
-<br/>
-<form action="#" method="post">
-<p>Zoom to Region: 	<select id="region" onchange="ZoomToCountry(this.value);">
-				<option value="1">All Regions</option>
-				<option>East & Southern Africa</option>
-				<option>Central & South Asia</option>
-				<option>West & Central Africa</option>
-				<option>East Asia</option>
-				<option>Latin America, Caribbean, Balkans, Caucasus</option>
-				<option>Middle East</option>
-			</select></p>
-</form>
-<p><b>Communities</b></p>
+<h4>Communities Map and List</h4>
 <div id="map"></div>
 
 {% include "activitydb/community_map.html" %}
@@ -90,5 +88,13 @@
         <li class="list-group-item">No Communityes yet.</li>
     {% endfor %}
 </table>
+
+<!-- Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div> <!-- /.modal-content -->
+    </div> <!-- /.modal-dialog -->
+</div> <!-- /.modal -->
 
 {% endblock content %}
