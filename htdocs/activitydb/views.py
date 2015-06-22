@@ -1006,6 +1006,12 @@ class CommunityUpdate(UpdateView):
         kwargs['request'] = self.request
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        context = super(CommunityUpdate, self).get_context_data(**kwargs)
+        getProjects = ProjectProposal.objects.all().filter(community__id=self.kwargs['pk'])
+        context.update({'getProjects': getProjects})
+        return context
+
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))

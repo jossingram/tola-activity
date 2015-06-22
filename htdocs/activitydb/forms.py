@@ -742,7 +742,34 @@ class CommunityForm(forms.ModelForm):
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
                 Reset('reset', 'Reset', css_class='btn-warning')
-            )
+            ),
+
+             HTML("""
+            <br/>
+            <div class='panel panel-default'>
+              <!-- Default panel contents -->
+              <div class='panel-heading'>Projects in this Community</div>
+              {% if getProjects %}
+                  <!-- Table -->
+                  <table class="table">
+                    <tr>
+                    <th>Project Name</th>
+                    <th>Program</th>
+                    <th>Activity Code</th>
+                    <th>View</th>
+                    </tr>
+                    {% for item in getProjects %}
+                    <tr>
+                        <td>{{ item.project_name }}</td>
+                        <td>{{ item.program.name }}</td>
+                        <td>{{ item.activity_code }}</td>
+                        <td><a target="_new" href='/activitydb/projectproposal_detail/{{ item.id }}/'>View</a>
+                    </tr>
+                    {% endfor %}
+                  </table>
+              {% endif %}
+            </div>
+             """),
         )
 
         super(CommunityForm, self).__init__(*args, **kwargs)
