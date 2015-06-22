@@ -21,7 +21,7 @@
 <div>
 {% if getDashboard %}
     {% for program in getDashboard %}
-        {% if program.proposal.all %}
+        {% if program.agreement.all %}
             <div class='panel panel-default'>
                 <div class='panel-heading'><h4>{{ program.gaitid }} - {{ program.name }}</h4></div>
                 <!-- Table -->
@@ -34,13 +34,13 @@
                         <th>Approval Status</th>
                         <th>&nbsp;</th>
                     </tr>
-                    {% for item in program.proposal.all %}
+                    {% for item in program.agreement.all %}
                     <tr>
                         <td>{{ item.create_date}}</td>
-                        <td><a href="/activitydb/projectproposal_update/{{ item.id }}">{{ item.project_name}}</a></td>
+                        <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a></td>
                         <td>{{ item.activity_code}}</td>
                         <td>{{ item.office}}</td>
-                        <td>{% if item.agreement_count and not item.complete_count %} Agreement {% elif item.complete_count %} Complete {% else %} Proposal {% endif %}</td>
+                        <td>{% if item.agreement_count and not item.complete_count %} Agreement {% elif item.complete_count %} Complete {% endif %} {{ item.approval }}</td>
                         <td>
                             <a href="/activitydb/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
                         </td>

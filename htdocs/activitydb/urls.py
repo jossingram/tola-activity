@@ -1,10 +1,8 @@
-from .views import ProjectProposalImport, ProjectProposalList, ProjectProposalCreate, ProjectProposalUpdate, ProjectProposalDelete, \
-    ProgramDash, ProjectAgreementCreate, ProjectAgreementList, ProjectAgreementUpdate, ProjectAgreementDetail, ProjectAgreementDelete, ProjectAgreementImport, ProjectCompleteCreate, ProjectCompleteUpdate,\
+from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, ProjectAgreementUpdate, ProjectAgreementDetail, ProjectAgreementDelete, ProjectAgreementImport, ProjectCompleteCreate, ProjectCompleteUpdate,\
     ProjectCompleteList, ProjectCompleteDelete, ProjectCompleteImport, CommunityList, CommunityCreate, CommunityUpdate, CommunityDelete,\
     DocumentationList, DocumentationCreate, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
     BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
-    BeneficiaryDelete, ProjectCompleteDetail, ProjectProposalDetail,\
-    CommunityReport, BudgetCreate, BudgetDelete, BudgetUpdate, BudgetList, ProgramDashboardCounts
+    BeneficiaryDelete, ProjectCompleteDetail, CommunityReport, BudgetCreate, BudgetDelete, BudgetUpdate, BudgetList, ProgramDashboardCounts
 
 
 try:
@@ -19,14 +17,6 @@ urlpatterns = patterns('',
                        ###activitydb
                        url(r'^dashboard/(?P<pk>\w+)/$', ProgramDash.as_view(), name='dashboard'),
                        url(r'^dashboard/project/(?P<pk>\w+)/$', ProjectDash.as_view(), name='project_dashboard'),
-
-                       #project proposal
-                       url(r'^projectproposal_list/(?P<pk>\w+)/$', ProjectProposalList.as_view(), name='projectproposal_list'),
-                       url(r'^projectproposal_add', ProjectProposalCreate.as_view(), name='projectproposal_add'),
-                       url(r'^projectproposal_update/(?P<pk>\w+)/$', ProjectProposalUpdate.as_view(), name='projectproposal_update'),
-                       url(r'^projectproposal_delete/(?P<pk>\w+)/$', ProjectProposalDelete.as_view(), name='projectproposal_delete'),
-                       url(r'^projectproposal_import', ProjectProposalImport.as_view(), name='projectproposal_import'),
-                       url(r'^projectproposal_detail/(?P<pk>\w+)/$', ProjectProposalDetail.as_view(), name='projectproposal_detail'),
 
                        url(r'^projectagreement_list/(?P<pk>\w+)/$', ProjectAgreementList.as_view(), name='projectagreement_list'),
                        url(r'^projectagreement_add/(?P<pk>\w+)/$', ProjectAgreementCreate.as_view(), name='projectagreement_add'),

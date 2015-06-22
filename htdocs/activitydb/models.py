@@ -515,14 +515,21 @@ class ProjectProposalAdmin(admin.ModelAdmin):
 
 
 class ProjectAgreement(models.Model):
-    project_proposal = models.ForeignKey(ProjectProposal, null=False, blank=False)
     program = models.ForeignKey(Program, null=True, blank=True, related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
-    project_name = models.CharField("Activity Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255, blank=True, null=True)
+    project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255, blank=True, null=True)
     project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
+    project_description = models.TextField("Project Description", help_text='Description must meet the Criteria.  Will translate description into three languages: English, Dari and Pashto)', blank=True, null=True)
     community = models.ManyToManyField(Community, blank=True)
-    activity_code = models.CharField("Activity Code", help_text='Please request Activity Code from Kabul MEL', max_length=255, blank=True, null=True)
+    community_rep = models.CharField("Community Representative", max_length=255, blank=True, null=True)
+    community_rep_contact = models.CharField("Community Representative Contact", help_text='Can have mulitple contact numbers', max_length=255, blank=True, null=True)
+    community_mobilizer = models.CharField("MC Community Mobilizer", max_length=255, blank=True, null=True)
+    community_mobilizer_contact = models.CharField("MC Community Mobilizer Contact Number", max_length=255, blank=True, null=True)
+    has_rej_letter = models.BooleanField("If Rejected: Rejection Letter Sent?", help_text='If yes attach copy', default=False)
+    rejection_letter = models.FileField("Rejection Letter", upload_to='uploads', blank=True, null=True)
+    activity_code = models.CharField("Activity Code", help_text='If applicable at this stage, please request Activity Code from MEL', max_length=255, blank=True, null=True)
+    project_description = models.TextField("Project Description", help_text='Description must meet the Criteria.  Will translate description into three languages: English, Dari and Pashto)', blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
     sector = models.ForeignKey("Sector", blank=True, null=True)
@@ -577,7 +584,7 @@ class ProjectAgreement(models.Model):
     class Meta:
         ordering = ('create_date',)
         permissions = (
-            ("can_approve", "Can approve proposal"),
+            ("can_approve", "Can approve agreement"),
         )
 
     #onsave add create date or update edit date
@@ -599,7 +606,6 @@ class ProjectAgreementAdmin(admin.ModelAdmin):
 
 class ProjectComplete(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True, related_name="complete")
-    project_proposal = models.ForeignKey(ProjectProposal)
     project_agreement = models.ForeignKey(ProjectAgreement)
     activity_code = models.CharField("Activity Code", max_length=255, blank=True, null=True)
     project_name = models.CharField("Activity Name", max_length=255, blank=True, null=True)
@@ -663,7 +669,7 @@ class Documentation(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     template = models.ForeignKey(Template, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
-    project = models.ForeignKey(ProjectProposal, blank=True, null=True)
+    project = models.ForeignKey(ProjectAgreement, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -683,7 +689,7 @@ class Documentation(models.Model):
 
 
 class DocumentationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'documentation_type', 'file_field', 'project_proposal_id', 'program_id', 'create_date', 'edit_date')
+    list_display = ('name', 'description', 'documentation_type', 'file_field', 'program_id', 'create_date', 'edit_date')
     display = 'Documentation'
 
 
@@ -776,7 +782,6 @@ class BudgetAdmin(admin.ModelAdmin):
 
 
 class MergeMap(models.Model):
-    project_proposal = models.ForeignKey(ProjectProposal, null=True, blank=False)
     project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=False)
     project_completion = models.ForeignKey(ProjectComplete, null=True, blank=False)
     from_column = models.CharField(max_length=255, blank=True)
@@ -784,15 +789,12 @@ class MergeMap(models.Model):
 
 
 class MergeMapAdmin(admin.ModelAdmin):
-    list_display = ( 'project_proposal', 'project_agreement', 'project_completion', 'from_column', 'to_column')
-    display = 'project_proposal'
+    list_display = ('project_agreement', 'project_completion', 'from_column', 'to_column')
+    display = 'project_agreement'
 
 
 class ProgramDashboard(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True)
-    project_proposal = models.ForeignKey(ProjectProposal, null=True, blank=True)
-    project_proposal_count = models.IntegerField(null=True,blank=True)
-    project_proposal_count_approved = models.IntegerField(null=True,blank=True)
     project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
     project_agreement_count = models.IntegerField(null=True,blank=True)
     project_agreement_count_approved = models.IntegerField(null=True,blank=True)
@@ -814,18 +816,18 @@ class ProgramDashboard(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return unicode("Program: %s  Proposal: %s" % (self.program, self.project_proposal))
+        return unicode("Program: %s " % (self.program, self.project_agreement))
 
 
 class ProgramDashboardAdmin(admin.ModelAdmin):
-    list_display = ('program', 'project_proposal', 'project_proposal_approved', 'create_date', 'edit_date')
+    list_display = ('program', 'create_date', 'edit_date')
     display = 'Program Dashboard'
 
 
 class TrainingAttendance(models.Model):
     training_name = models.CharField(max_length=255)
     program = models.ForeignKey(Program, null=True, blank=True)
-    project_proposal = models.ForeignKey(ProjectProposal, null=True, blank=True)
+    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
     implementer = models.CharField(max_length=255, null=True, blank=True)
     reporting_period = models.CharField(max_length=255, null=True, blank=True)
     total_participants = models.IntegerField(null=True, blank=True)
@@ -865,7 +867,7 @@ class TrainingAttendance(models.Model):
 
 
 class TrainingAttendanceAdmin(admin.ModelAdmin):
-    list_display = ('training_name', 'program', 'project_proposal', 'create_date', 'edit_date')
+    list_display = ('training_name', 'program', 'project_agreement', 'create_date', 'edit_date')
     display = 'Program Dashboard'
 
 
@@ -934,6 +936,7 @@ class ContributionAdmin(admin.ModelAdmin):
 class DocumentationApp(models.Model):
     name = models.CharField(max_length=255,null=True, blank=True)
     documentation = models.TextField(null=True, blank=True)
+    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:

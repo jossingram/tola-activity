@@ -212,8 +212,13 @@ class ProjectAgreementCreateForm(forms.ModelForm):
             HTML("""<p>Create a Summary first then add additional fields after saving</p><br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal','community', 'activity_code', 'office_code', 'project_name', 'sector', 'project_activity',
+                    Fieldset('Program', 'program', 'project_proposal', 'activity_code', 'office_code', 'project_name', 'sector', 'project_activity',
                              'project_type', 'account_code', 'sub_code','mc_staff_responsible'
+                    ),
+                    Fieldset(
+                        'Community',
+                        'community',PrependedText('has_rej_letter', ''), 'rejection_letter', 'community_rep',
+                        'community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
                     ),
                 ),
             ),
@@ -304,7 +309,7 @@ class ProjectAgreementForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal','community', 'activity_code', 'office_code', 'project_name', 'sector', 'project_activity',
+                    Fieldset('Program', 'program','community', 'activity_code', 'office_code', 'project_name', 'sector', 'project_activity',
                              'project_type', 'account_code', 'sub_code','mc_staff_responsible'
                     ),
                 ),
