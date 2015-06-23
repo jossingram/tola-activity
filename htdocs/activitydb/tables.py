@@ -4,7 +4,7 @@ from models import ProjectAgreement
 TEMPLATE = '''
 <div class="btn-group btn-group-xs">
    <a type="button" class="btn btn-warning" href="/activitydb/projectagreement_update/{{ record.id }}">Edit</a>
-   <a type="button" class="btn btn-default" href="/activitydb/projectagreement_detail/{{ record.project_proposal_id }}">View</a>
+   <a type="button" class="btn btn-default" href="/activitydb/projectagreement_detail/{{ record.id }}">View</a>
 </div>
 '''
 

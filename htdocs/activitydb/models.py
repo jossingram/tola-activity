@@ -1,8 +1,9 @@
+from __future__ import unicode_literals
+
 from django.db import models
 from django.contrib import admin
 from django.conf import settings
 from datetime import datetime
-
 
 class Country(models.Model):
     country = models.CharField("Country Name", max_length=255, blank=True)
@@ -315,7 +316,8 @@ class Community(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.name
+        new_name = str(self.province) + " - " + str(self.name)
+        return new_name
 
 
 class CommunityAdmin(admin.ModelAdmin):
@@ -596,7 +598,8 @@ class ProjectAgreement(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.project_name
+        new_name = unicode(self.office) + unicode(" - ") + unicode(self.project_name)
+        return new_name
 
 
 class ProjectAgreementAdmin(admin.ModelAdmin):

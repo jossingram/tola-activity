@@ -268,13 +268,6 @@ class ProjectAgreementDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementDetail, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
-        getData = serializers.serialize('python', data)
-        #return just the fields and skip the object name
-        justFields = [d['fields'] for d in getData]
-        #handle date exceptions with date_handler
-        jsonData =json.dumps(justFields, default=date_handler)
-        context.update({'jsonData': jsonData})
-
         context.update({'id': self.kwargs['pk']})
 
         try:

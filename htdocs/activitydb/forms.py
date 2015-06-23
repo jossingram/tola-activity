@@ -6,7 +6,7 @@ from functools import partial
 from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
-from .models import ProjectProposal, ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office
+from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
@@ -71,90 +71,6 @@ class DatePicker(forms.DateInput):
     DateInput = partial(forms.DateInput, {'class': 'datepicker'})
 
 
-class ProjectProposalForm(forms.ModelForm):
-
-    class Meta:
-        model = ProjectProposal
-        fields = '__all__'
-
-
-    date_of_request = forms.DateField(widget=DatePicker.DateInput())
-    rejection_letter = forms.FileField(required=False)
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
-    approval = forms.ChoiceField(
-        choices=APPROVALS,
-        initial='in progress',
-        required=False,
-    )
-
-    def __init__(self,  *args, **kwargs):
-        #get the user object to check permissions with
-        self.request = kwargs.pop('request')
-        self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-6'
-        self.helper.form_error_title = 'Form Errors'
-        self.helper.error_text_inline = True
-        self.helper.help_text_inline = True
-        self.helper.html5_required = True
-        self.helper.layout = Layout(
-
-            HTML("""<br/>"""),
-            TabHolder(
-                Tab('General Information',
-                    Fieldset('Program', 'program', 'activity_code', 'date_of_request', 'office', 'sector', 'project_name', 'project_activity', 'project_type'
-                    ),
-                    Fieldset(
-                        'Community',
-                        'community',PrependedText('has_rej_letter', ''), 'rejection_letter', 'community_rep',
-                        'community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
-                    ),
-                ),
-                Tab('Description',
-                    Fieldset(
-                        'Proposal',
-                        Field('project_description', rows="3", css_class='input-xlarge'),
-                    ),
-                ),
-                Tab('Approval',
-                    Fieldset('Approval',
-                        'approval', 'estimated_by', 'approved_by', 'approval_submitted_by',
-                        Field('approval_remarks', rows="3", css_class='input-xlarge')
-                    ),
-                ),
-            ),
-
-            HTML("""<br/>"""),
-            FormActions(
-                Submit('submit', 'Save', css_class='btn-default'),
-                Reset('reset', 'Reset', css_class='btn-warning')
-            )
-        )
-
-
-        super(ProjectProposalForm, self).__init__(*args, **kwargs)
-
-        #override the program queryset to use request.user for country
-        countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
-
-        #override the office queryset to use request.user for country
-        self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
-
-        #override the community queryset to use request.user for country
-        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
-
-
-        if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
-            self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
-            self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
-            self.fields['approval'].help_text = "Approval level permissions required"
-
-
-
 class BudgetForm(forms.ModelForm):
 
     class Meta:
@@ -212,7 +128,7 @@ class ProjectAgreementCreateForm(forms.ModelForm):
             HTML("""<p>Create a Summary first then add additional fields after saving</p><br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'activity_code', 'office_code', 'project_name', 'sector', 'project_activity',
+                    Fieldset('Program', 'program', 'project_proposal', 'activity_code', 'office', 'project_name', 'sector', 'project_activity',
                              'project_type', 'account_code', 'sub_code','mc_staff_responsible'
                     ),
                     Fieldset(
@@ -309,8 +225,13 @@ class ProjectAgreementForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program','community', 'activity_code', 'office_code', 'project_name', 'sector', 'project_activity',
+                    Fieldset('Program', 'program', 'activity_code', 'office', 'project_name', 'sector', 'project_activity',
                              'project_type', 'account_code', 'sub_code','mc_staff_responsible'
+                    ),
+                    Fieldset(
+                        'Community',
+                        'community',PrependedText('has_rej_letter', ''), 'rejection_letter', 'community_rep',
+                        'community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
                     ),
                 ),
                 Tab('Budget',

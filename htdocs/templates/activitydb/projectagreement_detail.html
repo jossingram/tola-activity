@@ -13,7 +13,6 @@
 
 {% block content %}
 <ul class="nav nav-tabs">
-  <li role="presentation"><a href="/activitydb/projectproposal_detail/{{ id }}/">Proposal</a></li>
   <li role="presentation" class="active"><a href="/activitydb/projectagreement_detail/{{ id }}/">Agreement</a></li>
   <li role="presentation"><a href="/activitydb/projectcomplete_detail/{{ id }}/">Complete</a></li>
   <li role="presentation"><a href="/activitydb/community_report/{{ id }}/">Communities</a></li>
@@ -47,6 +46,30 @@
             <td>{{ agreement.program }}</td>
             <td>{{ agreement.project_activity }}</td>
             <td>{{ agreement.project_type }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Community Representative</th>
+            <th>Community Representative Contact Number</th>
+            <th>If Rejected, rejection letter send to community?</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.community_rep }}</td>
+            <td>{{ agreement.community_rep_contact }}</td>
+            <td>{{ agreement.has_rej_letter }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>MC Community Mobilizer</th>
+            <th>MC Community Mobilize Contact Number</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.community_mobilizer }}</td>
+            <td>{{ agreement.community_mobilizer_contact }}</td>
         </tr>
     </table>
     <br/>
@@ -211,19 +234,6 @@
     <!-- Default panel contents -->
     <div class="panel-heading">Part III: Project Planning</div>
     <!-- Table -->
-    <h4> Expected Indicator Outputs</h4>
-    <table class="table" border="1">
-        <tr>
-            <th>Indicator Name</th>
-            <th>Targeted #</th>
-            <th>Is this Indicator in the Logframe?</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.program_objectives }}</td>
-            <td>{{ agreement.mc_objectives }}</td>
-            <td>{{ agreement.effect_or_impact }}</td>
-        </tr>
-    </table>
     <h4>Benchmarks</h4>
     <table class="table" border="1">
         <tr>
@@ -231,11 +241,13 @@
             <th>% Completion</th>
             <th>% Cumulative completion</th>
         </tr>
+        {% for benchmark in getBenchmarks %}
         <tr>
-            <td>{{ agreement.justification_background }}</td>
-            <td>{{ agreement.justification_description_community_selection }}</td>
-            <td>{{ agreement.justification_description_community_selection }}</td>
+            <td>{{ benchmark.description }}</td>
+            <td>{{ benchmark.completion }}</td>
+            <td>{{ benchmark.cumulative_completion }}</td>
         </tr>
+        {% endfor %}
     </table>
     <h4>Capacity</h4>
     <table class="table" border="1">
@@ -268,11 +280,13 @@
             <th>Responsible Person</th>
             <th>Frequency</th>
         </tr>
+        {% for monitor in getMonitor %}
         <tr>
-            <td>{{ agreement.justification_background }}</td>
-            <td>{{ agreement.justification_description_community_selection }}</td>
-            <td>{{ agreement.justification_description_community_selection }}</td>
+            <td>{{ monitor.type }}</td>
+            <td>{{ monitor.responsible_person }}</td>
+            <td>{{ monitor.frequency }}</td>
         </tr>
+        {% endfor %}
     </table>
 </div>
 <div class="panel panel-warning">
