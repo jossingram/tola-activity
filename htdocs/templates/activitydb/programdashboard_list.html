@@ -40,7 +40,7 @@
                         <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a></td>
                         <td>{{ item.activity_code }}</td>
                         <td>{{ item.office }} </td>
-                        <td>{% if item.projectcomplete_set.all %} Complete {% else %} Agreement {% if item.approval %}{{ item.approval }}{% else %} open {% endif %} {% endif %}</td>
+                        <td>{% if item.projectcomplete_set.all %} Complete {% else %} Agreement {% if item.approval  %}{{ item.approval }}{% else %} open {% endif %} {% endif %}</td>
                         <td>
                             <a href="/activitydb/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
                         </td>
