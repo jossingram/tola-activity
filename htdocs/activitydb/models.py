@@ -531,7 +531,6 @@ class ProjectAgreement(models.Model):
     has_rej_letter = models.BooleanField("If Rejected: Rejection Letter Sent?", help_text='If yes attach copy', default=False)
     rejection_letter = models.FileField("Rejection Letter", upload_to='uploads', blank=True, null=True)
     activity_code = models.CharField("Activity Code", help_text='If applicable at this stage, please request Activity Code from MEL', max_length=255, blank=True, null=True)
-    project_description = models.TextField("Project Description", help_text='Description must meet the Criteria.  Will translate description into three languages: English, Dari and Pashto)', blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
     sector = models.ForeignKey("Sector", blank=True, null=True)
@@ -799,11 +798,7 @@ class MergeMapAdmin(admin.ModelAdmin):
 class ProgramDashboard(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True)
     project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
-    project_agreement_count = models.IntegerField(null=True,blank=True)
-    project_agreement_count_approved = models.IntegerField(null=True,blank=True)
     project_completion = models.ForeignKey(ProjectComplete, null=True, blank=True)
-    project_completion_count = models.IntegerField(null=True,blank=True)
-    project_completion_count_approved = models.IntegerField(null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -939,7 +934,6 @@ class ContributionAdmin(admin.ModelAdmin):
 class DocumentationApp(models.Model):
     name = models.CharField(max_length=255,null=True, blank=True)
     documentation = models.TextField(null=True, blank=True)
-    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:

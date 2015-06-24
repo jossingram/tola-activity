@@ -38,9 +38,9 @@
                     <tr>
                         <td>{{ item.create_date}}</td>
                         <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a></td>
-                        <td>{{ item.activity_code}}</td>
-                        <td>{{ item.office}}</td>
-                        <td>{% if item.agreement_count and not item.complete_count %} Agreement {% elif item.complete_count %} Complete {% endif %} {{ item.approval }}</td>
+                        <td>{{ item.activity_code }}</td>
+                        <td>{{ item.office }} </td>
+                        <td>{% if item.projectcomplete_set.all %} Complete {% else %} Agreement {% if item.approval %}{{ item.approval }}{% else %} open {% endif %} {% endif %}</td>
                         <td>
                             <a href="/activitydb/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
                         </td>

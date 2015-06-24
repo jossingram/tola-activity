@@ -13,11 +13,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='projectagreement',
-            name='project_description',
-            field=models.TextField(help_text=b'Description must meet the Criteria.  Will translate description into three languages: English, Dari and Pashto)', null=True, verbose_name=b'Project Description', blank=True),
-        ),
-        migrations.AddField(
-            model_name='projectagreement',
             name='community_mobilizer',
             field=models.CharField(max_length=255, null=True, verbose_name=b'MC Community Mobilizer', blank=True),
         ),

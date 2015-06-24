@@ -7,6 +7,7 @@ from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
 from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office
+from indicators.models import CollectedData
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
@@ -304,7 +305,34 @@ class ProjectAgreementForm(forms.ModelForm):
                         'Additional Planning Data Added via links below after save',
                         MultiField(
                             '',
-
+                             HTML("""
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Indicator Evidence</div>
+                                      {% if getQuantitative %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Targeted</th>
+                                            <th>Description</th>
+                                            <th>Indicator</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getQuantitative %}
+                                            <tr>
+                                                <td>{{ item.targeted}}</td>
+                                                <td>{{ item.description}}</td>
+                                                <td>{{ item.indicator}}</td>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
+                                      </div>
+                                    </div>
+                                     """),
                             HTML("""
 
                                     <div class='panel panel-default'>
@@ -743,6 +771,35 @@ class DocumentationForm(forms.ModelForm):
 
         super(DocumentationForm, self).__init__(*args, **kwargs)
 
+class QuantitativeOutputsForm(forms.ModelForm):
+
+    class Meta:
+        model = CollectedData
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+
+                'targeted', 'indicator', Field('description', rows="3", css_class='input-xlarge'),'date_collected', 'agreement',
+
+        )
+
+        super(QuantitativeOutputsForm, self).__init__(*args, **kwargs)
+
+
+QuantitativeOutputsFormSet = formset_factory(QuantitativeOutputsForm)
+
+
 class BenchmarkForm(forms.ModelForm):
 
     class Meta:
@@ -764,7 +821,7 @@ class BenchmarkForm(forms.ModelForm):
         self.helper.layout = Layout(
 
                 'percent_complete', 'percent_cumulative', Field('description', rows="3", css_class='input-xlarge'), 'agreement',
-                'file_field','project',
+                'file_field'
 
         )
 

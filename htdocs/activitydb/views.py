@@ -3,11 +3,12 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from django.views.generic import TemplateView
 from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget
+from indicators.models import CollectedData
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm
+from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -102,9 +103,9 @@ class ProgramDash(ListView):
         if int(self.kwargs['pk']) == 0:
             getDashboard = Program.objects.all().select_related().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('agreement'),has_complete=Count('complete'))
         else:
-            getDashboard = Program.objects.all().filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name').select_related()
+            getDashboard = Program.objects.all().filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
 
-        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms':getPrograms})
+        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms})
 
 
 class ProjectAgreementList(ListView):
@@ -191,6 +192,12 @@ class ProjectAgreementCreate(CreateView):
         latest = ProjectAgreement.objects.latest('id')
         getAgreement = ProjectAgreement.objects.get(id=latest.id)
 
+        #create a new dashbaord entry for the project
+        getProgram = Program.objects.get(id=latest.program_id)
+
+        create_dashboard_entry = ProgramDashboard(program=getProgram, project_agreement=getAgreement)
+        create_dashboard_entry.save()
+
         messages.success(self.request, 'Success, Agreement Created!')
         redirect_url = '/activitydb/projectagreement_update/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
@@ -210,6 +217,12 @@ class ProjectAgreementUpdate(UpdateView):
         context = super(ProjectAgreementUpdate, self).get_context_data(**kwargs)
         pk = self.kwargs['pk']
         context.update({'pk': pk})
+
+        try:
+            getQuantitative = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('indicator')
+        except CollectedData.DoesNotExist:
+            getQuantitative = None
+        context.update({'getQuantitative': getQuantitative})
 
         try:
             getMonitor = Monitor.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('type')
@@ -398,7 +411,7 @@ class ProjectCompleteCreate(CreateView):
         latest = ProjectComplete.objects.latest('id')
         getComplete = ProjectComplete.objects.get(id=latest.id)
 
-        ProgramDashboard.objects.filter(agreement__id=self.request.POST['agreement']).update(project_completion=getComplete)
+        ProgramDashboard.objects.filter(project_agreement__id=self.request.POST['project_agreement']).update(project_completion=getComplete)
 
         messages.success(self.request, 'Success, Completion Form Created!')
         redirect_url = '/activitydb/projectcomplete_update/' + str(latest.id)
@@ -1164,7 +1177,107 @@ class BeneficiaryDelete(DeleteView):
 
     form_class = BeneficiaryForm
 
+class QuantitativeOutputsList(ListView):
+    """
+    QuantitativeOutput List
+    """
+    model = CollectedData
+    template_name = 'activitydb/quantitative_list.html'
 
+    def get(self, request, *args, **kwargs):
+
+        project_proposal_id = self.kwargs['pk']
+
+        if int(self.kwargs['pk']) == 0:
+            getQuantitativeOutputs = QuantitativeOutputs.objects.all()
+        else:
+            getQuantitativeOutputs = QuantitativeOutputs.objects.all().filter(project_proposal_id=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getQuantitativeOutputs': getQuantitativeOutputs, 'project_proposal_id': project_proposal_id})
+
+
+class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
+    """
+    QuantitativeOutput Form
+    """
+    model = CollectedData
+    template_name = 'activitydb/quantitativeoutputs_form.html'
+    def get_context_data(self, **kwargs):
+        context = super(QuantitativeOutputsCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(QuantitativeOutputsCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = {
+            'agreement': self.kwargs['id'],
+            }
+
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Quantitative Output Created!')
+        form = ""
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+    form_class = QuantitativeOutputsForm
+
+
+class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
+    """
+    QuantitativeOutput Form
+    """
+    model = CollectedData
+
+    def get_context_data(self, **kwargs):
+        context = super(QuantitativeOutputsUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Quantitative Output Updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = QuantitativeOutputsForm
+
+
+class QuantitativeOutputsDelete(AjaxableResponseMixin, DeleteView):
+    """
+    QuantitativeOutput Delete
+    """
+    model = CollectedData
+    success_url = '/'
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Quantitative Output Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = QuantitativeOutputsForm
 
 class BudgetList(ListView):
     """
