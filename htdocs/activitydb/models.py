@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.conf import settings
 from datetime import datetime
 
+
 class Country(models.Model):
     country = models.CharField("Country Name", max_length=255, blank=True)
     code = models.CharField("2 Letter Country Code", max_length=4, blank=True)
@@ -17,6 +18,7 @@ class Country(models.Model):
     class Meta:
         ordering = ('country',)
         verbose_name_plural = "Countries"
+        app_label = 'activitydb'
 
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
