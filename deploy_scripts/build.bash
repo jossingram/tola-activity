@@ -16,13 +16,12 @@ then
     echo "Changes detected running test"
     git pull origin dev
     cd htdocs
-    sudo py manage.py test | grep -q -v 'OK' && passed=1
+    sudo py manage.py test | grep -q -v 'OK' && passed=0
     if [ $passed == 1 ]
     then
         echo "Test Failed"
-        sendmail -v glind@mercycorps.org, mkhan@mercycorps.org
-        subject:Unit Test Failed for Tola-Activity
-        Unit tests failed on [$hostname] for Tola-Activity
+        "Subject: Unit tests failed on [$hostname] for Tola-Activity" | /usr/sbin/sendmail glind@mercycorps.org, mkhan@mercycorps.org
+        <ctrl-d>
     else
         echo "All Tests Passed"
     fi
