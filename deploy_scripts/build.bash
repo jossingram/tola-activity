@@ -16,7 +16,7 @@ then
     echo "Changes detected running test"
     git pull origin dev
     cd htdocs
-    python manage.py test | grep -q -v 'OK' && passed=1
+    sudo py manage.py test | grep -q -v 'OK' && passed=1
     if [ $passed == 1 ]
     then
         echo "All Tests Passed"
@@ -26,6 +26,7 @@ then
     fi
 else
     echo "No changes detected"
+    cd htdocs
 fi
 
 echo "Running Migrations..."
