@@ -855,7 +855,7 @@ class TrainingAttendance(models.Model):
         ordering = ('training_name',)
 
     #onsave add create date or update edit date
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
@@ -887,7 +887,7 @@ class Beneficiary(models.Model):
         ordering = ('beneficiary_name',)
 
     #onsave add create date or update edit date
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
@@ -900,36 +900,6 @@ class Beneficiary(models.Model):
 
 class BeneficiaryAdmin(admin.ModelAdmin):
     list_display = ('beneficiary_name', 'father_name', 'age', 'gender', 'community', 'signature', 'remarks', 'initials')
-
-
-class Contribution(models.Model):
-    contributor = models.CharField("Contributor", max_length=255, blank=True)
-    description = models.CharField("Description of Contribution", max_length=255, blank=True)
-    value = models.CharField("Value of Contribution", max_length=255, blank=True)
-    actual = models.BooleanField("Is an Actual Contribution", default=None)
-    project_agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="c_agreement")
-    project_complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="c_complete")
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('contributor',)
-
-    #onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Contribution, self).save()
-
-    #displayed in admin templates
-    def __unicode__(self):
-        return self.contributor
-
-
-class ContributionAdmin(admin.ModelAdmin):
-    list_display = ('contributor', 'create_date', 'edit_date')
-    display = 'Contribution'
 
 
 # Documentation
@@ -951,8 +921,9 @@ class DocumentationApp(models.Model):
 
 
 class DocumentationAppAdmin(admin.ModelAdmin):
-    list_display = ( 'name', 'documentation', 'create_date',)
+    list_display = ('name', 'documentation', 'create_date',)
     display = 'DocumentationApp'
+
 
 # collect feedback from users
 class Feedback(models.Model):

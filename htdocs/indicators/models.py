@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib import admin
 from django.conf import settings
-from activitydb.models import Program, Sector, Community, ProjectAgreement, ProjectComplete
+from activitydb.models import Program, Sector, Community, ProjectAgreement, ProjectComplete, Country
 from datetime import datetime
 
 
@@ -15,8 +15,14 @@ class IndicatorType(models.Model):
         return self.indicator_type
 
 
+class IndicatorTypeAdmin(admin.ModelAdmin):
+    list_display = ('indicator_type','description','create_date','edit_date')
+    display = 'Indicator Type'
+
+
 class Objective(models.Model):
     name = models.CharField(max_length=135, blank=True)
+    country = models.ForeignKey(Country, null=True, blank=True)
     description = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -25,9 +31,9 @@ class Objective(models.Model):
         return self.name
 
 
-class IndicatorTypeAdmin(admin.ModelAdmin):
-    list_display = ('indicator_type','description','create_date','edit_date')
-    display = 'Indicator Type'
+class ObjectiveAdmin(admin.ModelAdmin):
+    list_display = ('name')
+    display = 'Objectives'
 
 
 class DisaggregationType(models.Model):
@@ -76,7 +82,7 @@ class DisaggregationValueAdmin(admin.ModelAdmin):
 
 
 class ReportingFrequency(models.Model):
-    frequency= models.CharField(max_length=135, blank=True)
+    frequency = models.CharField(max_length=135, blank=True)
     description = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
