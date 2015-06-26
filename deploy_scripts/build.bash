@@ -20,7 +20,9 @@ then
     if [ $passed == 1 ]
     then
         echo "Test Failed"
-        mail -s "Unit Test Failed for Tola-Activity" glind@mercycorps.org, mkhan@mercycorps.org
+        sendmail -v glind@mercycorps.org, mkhan@mercycorps.org
+        subject:Unit Test Failed for Tola-Activity
+        Unit tests failed on [$hostname] for Tola-Activity
     else
         echo "All Tests Passed"
     fi
