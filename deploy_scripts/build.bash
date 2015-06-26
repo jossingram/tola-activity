@@ -19,10 +19,10 @@ then
     sudo py manage.py test | grep -q -v 'OK' && passed=1
     if [ $passed == 1 ]
     then
-        echo "All Tests Passed"
-    else
         echo "Test Failed"
         mail -s "Unit Test Failed for Tola-Activity" glind@mercycorps.org, mkhan@mercycorps.org
+    else
+        echo "All Tests Passed"
     fi
 else
     echo "No changes detected"
