@@ -2,7 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from django.views.generic import TemplateView
-from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget
+from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority
 from indicators.models import CollectedData
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
-from tola.util import getCountry, getTolaDataSilos
+from tola.util import getCountry, getTolaDataSilos, emailGroup
 from mixins import AjaxableResponseMixin
 """
 project_agreement_id is the key to link each related form
@@ -259,12 +259,44 @@ class ProjectAgreementUpdate(UpdateView):
 
     def form_valid(self, form):
 
+        check_agreement_status = ProjectAgreement.objects.get(id=str(self.kwargs['pk']))
+        is_approved = str(form.instance.approval)
+        print check_agreement_status.approval
+        print is_approved
+        #check to see if the approval status has changed
+        if str(is_approved) is "approved" and check_agreement_status.approval is not "approved":
+            budget = form.instance.total_estimated_budget
+            try:
+                user_budget_approval = ApprovalAuthority.objects.get(approval_user=self.request.user)
+            except ApprovalAuthority.DoesNotExist:
+                user_budget_approval = None
+            #compare budget amount to users approval amounts
+            if user_budget_approval and int(budget) > int(user_budget_approval.budget_limit):
+                messages.success(self.request, 'You do not appear to have permissions to approve this agreement')
+                form.instance.approval = 'awaiting approval'
+            else:
+                messages.success(self.request, 'Success, Agreement and Budget Approved')
+                #email the approver group so they know this was approved
+                link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+                subject = "Project Agreement Approved: " + str(form.instance.project_name)
+                message = "A new agreement was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
+                emailGroup(group="Approver",link=link,subject=subject,message=message)
+                form.instance.approval = 'approved'
+        elif str(is_approved) is "awaiting approval" and check_agreement_status.approval is not "awaiting approval":
+                messages.success(self.request, 'Success, Agreement has been saved and is now Awaiting Approval (Notifications have been Sent)')
+                #email the approver group so they know this was approved
+                link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+                subject = "Project Agreement Waiting for Approval: " + str(form.instance.project_name)
+                message = "A new agreement was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
+                emailGroup(group="Approver",link=link,subject=subject,message=message)
+        else:
+            messages.success(self.request, 'Success, form updated!')
         form.save()
         #save formset from context
         context = self.get_context_data()
         self.object = form.save()
 
-        messages.success(self.request, 'Success, form updated!')
+
 
         return self.render_to_response(self.get_context_data(form=form))
 

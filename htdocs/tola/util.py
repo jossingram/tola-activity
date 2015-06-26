@@ -7,6 +7,8 @@ import sys
 
 from djangocosign.models import UserProfile, Country
 from activitydb.models import Country as ActivityCountry
+from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
+from django.contrib.auth.models import User
 
 #CREATE NEW DATA DICTIONARY OBJECT 
 def siloToDict(silo):
@@ -36,6 +38,7 @@ def getCountry(user):
         get_countries = ActivityCountry.objects.all().filter(country__in=get_cosign_country)
 
         return get_countries
+
 
 def getTolaDataSilos(user):
         """
@@ -79,3 +82,19 @@ def getTolaDataSilos(user):
 
         return silos
 
+
+def emailGroup(group,link,subject,message):
+        #email incident to admins
+        getGroupEmails = User.objects.all().filter(groups__name=group).values_list('email', flat=True)
+        email_link = link
+        formatted_email = email_link
+        subject = str(subject)
+        message = str(message) + formatted_email
+        to = [str(item) for item in getGroupEmails]
+
+        email = EmailMessage(subject, message, 'systems-incident@mercycorps.org',
+                to)
+
+        email.send()
+
+        mail_admins(subject, message, fail_silently=False)
