@@ -16,12 +16,11 @@ then
     echo "Changes detected running test"
     git pull origin dev
     cd htdocs
-    sudo py manage.py test | grep -q -v 'OK' && passed=0
+    sudo py manage.py test --settings tola.settings.test | grep -q -v 'OK' && passed=0
     if [ $passed == 1 ]
     then
         echo "Test Failed"
         "Subject: Unit tests failed on [$hostname] for Tola-Activity" | /usr/sbin/sendmail glind@mercycorps.org, mkhan@mercycorps.org
-        <ctrl-d>
     else
         echo "All Tests Passed"
     fi
