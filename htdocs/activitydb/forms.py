@@ -438,10 +438,10 @@ class ProjectCompleteCreateForm(forms.ModelForm):
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
 
-    expected_start_date = forms.DateField(widget=DatePicker.DateInput())
-    expected_end_date = forms.DateField(widget=DatePicker.DateInput())
-    actual_start_date = forms.DateField(widget=DatePicker.DateInput())
-    actual_end_date = forms.DateField(widget=DatePicker.DateInput())
+    expected_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    expected_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
 
@@ -494,10 +494,10 @@ class ProjectCompleteForm(forms.ModelForm):
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
 
-    expected_start_date = forms.DateField(widget=DatePicker.DateInput())
-    expected_end_date = forms.DateField(widget=DatePicker.DateInput())
-    actual_start_date = forms.DateField(widget=DatePicker.DateInput())
-    actual_end_date = forms.DateField(widget=DatePicker.DateInput())
+    expected_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    expected_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
 
@@ -631,7 +631,7 @@ class CommunityForm(forms.ModelForm):
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
 
-    date_of_firstcontact = forms.DateField(widget=DatePicker.DateInput())
+    date_of_firstcontact = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     approval = forms.ChoiceField(
         choices=APPROVALS,
@@ -665,7 +665,7 @@ class CommunityForm(forms.ModelForm):
                 ),
                 Tab('Location',
                     Fieldset('Places',
-                        'country','province','district','village','latitude','longitude',
+                        'country','province','district','village','latitude','longitude','altitude', 'precision',
                     ),
                     Fieldset('Map',
                         'map',
@@ -681,7 +681,7 @@ class CommunityForm(forms.ModelForm):
                     ),
                     Fieldset('Land',
                         'total_land','total_agricultural_land','total_rainfed_land','total_horticultural_land',
-                        'population_owning_land', 'avg_landholding_size', 'population_owning_livestock','animal_types','num_animals_population_owning'
+                        'population_owning_land', 'avg_landholding_size', 'population_owning_livestock','animal_type'
                     ),
                     Fieldset('Literacy',
                         'total_num_literate','literate_males','literate_females','literacy_rate',
@@ -689,7 +689,7 @@ class CommunityForm(forms.ModelForm):
                 ),
                 Tab('Approval',
                     Fieldset('Approval',
-                        'approval', 'filled_by', 'approved_by',
+                        'approval', 'filled_by', 'location_verified_by', 'approved_by',
                     ),
                 ),
             ),

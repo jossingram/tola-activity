@@ -195,7 +195,8 @@ class Office(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.name
+        new_name = unicode(self.name) + unicode(" - ") + unicode(self.code)
+        return new_name
 
 
 class OfficeAdmin(admin.ModelAdmin):
@@ -230,7 +231,7 @@ class VillageAdmin(admin.ModelAdmin):
 
 
 class ProfileType(models.Model):
-    profile = models.CharField("Profile Name", max_length=255, blank=True)
+    profile = models.CharField("Profile Type", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -263,7 +264,7 @@ class Community(models.Model):
     community_leader = models.CharField("Community Malik/Elder Name", max_length=255, blank=True, null=True)
     head_of_institution = models.CharField("Head of Shura/Institution", max_length=255, blank=True, null=True)
     date_of_firstcontact = models.DateTimeField(null=True, blank=True)
-    contact_number = models.CharField("Head of Shura/Institution", max_length=255, blank=True, null=True)
+    contact_number = models.CharField("Contact Number", max_length=255, blank=True, null=True)
     num_members = models.CharField("Number of Members", max_length=255, blank=True, null=True)
     distance_district_capital = models.IntegerField("Distance from District Capital", help_text="In KM", null=True, blank=True)
     distance_site_camp = models.IntegerField("Distance from Site Camp", help_text="In KM", null=True, blank=True)
@@ -279,6 +280,8 @@ class Community(models.Model):
     male_over_60 = models.IntegerField("Male Over 60", null=True, blank=True)
     female_over_60 = models.IntegerField("Female Over 60", null=True, blank=True)
     total_population = models.IntegerField(null=True, blank=True)
+    total_male = models.IntegerField(null=True, blank=True)
+    total_female = models.IntegerField(null=True, blank=True)
     total_land = models.IntegerField("Total Land", help_text="In hectares/jeribs", null=True, blank=True)
     total_agricultural_land = models.IntegerField("Total Agricultural Land", help_text="In hectares/jeribs", null=True, blank=True)
     total_rainfed_land = models.IntegerField("Total Rain-fed Land", help_text="In hectares/jeribs", null=True, blank=True)
@@ -290,17 +293,19 @@ class Community(models.Model):
     population_owning_land = models.IntegerField("Population Owning Land", help_text="(%)", null=True, blank=True)
     avg_landholding_size = models.IntegerField("Average Landholding Size", help_text="In hectares/jeribs", null=True, blank=True)
     population_owning_livestock = models.IntegerField("Population Owning Livestock", help_text="(%)", null=True, blank=True)
-    animal_type = models.CharField("Animal Types", help_text="See Guide for Calculation", max_length=255, null=True, blank=True)
-    num_animals_population_owning = models.CharField(help_text="What?", max_length=255, null=True, blank=True)
+    animal_type = models.CharField("Animal Types", help_text="List Animal Types", max_length=255, null=True, blank=True)
     country = models.ForeignKey(Country)
     province = models.ForeignKey(Province, null=True, blank=True)
     district = models.ForeignKey(District, null=True, blank=True)
     village = models.CharField("Village", help_text="", max_length=255, null=True, blank=True)
-    latitude = models.DecimalField("Latitude (Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
-    longitude = models.DecimalField("Longitude (Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
+    latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
+    longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
+    altitude = models.DecimalField("Altitude (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
+    precision = models.DecimalField("Precision (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
     approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(settings.AUTH_USER_MODEL,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="comm_approving")
     filled_by = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='This is the originator', blank=True, null=True, related_name="comm_estimate")
+    location_verified_by = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='This should be GIS Manager', blank=True, null=True, related_name="comm_gis")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
