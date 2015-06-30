@@ -128,16 +128,23 @@ class ProjectAgreementCreateForm(forms.ModelForm):
 
             HTML("""<p>Create a Summary first then add additional fields after saving</p><br/>"""),
             TabHolder(
-                Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'activity_code', 'office', 'project_name', 'sector', 'project_activity',
-                             'project_type', 'account_code', 'sub_code','mc_staff_responsible'
+                   Tab('Executive Summary',
+                        Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
+                                 'project_type','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
+                        ),
+
                     ),
-                    Fieldset(
-                        'Community',
-                        'community',PrependedText('has_rej_letter', ''), 'rejection_letter', 'community_rep',
-                        'community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
+                    Tab('Community Proposal',
+                        Fieldset(
+                            'Community',
+                            'community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
+                            'community_proposal','community',PrependedText('has_rej_letter', ''), 'rejection_letter',
+                        ),
+                        Fieldset(
+                            'Partners',
+                            PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list',
+                        ),
                     ),
-                ),
             ),
 
             HTML("""<br/>"""),
@@ -226,20 +233,25 @@ class ProjectAgreementForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'activity_code', 'office', 'project_name', 'sector', 'project_activity',
-                             'project_type', 'account_code', 'sub_code','mc_staff_responsible'
+                    Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
+                             'project_type','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
                     ),
+
+                ),
+                Tab('Community Proposal',
                     Fieldset(
                         'Community',
-                        'community',PrependedText('has_rej_letter', ''), 'rejection_letter', 'community_rep',
-                        'community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
+                        'community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
+                        'community_proposal','community',PrependedText('has_rej_letter', ''), 'rejection_letter',
+                    ),
+                    Fieldset(
+                        'Partners',
+                        PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list',
                     ),
                 ),
                 Tab('Budget',
                      Fieldset(
-                        'Partners',
-                        PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list', 'expected_start_date',
-                        'expected_end_date', 'expected_duration', 'beneficiary_type','estimated_num_direct_beneficiaries', 'average_household_size', 'estimated_num_indirect_beneficiaries',
+                        'Budget',
                         PrependedAppendedText('total_estimated_budget','$', '.00'), PrependedAppendedText('mc_estimated_budget','$', '.00'),
                         'estimation_date','other_budget','project_type_other',
                     ),
@@ -396,6 +408,25 @@ class ProjectAgreementForm(forms.ModelForm):
                             'capacity', 'evaluate',
                         ),
                     ),
+                ),
+                Tab('Project Impact',
+                     Fieldset(
+                        'Beneficiaries',
+                        'beneficiary_type','estimated_num_direct_beneficiaries', 'average_household_size', 'estimated_num_indirect_beneficiaries',
+                     ),
+                     Fieldset(
+                         'Training',
+                         'estimate_male_trained','estimate_female_trained','estimate_total_trained','estimate_trainings',
+                     ),
+                     Fieldset(
+                         'Distribution',
+                         'distribution_type','distribution_uom','distribution_estimate',
+                     ),
+                     Fieldset(
+                         'Cash For Work',
+                         'cfw_estimate_male','cfw_estimate_female','cfw_estimate_total','cfw_estimate_project_days','cfw_estimate_person_days',
+                         'cfw_estimate_cost_materials','cfw_estimate_wages_budgeted',
+                     ),
                 ),
                 Tab('Approval',
                     Fieldset('Approval',
