@@ -180,6 +180,7 @@ class ProjectAgreementForm(forms.ModelForm):
     me_reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     checked_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     estimated_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    finance_reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
 
@@ -311,7 +312,7 @@ class ProjectAgreementForm(forms.ModelForm):
                 ),
                 Tab('Project Planning',
                     Fieldset(
-                        'Additional Planning Data Added via links below after save',
+                        '',
                         MultiField(
                             '',
                              HTML("""
