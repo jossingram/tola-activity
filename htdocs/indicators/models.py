@@ -161,7 +161,7 @@ class CollectedData(models.Model):
     targeted = models.CharField("Targeted", max_length=255, blank=True, null=True)
     achieved = models.CharField("Achieved", max_length=255, blank=True, null=True)
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
-    description = models.CharField("Description", max_length=255, blank=True, null=True)
+    description = models.CharField("Remarks/comments", max_length=255, blank=True, null=True)
     indicator = models.ForeignKey(Indicator, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2")

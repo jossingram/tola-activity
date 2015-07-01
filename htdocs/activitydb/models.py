@@ -587,8 +587,8 @@ class ProjectAgreement(models.Model):
     finance_reviewed_by_date = models.DateTimeField("Date Reviewed by Finance", null=True, blank=True)
     me_reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="reviewing_me")
     me_reviewed_by_date = models.DateTimeField("Date Reviewed by M&E", null=True, blank=True)
-    capacity = models.CharField("Capacity",max_length=255, blank=True, null=True)
-    evaluate = models.CharField("How will you evaluate the outcome or impact of the project?",max_length=255, blank=True, null=True)
+    capacity = models.ManyToManyField(Capacity, blank=True)
+    evaluate = models.ManyToManyField(Evaluate, blank=True)
     approval = models.CharField("Status", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="approving_agreement")
     approved_by_date = models.DateTimeField("Date Approved", null=True, blank=True)
@@ -632,7 +632,7 @@ class ProjectComplete(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True, related_name="complete")
     project_agreement = models.ForeignKey(ProjectAgreement)
     activity_code = models.CharField("Activity Code", max_length=255, blank=True, null=True)
-    project_name = models.CharField("Activity Name", max_length=255, blank=True, null=True)
+    project_name = models.CharField("Project Name", max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     expected_start_date = models.DateTimeField(help_text="Comes from Form-04 Project Agreement", blank=True, null=True)
@@ -679,7 +679,8 @@ class ProjectComplete(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.project_name
+        new_name = unicode(self.office) + unicode(" - ") + unicode(self.project_name)
+        return new_name
 
 
 class ProjectCompleteAdmin(admin.ModelAdmin):

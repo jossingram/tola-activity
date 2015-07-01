@@ -197,18 +197,6 @@ class ProjectAgreementForm(forms.ModelForm):
     documentation_government_approval = forms.CharField(help_text="Check the box if there IS documentation to show government request for or approval of the project. This should be attached to the proposal, and also kept in the program file.", widget=forms.Textarea, required=False)
     description_of_community_involvement = forms.CharField(help_text="How the community is involved in the planning, approval, or implementation of this project should be described. Indicate their approval (copy of a signed MOU, or their signed Project Prioritization request, etc.). But also describe how they will be involved in the implementation - supplying laborers, getting training, etc.", widget=forms.Textarea, required=False)
 
-    capacity = forms.ModelChoiceField(
-        queryset=Capacity.objects.all(),
-        initial='',
-        required=False,
-    )
-
-    evaluate = forms.ModelChoiceField(
-        queryset=Evaluate.objects.all(),
-        initial='',
-        required=False,
-    )
-
     approval = forms.ChoiceField(
         choices=APPROVALS,
         initial='in progress',
