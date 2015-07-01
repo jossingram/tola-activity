@@ -2,13 +2,13 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from django.views.generic import TemplateView
-from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority
+from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem
 from indicators.models import CollectedData
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm
+from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -1418,6 +1418,115 @@ class BudgetDelete(AjaxableResponseMixin, DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = BudgetForm
+
+
+class ChecklistList(ListView):
+    """
+    Checklist List
+    """
+    model = Checklist
+    template_name = 'activitydb/checklist_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        project_agreement_id = self.kwargs['pk']
+
+        if int(self.kwargs['pk']) == 0:
+            getChecklist = Checklist.objects.all()
+        else:
+            getChecklist = Checklist.objects.all().filter(agreement_id=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getChecklist': getChecklist, 'project_agreement_id': self.kwargs['pk']})
+
+
+class ChecklistCreate(CreateView):
+    """
+    Budget Form
+    """
+    model = Checklist
+
+    def get_context_data(self, **kwargs):
+        context = super(ChecklistCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(ChecklistCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        initial = {
+            'agreement': self.kwargs['id'],
+            }
+
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Checklist Created!')
+        form = ""
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+    form_class = ChecklistForm
+
+
+class ChecklistUpdate(UpdateView):
+    """
+    Checklist Form
+    """
+    model = Checklist
+
+    def get_context_data(self, **kwargs):
+        context = super(ChecklistUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Checklist Output Updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = ChecklistForm
+
+
+class ChecklistDelete(DeleteView):
+    """
+    Checklist Delete
+    """
+    model = Checklist
+    success_url = '/'
+
+
+    def get_context_data(self, **kwargs):
+        context = super(ChecklistDelete, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Checklist Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = ChecklistForm
 
 
 def report(request):

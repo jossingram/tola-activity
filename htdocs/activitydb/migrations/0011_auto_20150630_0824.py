@@ -81,4 +81,9 @@ class Migration(migrations.Migration):
             name='estimate_trainings',
             field=models.IntegerField(null=True, verbose_name='Estimated # of Trainings Conducted', blank=True),
         ),
+        migrations.AddField(
+            model_name='projectagreement',
+            name='project_description',
+            field=models.TextField(null=True, verbose_name='Project Description', blank=True),
+        ),
     ]

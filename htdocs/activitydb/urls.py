@@ -2,7 +2,8 @@ from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, Pr
     ProjectCompleteList, ProjectCompleteDelete, ProjectCompleteImport, CommunityList, CommunityCreate, CommunityUpdate, CommunityDelete,\
     DocumentationList, DocumentationCreate, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
     BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
-    BeneficiaryDelete, ProjectCompleteDetail, CommunityReport, BudgetCreate, BudgetDelete, BudgetUpdate, BudgetList, QuantitativeOutputsList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete
+    BeneficiaryDelete, ProjectCompleteDetail, CommunityReport, ChecklistCreate, ChecklistDelete, ChecklistUpdate, BudgetList, QuantitativeOutputsList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
+    ChecklistCreate, ChecklistDelete, ChecklistUpdate, ChecklistList
 
 
 try:
@@ -63,15 +64,20 @@ urlpatterns = patterns('',
                        url(r'^training_update/(?P<pk>\w+)/$', TrainingUpdate.as_view(), name='training_update'),
                        url(r'^training_delete/(?P<pk>\w+)/$', TrainingDelete.as_view(), name='training_delete'),
 
+                       url(r'^checklist_list/(?P<pk>\w+)/$', ChecklistList.as_view(), name='checklist_list'),
+                       url(r'^checklist_add/(?P<id>\w+)/$', ChecklistCreate.as_view(), name='checklist_add'),
+                       url(r'^checklist_update/(?P<pk>\w+)/$', ChecklistUpdate.as_view(), name='checklist_update'),
+                       url(r'^checklist_delete/(?P<pk>\w+)/$', ChecklistDelete.as_view(), name='checklistdelete'),
+
                        url(r'^beneficiary_list/(?P<pk>\w+)/$', BeneficiaryList.as_view(), name='beneficiary_list'),
                        url(r'^beneficiary_add/(?P<id>\w+)/$', BeneficiaryCreate.as_view(), name='beneficiary_add'),
                        url(r'^beneficiary_update/(?P<pk>\w+)/$', BeneficiaryUpdate.as_view(), name='beneficiary_update'),
                        url(r'^beneficiary_delete/(?P<pk>\w+)/$', BeneficiaryDelete.as_view(), name='beneficiary_delete'),
 
                        url(r'^budget_list/(?P<pk>\w+)/$', BudgetList.as_view(), name='budget_list'),
-                       url(r'^budget_add/(?P<id>\w+)/$', BudgetCreate.as_view(), name='budget_add'),
-                       url(r'^budget_update/(?P<pk>\w+)/$', BudgetUpdate.as_view(), name='budget_update'),
-                       url(r'^budget_delete/(?P<pk>\w+)/$', BudgetDelete.as_view(), name='budget_delete'),
+                       url(r'^budget_add/(?P<id>\w+)/$', ChecklistCreate.as_view(), name='budget_add'),
+                       url(r'^budget_update/(?P<pk>\w+)/$', ChecklistUpdate.as_view(), name='budget_update'),
+                       url(r'^budget_delete/(?P<pk>\w+)/$', ChecklistDelete.as_view(), name='budget_delete'),
 
                        url(r'^report/', 'activitydb.views.report', name='report'),
 

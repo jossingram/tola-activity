@@ -117,6 +117,9 @@
     <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/monitor_list/{{ agreement.project_agreement.id }}'">
         Project Planning <span class="badge">{{ getMonitoringCount }}</span>
     </button>
+    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/checklist_list/{{ agreement.project_agreement.id }}'">
+        Checklist <span class="badge">{{ getMonitoringCount }}</span>
+    </button>
     </div>
 {% empty %}
     <li class="list-group-item">No Projects yet.</li>

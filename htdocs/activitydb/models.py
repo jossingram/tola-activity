@@ -922,6 +922,58 @@ class BeneficiaryAdmin(admin.ModelAdmin):
     list_display = ('beneficiary_name', 'father_name', 'age', 'gender', 'community', 'signature', 'remarks', 'initials')
 
 
+class ChecklistItem(models.Model):
+    item = models.CharField(max_length=255, null=True, blank=True)
+    country = models.ForeignKey(Country,null=True,blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('item',)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ChecklistItem, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.item)
+
+
+class ChecklistItemAdmin(admin.ModelAdmin):
+    list_display = ('agreement')
+
+
+class Checklist(models.Model):
+    agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
+    item = models.ForeignKey(ChecklistItem, null=True, blank=True)
+    in_file = models.BooleanField()
+    not_applicable = models.BooleanField()
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('agreement',)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Checklist, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.agreement)
+
+
+class ChecklistAdmin(admin.ModelAdmin):
+    list_display = ('agreement')
+
+
 # Documentation
 class DocumentationApp(models.Model):
     name = models.CharField(max_length=255,null=True, blank=True)
