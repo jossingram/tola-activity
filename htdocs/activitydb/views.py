@@ -1450,6 +1450,12 @@ class ChecklistCreate(CreateView):
         context.update({'id': self.kwargs['id']})
         return context
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(ChecklistCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def dispatch(self, request, *args, **kwargs):
         return super(ChecklistCreate, self).dispatch(request, *args, **kwargs)
 
@@ -1486,6 +1492,12 @@ class ChecklistUpdate(UpdateView):
         context = super(ChecklistUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
         return context
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(ChecklistCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)

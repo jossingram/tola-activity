@@ -6,7 +6,7 @@ from functools import partial
 from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
-from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist
+from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem
 from indicators.models import CollectedData
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
@@ -893,6 +893,7 @@ class ChecklistForm(forms.ModelForm):
         exclude = ['create_date', 'edit_date']
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -905,6 +906,10 @@ class ChecklistForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
         super(ChecklistForm, self).__init__(*args, **kwargs)
+
+        countries = getCountry(self.request.user)
+        #override the community queryset to use request.user for country
+        self.fields['item'].queryset = ChecklistItem.objects.filter(country__in=countries)
 
 
 class TrainingAttendanceForm(forms.ModelForm):
