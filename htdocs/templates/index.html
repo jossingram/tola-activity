@@ -35,7 +35,8 @@ $(function () {
         series: [
         {
             name: 'Approved',
-            data: [{{ agreement_approved_count }}, {{ complete_approved_count }}]
+            data: [{{ agreement_approved_count }}, {{ complete_approved_count }}],
+            click: 'http://www.google.com',
         },
         {
             name: 'Pending',
