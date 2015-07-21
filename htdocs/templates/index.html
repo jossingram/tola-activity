@@ -29,22 +29,31 @@ $(function () {
         },
         plotOptions: {
             series: {
-                stacking: 'normal'
+                stacking: 'normal',
+                point: {
+                    events: {
+                        click: function () {
+                            location.href = this.options.url;
+                        }
+                    }
+                }
             }
         },
         series: [
         {
             name: 'Approved',
             data: [{{ agreement_approved_count }}, {{ complete_approved_count }}],
-            click: 'http://www.google.com',
+            url: ['/activitydb/projectagreement_list/0/','/activitydb/projectagreement_list/0/']
         },
         {
             name: 'Pending',
-            data: [{{ agreement_wait_count }}, {{ complete_wait_count }}]
+            data: [{{ agreement_wait_count }}, {{ complete_wait_count }}],
+            url: ['/activitydb/projectagreement_list/0/','/activitydb/projectagreement_list/0/']
         },
         {
             name: 'Open',
-            data: [{{ agreement_open_count }}, {{ complete_open_count }}]
+            data: [{{ agreement_open_count }}, {{ complete_open_count }}],
+            url: ['/activitydb/projectagreement_list/0/','/activitydb/projectagreement_list/0/']
         },
         ]
     });

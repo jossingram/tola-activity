@@ -271,7 +271,13 @@ class ProjectAgreementUpdate(UpdateView):
             except ApprovalAuthority.DoesNotExist:
                 user_budget_approval = None
             #compare budget amount to users approval amounts
-            if user_budget_approval and int(budget) > int(user_budget_approval.budget_limit):
+            print "has approval="
+            print user_budget_approval
+            print " approval amount = "
+            print budget
+            print "budget limit = "
+            print user_budget_approval.budget_limit
+            if not user_budget_approval or int(budget) > int(user_budget_approval.budget_limit):
                 messages.success(self.request, 'You do not appear to have permissions to approve this agreement')
                 form.instance.approval = 'awaiting approval'
             else:
@@ -1335,6 +1341,7 @@ class BudgetCreate(AjaxableResponseMixin, CreateView):
     Budget Form
     """
     model = Budget
+    template_name = 'activitydb/budget_form.html'
 
     def get_context_data(self, **kwargs):
         context = super(BudgetCreate, self).get_context_data(**kwargs)
@@ -1441,7 +1448,7 @@ class ChecklistList(ListView):
 
 class ChecklistCreate(CreateView):
     """
-    Budget Form
+    Checklist Form
     """
     model = Checklist
 
@@ -1619,6 +1626,3 @@ def ProgramDashboardCounts(request):
                                                               project_completion_count_approved=getCompleteApproved,
                                                               )
     return HttpResponseRedirect('/')
-
-
-

@@ -3,7 +3,7 @@ from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, Pr
     DocumentationList, DocumentationCreate, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
     BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
     BeneficiaryDelete, ProjectCompleteDetail, CommunityReport, ChecklistCreate, ChecklistDelete, ChecklistUpdate, BudgetList, QuantitativeOutputsList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
-    ChecklistCreate, ChecklistDelete, ChecklistUpdate, ChecklistList
+    ChecklistCreate, ChecklistDelete, ChecklistUpdate, ChecklistList, BudgetCreate, BudgetUpdate, BudgetDelete
 
 
 try:
@@ -75,9 +75,9 @@ urlpatterns = patterns('',
                        url(r'^beneficiary_delete/(?P<pk>\w+)/$', BeneficiaryDelete.as_view(), name='beneficiary_delete'),
 
                        url(r'^budget_list/(?P<pk>\w+)/$', BudgetList.as_view(), name='budget_list'),
-                       url(r'^budget_add/(?P<id>\w+)/$', ChecklistCreate.as_view(), name='budget_add'),
-                       url(r'^budget_update/(?P<pk>\w+)/$', ChecklistUpdate.as_view(), name='budget_update'),
-                       url(r'^budget_delete/(?P<pk>\w+)/$', ChecklistDelete.as_view(), name='budget_delete'),
+                       url(r'^budget_add/(?P<id>\w+)/$', BudgetCreate.as_view(), name='budget_add'),
+                       url(r'^budget_update/(?P<pk>\w+)/$', BudgetUpdate.as_view(), name='budget_update'),
+                       url(r'^budget_delete/(?P<pk>\w+)/$', BudgetDelete.as_view(), name='budget_delete'),
 
                        url(r'^report/', 'activitydb.views.report', name='report'),
 

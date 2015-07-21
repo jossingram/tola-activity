@@ -66,9 +66,10 @@ def index(request,id=0,sector=0):
     return render(request, "index.html", {'agreement_total_count':agreement_total_count,\
                                           'agreement_approved_count':agreement_approved_count,\
                                           'agreement_open_count':agreement_open_count,\
+                                          'agreement_wait_count':agreement_wait_count,\
                                           'complete_open_count':complete_open_count,\
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,\
-                                          'complete_wait_count':complete_wait_count,'agreement_wait_count':agreement_wait_count,\
+                                          'complete_wait_count':complete_wait_count,\
                                           'programs':getPrograms,'getCommunity':getCommunity,'country': countries,'getFilteredName':getFilteredName,'getSectors':getSectors,\
                                           'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums
                                           })
