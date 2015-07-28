@@ -19,6 +19,10 @@ from django.db.models import Sum
 
 from tola.util import getCountry
 
+from django.contrib.auth.decorators import login_required
+
+
+@login_required(login_url='/accounts/login/')
 def index(request,id=0,sector=0):
     """
     Home page
