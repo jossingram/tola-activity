@@ -67,23 +67,27 @@ class ProjectDash(ListView):
         form = ProgramDashboardForm
 
         if int(self.kwargs['pk']) == 0:
-            getDashboard = ProgramDashboard.objects.all()
+            getAgreement = ProjectAgreement.objects.all()
+            getComplete = ProjectComplete.objects.all()
             getDocumentCount = 0
             getCommunityCount = 0
             getTrainingCount = 0
         else:
-            getDashboard = ProgramDashboard.objects.all().filter(id=self.kwargs['pk'])
+            getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
+            getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['pk'])
             getDocumentCount = Documentation.objects.all().filter(project_id=self.kwargs['pk']).count()
             getCommunityCount = Community.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
             getTrainingCount = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
+            getChecklistCount = Checklist.objects.all().filter(agreement_id=self.kwargs['pk']).count()
+
 
         if int(self.kwargs['pk']) == 0:
             getProgram =Program.objects.all().filter(funding_status="Funded", country__in=countries)
         else:
             getProgram =Program.objects.get(agreement__id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getDashboard': getDashboard,
-                                                    'getPrograms':getPrograms, 'getDocumentCount':getDocumentCount,
+        return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete,
+                                                    'getPrograms':getPrograms, 'getDocumentCount':getDocumentCount,'getChecklistCount': getChecklistCount,
                                                     'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount})
 
 

@@ -28,43 +28,43 @@
 <br/>
 <ul class="list-group">
 <h3>{{getProgram.gaitid }} - {{ getProgram.name }}</h3>
-{% for agreement in getDashboard %}
+    {% if getAgreement %}
     <div class="jumbotron">
         <ul class="list-group">
             <li class="list-group-item list-group-item-info">
                 <h4>Project Agreement</h4>
-                <span><a href="/activitydb/projectagreement_detail/{{ agreement.project_agreement.id }}/">Print View</a></span>
+                <span><a href="/activitydb/projectagreement_detail/{{ getAgreement.id }}/">Print View</a></span>
             </li>
 
-            <li class="list-group-item"><b>Name: </b>{{ agreement.project_agreement.project_name }}<br/>
-                <b>Activity Code: </b>{{ agreement.project_agreement.activity_code }}<br/>
-                <b>Created:</b> <span class="date-badge">{{ agreement.project_agreement.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ agreement.project_agreement.edit_date|date }}</span>
+            <li class="list-group-item"><b>Name: </b>{{ getAgreement.project_name }}<br/>
+                <b>Activity Code: </b>{{ getAgreement.activity_code }}<br/>
+                <b>Created:</b> <span class="date-badge">{{ getAgreement.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ getAgreement.edit_date|date }}</span>
             </li>
             <li class="list-group-item">
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectagreement_update/{{ agreement.project_agreement.id }}'">Update Agreement</button>
-                    {% if agreement.project_agreement.approval == "approved" %}
+                    <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectagreement_update/{{ getAgreement.id }}'">Update Agreement</button>
+                    {% if getAgreement.project_agreement.approval == "approved" %}
                         <button data-toggle="tooltip" data-placement="top" title="Agreement has been approved and can no longer be deleted." type="button" class="btn btn-sm btn-frozen">Delete Agreement</button>
-                        {% if not agreement.project_completion %}
-                            <button type="button" class="btn btn-sm btn-info" onclick="location.href='/activitydb/projectcomplete_add/{{ agreement.project_agreement.id }}'">Complete Project</button>
+                        {% if not getAgreement.project_completion %}
+                            <button type="button" class="btn btn-sm btn-info" onclick="location.href='/activitydb/projectcomplete_add/{{ getAgreement.id }}'">Complete Project</button>
                         {% else %}
                             <button data-toggle="tooltip" data-placement="top" title="A completion form has already been created for the project" type="button" class="btn btn-sm btn-frozen">Complete Project</button>
                         {% endif %}
                     {% else %}
-                        <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectagreement_delete/{{ agreement.project_agreement.id }}'">Delete Agreement</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectagreement_delete/{{ getAgreement.id }}'">Delete Agreement</button>
                         <button data-toggle="tooltip" data-placement="top" title="Once Approved you will be able to click here and complete the project" type="button" class="btn btn-sm btn-frozen">Complete Project</button>
                     {% endif %}
                 </div>
             </li>
             <li class="list-group-item">
-                {% if agreement.project_agreement.approval == "approved" %}
+                {% if getAgreement.approval == "approved" %}
                     <button class="btn btn-success" type="button">
                       Approved
                     </button>
                 {% else %}
-                    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/projectagreement_update/{{ agreement.project_agreement.id }}'">
-                    {% if agreement.project_agreement.approval %}
-                        {{ agreement.project_agreement.approval|title }}
+                    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/projectagreement_update/{{ getAgreement.id }}'">
+                    {% if getAgreement.approval %}
+                        {{ getAgreement.approval|title }}
                     {% else %}
                         Open
                     {% endif %}
@@ -72,20 +72,20 @@
                 {% endif %}
              </li>
         </ul>
-
-    {% if agreement.project_completion %}
+    {% endif %}
+    {% if getComplete %}
         <ul class="list-group">
             <li class="list-group-item list-group-item-info">
                 <h4>Project Completion</h4>
             </li>
-            <li class="list-group-item"><b>Name: </b>{{ agreement.project_completion.project_name }}<br/>
-                <b>Activity Code: </b>{{ agreement.project_completion.activity_code }}<br/>
-                <b>Created:</b> <span class="date-badge">{{ agreement.project_completion.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ agreement.project_completion.edit_date|date }}</span>
+            <li class="list-group-item"><b>Name: </b>{{ getComplete.project_name }}<br/>
+                <b>Activity Code: </b>{{ getComplete.activity_code }}<br/>
+                <b>Created:</b> <span class="date-badge">{{ getComplete.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ getComplete.edit_date|date }}</span>
             </li>
             <li class="list-group-item">
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectcomplete_update/{{ agreement.project_completion.id }}'">Update Completion</button>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectcomplete_delete/{{ agreement.project_completion.id }}'">Delete Completion</button>
+                    <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectcomplete_update/{{ getComplete.id }}'">Update Completion</button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectcomplete_delete/{{ getComplete.id }}'">Delete Completion</button>
                 </div>
             </li>
             <li class="list-group-item">
@@ -94,9 +94,9 @@
                       Approved
                     </button>
                 {% else %}
-                    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/projectcomplete_update/{{ agreement.project_completion.id }}'">
-                      {% if agreement.project_completion.approval %}
-                        {{ agreement.project_completion.approval|title }}
+                    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/projectcomplete_update/{{ getComplete.id }}'">
+                      {% if getComplete.approval %}
+                        {{ getComplete.approval|title }}
                       {% else %}
                         Open
                       {% endif %}
@@ -105,26 +105,22 @@
              </li>
         </ul>
     {% endif %}
-    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/documentation_list/{{ agreement.project_agreement.id }}'">
-        Documentation <span class="badge">{{ getDocumentCount }}</span>
+    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/documentation_list/{{ getAgreement.id }}'">
+        Documents <span class="badge">{{ getDocumentCount }}</span>
     </button>
-    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/community_list/0/{{ agreement.project_agreement.id }}'">
+    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/community_list/0/{{ getAgreement.id }}'">
         Communities <span class="badge">{{ getCommunityCount }}</span>
     </button>
-    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/training_list/{{ agreement.project_agreement.id }}'">
+    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/training_list/{{ getAgreement.id }}'">
         Training <span class="badge">{{ getTrainingCount }}</span>
     </button>
-    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/monitor_list/{{ agreement.project_agreement.id }}'">
+    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/monitor_list/{{ getAgreement.id }}'">
         Project Planning <span class="badge">{{ getMonitoringCount }}</span>
     </button>
-    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/checklist_list/{{ agreement.project_agreement.id }}'">
-        Checklist <span class="badge">{{ getMonitoringCount }}</span>
+    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/checklist_list/{{ getAgreement.id }}'">
+        Checklist <span class="badge">{{ getChecklistCount }}</span>
     </button>
     </div>
-{% empty %}
-    <li class="list-group-item">No Projects yet.</li>
-    </div>
-{% endfor %}
 </ul>
 
 <!-- Modal -->
