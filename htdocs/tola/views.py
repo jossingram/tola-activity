@@ -16,6 +16,7 @@ from util import getCountry
 from datetime import datetime
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum
+from django.db.models import Q
 
 from tola.util import getCountry
 
@@ -45,7 +46,7 @@ def index(request,id=0,sector=0):
         agreement_approved_count = ProjectAgreement.objects.all().filter(approval='approved', program__country__in=countries).count()
         complete_approved_count = ProjectComplete.objects.all().filter(approval='approved', program__country__in=countries).count()
         agreement_open_count = ProjectAgreement.objects.all().filter(approval='open', program__country__in=countries).count()
-        complete_open_count = ProjectComplete.objects.all().filter(approval='open', program__country__in=countries).count()
+        complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="")), program__country__in=countries).count()
         agreement_wait_count = ProjectAgreement.objects.all().filter(approval='in progress', program__country__in=countries).count()
         complete_wait_count = ProjectComplete.objects.all().filter(approval='in progress', program__country__in=countries).count()
         getCommunity = Community.objects.all().filter(country__in=countries)
