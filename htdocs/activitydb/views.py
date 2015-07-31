@@ -74,7 +74,10 @@ class ProjectDash(ListView):
             getTrainingCount = 0
         else:
             getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
-            getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['pk'])
+            try:
+                getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['pk'])
+            except ProjectComplete.DoesNotExist:
+                getComplete = None
             getDocumentCount = Documentation.objects.all().filter(project_id=self.kwargs['pk']).count()
             getCommunityCount = Community.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
             getTrainingCount = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
