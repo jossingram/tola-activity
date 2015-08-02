@@ -33,29 +33,29 @@ $(function () {
                 point: {
                     events: {
                         click: function () {
-                            location.href = this.options.url;
+                            location.href = this.options.ownURL;
                         }
                     }
                 }
             }
         },
+
         series: [
         {
             name: 'Approved',
-            data: [{{ agreement_approved_count }}, {{ complete_approved_count }}],
-            url: ['/activitydb/projectagreement_list/0/','/activitydb/projectagreement_list/0/']
+            data: [{ y:{{ agreement_approved_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_approved_count }},ownURL:'http://127.0.0.1:8000/activitydb/projectagreement_list/0/' }],
         },
         {
             name: 'Pending',
-            data: [{{ agreement_wait_count }}, {{ complete_wait_count }}],
-            url: ['/activitydb/projectagreement_list/0/','/activitydb/projectagreement_list/0/']
+            data: [{ y:{{ agreement_wait_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_wait_count }},ownURL:'http://127.0.0.1:8000/activitydb/projectagreement_list/0/' }],
         },
         {
             name: 'Open',
-            data: [{{ agreement_open_count }}, {{ complete_open_count }}],
-            url: ['/activitydb/projectagreement_list/0/','/activitydb/projectagreement_list/0/']
+            data: [{ y:{{ agreement_open_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_open_count }},ownURL:'http://127.0.0.1:8000/activitydb/projectagreement_list/0/' }],
         },
+
         ]
+
     });
 });
 
