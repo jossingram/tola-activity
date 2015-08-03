@@ -91,6 +91,8 @@ class CollectedDataForm(forms.ModelForm):
         exclude = ['create_date', 'edit_date']
 
     date_collected = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    date_of_training = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    date_of_analysis = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -104,13 +106,12 @@ class CollectedDataForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = True
-
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved', 'description','indicator','date_collected','agreement'
+                'targeted', 'achieved', 'description','indicator','date_collected','agreement','comment','method','tool','date_of_training','trainer_name','date_of_analysis','analysis_name','office'
             ),
 
 

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib import admin
 from django.conf import settings
-from activitydb.models import Program, Sector, Community, ProjectAgreement, ProjectComplete, Country
+from activitydb.models import Program, Sector, Community, ProjectAgreement, ProjectComplete, Country, Office
 from datetime import datetime
 
 
@@ -167,11 +167,19 @@ class CollectedData(models.Model):
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2")
     date_collected = models.DateTimeField(null=True, blank=True)
+    comment = models.CharField("Comment/Explanation", max_length=255, blank=True, null=True)
+    method = models.CharField("Method of Data Collection", max_length=255, blank=True, null=True)
+    tool = models.CharField("Tool/Source Developed By", max_length=255, blank=True, null=True)
+    date_of_training = models.DateTimeField("Date of Staff Training", null=True, blank=True)
+    date_of_analysis = models.DateTimeField("Date of Analysis", null=True, blank=True)
+    trainer_name = models.CharField("Name of Trainer", max_length=255, blank=True, null=True)
+    analysis_name = models.CharField("Analysis Done By", max_length=255, blank=True, null=True)
+    office = models.ForeignKey(Office, blank=True, null=True, related_name="q_office")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('indicator','date_collected','create_date')
+        ordering = ('agreement','indicator','date_collected','create_date')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"
 
     #onsave add create date or update edit date
@@ -187,7 +195,7 @@ class CollectedData(models.Model):
 
     def targeted_sum(self):
         targets=CollectedData.targeted.filter(indicator__id=self).sum('targeted')
-        return target
+        return targets
 
     def achieved_sum(self):
         achieved=CollectedData.targeted.filter(indicator__id=self).sum('achieved')
