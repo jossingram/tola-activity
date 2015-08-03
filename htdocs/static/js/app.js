@@ -101,4 +101,61 @@ $(document).ready(function() {
         // page-specific-action call if a page has implemented the 'office_dropdown_has_changed' function
         if(typeof district_dropdown_has_changed != 'undefined') distirct_dropdown_has_changed(district_office);
     });
+
+    /*
+     * UPDATE BUDGET TOTAL
+    */
+    function updateBudget()
+    {
+        var mc_budget = parseFloat($("#mc_budget").val());
+        var other_bidget = parseFloat($("#other_budget").val());
+        var total = mc_budget + other_budget;
+        var total = total.toFixed(2);
+        $("#total_budget").val(total);
+    }
+    $(document).on("change, keyup", "#mc_budget", updateBudget);
+    $(document).on("change, keyup", "#other_budget", updateBudget);
+
+    /*
+     * Calculate Total Indirect Beneficiaries
+    */
+    function updateBens()
+    {
+        var direct_bens = parseFloat($("#id_estimated_num_direct_beneficiaries").val());
+        var avg_houshold_size = parseFloat($("#id_average_household_size").val());
+        var total = direct_bens * avg_houshold_size;
+        var total = total.toFixed(2);
+        $("#id_estimated_num_indirect_beneficiaries").val(total);
+    }
+    $(document).on("change, keyup", "#id_estimated_num_direct_beneficiaries", updateBens);
+    $(document).on("change, keyup", "#id_average_household_size", updateBens);
+
+    /*
+     * Trained TOTAL
+    */
+    function updateTrained()
+    {
+        var male = parseFloat($("#id_estimate_male_trained").val());
+        var female = parseFloat($("#id_estimate_female_trained").val());
+        var total = male + female;
+        var total = total.toFixed(0);
+        $("#id_estimate_total_trained").val(total);
+    }
+    $(document).on("change, keyup", "#id_estimate_male_trained", updateTrained);
+    $(document).on("change, keyup", "#id_estimate_female_trained", updateTrained);
+
+    /*
+     * CFW Workers TOTAL
+    */
+    function updateCFW()
+    {
+        var male = parseFloat($("#id_cfw_estimate_male").val());
+        var female = parseFloat($("#id_cfw_estimate_female").val());
+        var total = male + female;
+        var total = total.toFixed(0);
+        $("#id_cfw_estimate_total").val(total);
+    }
+    $(document).on("change, keyup", "#id_cfw_estimate_male", updateCFW);
+    $(document).on("change, keyup", "#id_cfw_estimate_female", updateCFW);
 });
+
