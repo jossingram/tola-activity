@@ -302,7 +302,7 @@ class CollectedDataCreate(CreateView):
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
-        context.update({'indicator': self.kwargs['indicator']})
+        context.update({'indicator_id': self.kwargs['indicator']})
         return context
 
     def get_initial(self):
