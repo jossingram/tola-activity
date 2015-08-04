@@ -374,19 +374,22 @@ class CollectedDataUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataUpdate, self).get_context_data(**kwargs)
+        #get the indicator_id for the collected data
+        getIndicator = CollectedData.objects.get(id=self.kwargs['pk'])
         try:
-            getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__collecteddata__id=self.kwargs['pk'])
+            getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=getIndicator.indicator_id)
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationLabel = None
 
         try:
-            getDisaggregationValue = DisaggregationValue.objects.all().filter(disaggregation_label__disaggregation_type__indicator__collecteddata__id=self.kwargs['pk'])
+            getDisaggregationValue = DisaggregationValue.objects.all().filter(disaggregation_label__disaggregation_type__indicator__id=getIndicator.indicator_id)
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationValue = None
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
+        context.update({'indicator_id': getIndicator.indicator_id})
         return context
 
     def form_invalid(self, form):
@@ -400,6 +403,29 @@ class CollectedDataUpdate(UpdateView):
         return kwargs
 
     def form_valid(self, form):
+
+        getCollectedData = CollectedData.objects.get(id=self.kwargs['pk'])
+        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.request.POST['indicator'])
+
+        for label in getDisaggregationLabel:
+            for key, value in self.request.POST.iteritems():
+                if key == str(label.id):
+                    value_to_insert = value
+                else:
+                    value_to_insert = None
+                if value_to_insert:
+                    insert_disaggregationvalue = DisaggregationValue(disaggregation_label=label,collecteddata=getCollectedData, value=value_to_insert)
+                    insert_disaggregationvalue.save()
+
+        for label in getDisaggregationLabel:
+            print label
+            for key, value in self.request.POST.iteritems():
+                if key == "update_" + str(label.id):
+                    value_to_update = value
+                else:
+                    value_to_update = None
+                if value_to_update:
+                    DisaggregationValue.objects.filter(disaggregation_label=label,collecteddata=getCollectedData).update(value=value_to_update)
         form.save()
         messages.success(self.request, 'Success, Data Updated!')
 
