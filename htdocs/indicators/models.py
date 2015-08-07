@@ -112,7 +112,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 class Indicator(models.Model):
     owner = models.ForeignKey('auth.User')
-    indicator_type = models.ManyToManyField(IndicatorType, null=True, blank=True)
+    indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     objectives = models.ManyToManyField(Objective, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     number = models.CharField(max_length=255, null=True, blank=True)

@@ -295,12 +295,8 @@ class CollectedDataCreate(CreateView):
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationLabel = None
 
-        print getDisaggregationLabel
-
-        try:
-            getDisaggregationValue = DisaggregationValue.objects.all().filter(disaggregation_label__disaggregation_type__indicator__id=self.kwargs['indicator'])
-        except DisaggregationLabel.DoesNotExist:
-            getDisaggregationValue = None
+        #set values to None so the form doesn't display empty fields for previous entries
+        getDisaggregationValue = None
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
@@ -347,16 +343,6 @@ class CollectedDataCreate(CreateView):
                 insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=getCollectedData)
                 insert_disaggregationvalue.save()
 
-        for label in getDisaggregationLabel:
-            for key, value in self.request.POST.iteritems():
-                if key == "update_" + str(label.id):
-                    value_to_update = value
-                else:
-                    value_to_update = None
-            if value_to_update:
-                update_disaggregatedvalue = DisaggregationValue.objects.filter(disaggregation_label=label,collecteddata=getCollectedData).update(value=value_to_update)
-                update_disaggregatedvalue.save()
-
         form.save()
         messages.success(self.request, 'Success, Data Created!')
 
@@ -382,7 +368,7 @@ class CollectedDataUpdate(UpdateView):
             getDisaggregationLabel = None
 
         try:
-            getDisaggregationValue = CollectedData.objects.all().filter(id=self.kwargs['pk']).exclude(disaggregation_value__isnull=True).select_related()
+            getDisaggregationValue = DisaggregationValue.objects.all().filter(collecteddata=self.kwargs['pk'])
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationValue = None
 
@@ -407,26 +393,17 @@ class CollectedDataUpdate(UpdateView):
         getCollectedData = CollectedData.objects.get(id=self.kwargs['pk'])
         getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.request.POST['indicator'])
 
+        #save the form then update manytomany relationships
+        form.save()
+
+        #Insert or update disagg values
         for label in getDisaggregationLabel:
             for key, value in self.request.POST.iteritems():
                 if key == str(label.id):
                     value_to_insert = value
-                else:
-                    value_to_insert = None
-                if value_to_insert:
-                    insert_disaggregationvalue = DisaggregationValue(disaggregation_label=label, value=value_to_insert)
-                    insert_disaggregationvalue.save()
+                    save = getCollectedData.disaggregation_value.create(disaggregation_label=label, value=value_to_insert)
+                    getCollectedData.disaggregation_value.add(save.id)
 
-        for label in getDisaggregationLabel:
-            print label
-            for key, value in self.request.POST.iteritems():
-                if key == "update_" + str(label.id):
-                    value_to_update = value
-                else:
-                    value_to_update = None
-                if value_to_update:
-                    DisaggregationValue.objects.filter(disaggregation_label=label).update(value=value_to_update)
-        form.save()
         messages.success(self.request, 'Success, Data Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))

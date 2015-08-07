@@ -32,10 +32,9 @@
 
     <h4 class="modal-title">{% block page_title %}Import Project Agreement {% endblock %}</h4>
     <ul class="list-group">
-    {{ getAgreements }}
     {% for row in getAgreements %}
-        <li class="list-group-item">{{ row }}</li>
-        <li class="list-group-item"><a href="/activitydb/doimport/{{ item.id }}" class="btn btn-xs btn-warning">Import Data</a>
+        <li class="list-group-item">{{ row.read_name }}</li>
+        <li class="list-group-item"><a href="{{ row.read_url }}" class="btn btn-xs btn-warning">Import Data</a>
     {% empty %}
         <li class="list-group-item">No data sources.</li>
     {% endfor %}

@@ -118,7 +118,7 @@ class CollectedDataForm(forms.ModelForm):
                 MultiField(
                         "",
                         HTML("""<br/>
-                                {% if getDisaggregationLabel %}
+                                {% if getDisaggregationLabel and not getDisaggregationValue%}
                                     <div class='panel panel-default'>
                                         <!-- Default panel contents -->
                                         <div class='panel-heading'>New Disaggregations</div>
@@ -155,7 +155,7 @@ class CollectedDataForm(forms.ModelForm):
                                             {% for item in getDisaggregationValue %}
                                             <tr>
                                                 <td>{{ item.disaggregation_label.label }}</td>
-                                                <td><input type="text" name="update_{{ item.id }}" value="{{ item.value }}"></td>
+                                                <td><input type="text" name="{{ item.disaggregation_label.id }}" value="{{ item.value }}"></td>
                                             </tr>
                                             {% endfor %}
                                           </table>
