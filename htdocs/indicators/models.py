@@ -149,6 +149,10 @@ class Indicator(models.Model):
     def programs(self):
         return ', '.join([x.name for x in self.program.all()])
 
+    @property
+    def indicator_types(self):
+        return ', '.join([x.indicator_type for x in self.indicator_type.all()])
+
     def __unicode__(self):
         return self.name
 
