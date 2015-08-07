@@ -23,6 +23,7 @@ from filters import ProjectAgreementFilter
 from datetime import datetime
 import json
 import urllib2
+import requests
 from django.shortcuts import get_object_or_404
 
 from django.core import serializers
@@ -149,18 +150,13 @@ class ProjectAgreementImport(ListView):
     def get(self, request, *args, **kwargs):
 
         # set url for json feed here
-        json_file = urllib2.urlopen('https://tola-data-dev.mercycorps.org/api/?format=json')
+        response = requests.get("https://tola-data-dev.mercycorps.org/api/read/?format=json")
+        jsondata = json.loads(response.content)
 
-        #load data
-        data = json.load(json_file)
-        json_file.close()
-        print data
-        agreement = []
-        for row in data:
-            agreement.append(row)
+        data = jsondata['results']
 
 
-        return render(request, self.template_name, {'getAgreements': agreement})
+        return render(request, self.template_name, {'getAgreements': data})
 
 
 

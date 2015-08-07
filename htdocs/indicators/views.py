@@ -289,11 +289,13 @@ class CollectedDataCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataCreate, self).get_context_data(**kwargs)
-
+        print self.kwargs['indicator']
         try:
             getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationLabel = None
+
+        print getDisaggregationLabel
 
         try:
             getDisaggregationValue = DisaggregationValue.objects.all().filter(disaggregation_label__disaggregation_type__indicator__id=self.kwargs['indicator'])
@@ -362,8 +364,6 @@ class CollectedDataCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-
-
 class CollectedDataUpdate(UpdateView):
     """
     CollectedData Form
@@ -382,7 +382,7 @@ class CollectedDataUpdate(UpdateView):
             getDisaggregationLabel = None
 
         try:
-            getDisaggregationValue = DisaggregationValue.objects.all().filter(disaggregation_label__disaggregation_type__indicator__id=getIndicator.indicator_id)
+            getDisaggregationValue = CollectedData.objects.all().filter(id=self.kwargs['pk']).exclude(disaggregation_value__isnull=True).select_related()
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationValue = None
 
@@ -414,7 +414,7 @@ class CollectedDataUpdate(UpdateView):
                 else:
                     value_to_insert = None
                 if value_to_insert:
-                    insert_disaggregationvalue = DisaggregationValue(disaggregation_label=label,collecteddata=getCollectedData, value=value_to_insert)
+                    insert_disaggregationvalue = DisaggregationValue(disaggregation_label=label, value=value_to_insert)
                     insert_disaggregationvalue.save()
 
         for label in getDisaggregationLabel:
@@ -425,7 +425,7 @@ class CollectedDataUpdate(UpdateView):
                 else:
                     value_to_update = None
                 if value_to_update:
-                    DisaggregationValue.objects.filter(disaggregation_label=label,collecteddata=getCollectedData).update(value=value_to_update)
+                    DisaggregationValue.objects.filter(disaggregation_label=label).update(value=value_to_update)
         form.save()
         messages.success(self.request, 'Success, Data Updated!')
 

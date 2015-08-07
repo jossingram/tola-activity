@@ -43,12 +43,12 @@
             <li class="list-group-item">
                 <div class="btn-group" role="group" aria-label="...">
                     <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectagreement_update/{{ getAgreement.id }}'">Update Agreement</button>
-                    {% if getAgreement.project_agreement.approval == "approved" %}
+                    {% if getAgreement.approval == "approved" %}
                         <button data-toggle="tooltip" data-placement="top" title="Agreement has been approved and can no longer be deleted." type="button" class="btn btn-sm btn-frozen">Delete Agreement</button>
-                        {% if not getAgreement.project_completion %}
-                            <button type="button" class="btn btn-sm btn-info" onclick="location.href='/activitydb/projectcomplete_add/{{ getAgreement.id }}'">Complete Project</button>
-                        {% else %}
+                        {% if getComplete%}
                             <button data-toggle="tooltip" data-placement="top" title="A completion form has already been created for the project" type="button" class="btn btn-sm btn-frozen">Complete Project</button>
+                        {% else %}
+                            <button type="button" class="btn btn-sm btn-info" onclick="location.href='/activitydb/projectcomplete_add/{{ getAgreement.id }}'">Complete Project</button>
                         {% endif %}
                     {% else %}
                         <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectagreement_delete/{{ getAgreement.id }}'">Delete Agreement</button>
@@ -89,7 +89,7 @@
                 </div>
             </li>
             <li class="list-group-item">
-                {% if agreement.project_completion.approval == "approved" %}
+                {% if getComplete.approval == "approved" %}
                     <button class="btn btn-success" type="button">
                       Approved
                     </button>
