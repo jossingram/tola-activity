@@ -30,6 +30,7 @@
                     <tr>
                         <th>Date Created</th>
                         <th>Project Name</th>
+                        <th>Activty Name</th>
                         <th>Activity Code</th>
                         <th>Office Code</th>
                         <th>Approval Status</th>
@@ -39,6 +40,7 @@
                     <tr>
                         <td>{{ item.create_date}}</td>
                         <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a></td>
+                        <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_activity}}</a></td>
                         <td>{{ item.activity_code }}</td>
                         <td>{{ item.office }} </td>
                         <td>{% if item.projectcomplete_set.all %} Complete {% else %} Agreement {% if item.approval  %}{{ item.approval }}{% else %} open {% endif %} {% endif %}</td>
