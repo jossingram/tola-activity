@@ -9,11 +9,10 @@
 {% endblock bread_crumb %}
 {% load render_table from django_tables2 %}
 
-{% block page_title %}Activity Report{% endblock %}
+{% block page_title %}Project Report{% endblock %}
 
 {% block content %}
 <ul class="nav nav-tabs">
-  <li role="presentation"><a href="/activitydb/projectproposal_detail/{{ id }}/">Proposal</a></li>
   <li role="presentation"><a href="/activitydb/projectagreement_detail/{{ id }}/">Agreement</a></li>
   <li role="presentation" class="active"><a href="/activitydb/projectcomplete_detail/{{ id }}/">Complete</a></li>
   <li role="presentation"><a href="/activitydb/community_report/{{ id }}/">Communities</a></li>

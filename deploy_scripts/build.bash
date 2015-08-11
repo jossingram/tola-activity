@@ -4,55 +4,33 @@ function pause(){
    read -p "$*"
 }
 
-echo "Should we do a pull from git Dev branch first? (y/n)"
-read a
-if [[ $a == "y" || $a == "Y" ]]; then
-	cd ../
-	sudo git checkout dev
-	sudo git pull
-	cd deploy_scripts
-else
-	echo "Skipping...";
-fi
+cd ../
 
-if P1=$(pgrep 'puppet')
+git remote update
+changed=1
+git pull --dry-run | grep -q -v 'Already up-to-date.' && changed=0
+
+if [ $changed == 0 ]
 then
-  echo "Stopping puppet running at PID = $P1"
-  sudo /sbin/service puppet stop
+    passed=0
+    echo "Changes detected running test"
+    git pull origin dev
+    cd htdocs
+    sudo py manage.py test --settings tola.settings.test | grep -q -v 'OK' && passed=0
+    if [ $passed == 1 ]
+    then
+        echo "Test Failed"
+        "Subject: Unit tests failed on [$hostname] for Tola-Activity" | /usr/sbin/sendmail glind@mercycorps.org, mkhan@mercycorps.org
+    else
+        echo "All Tests Passed"
+    fi
 else
-  echo "puppet service was already stopped."
+    echo "No changes detected"
+    cd htdocs
 fi
-
-if P2=$(pgrep 'postfix')
-then
-  echo "Stopping postfix service running at PID = $P2 "
-  sudo /sbin/service postfix stop
-else
-  echo "postfix was already stopped."
-fi
-
-cd ../htdocs
 
 echo "Running Migrations..."
 sudo py manage.py migrate
-
-echo "Do you want to run fixtures as sudo and using py? (Y/n)"
-read c
-
-if [[ $c == "y" || $c == "Y" ]]; then
-    sudo py manage.py loaddata fixtures/*.json
-else
-  echo "Ok Skipping"
-fi
-
-echo "Do you want to run fixtures as you and using python? (Y/n)"
-read c
-
-if [[ $c == "y" || $c == "Y" ]]; then
-    python manage.py loaddata fixtures/*.json
-else
-  echo "Ok Skipping"
-fi
 
 cd ../deploy_scripts
 

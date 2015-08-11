@@ -13,8 +13,6 @@ TEMPLATE = '''
 class IndicatorTable(tables.Table):
     edit = tables.TemplateColumn(TEMPLATE)
 
-    programs = tables.Column(accessor='program_str')
-
     class Meta:
         model = Indicator
         attrs = {"class": "paleblue"}

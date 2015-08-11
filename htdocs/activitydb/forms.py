@@ -6,7 +6,8 @@ from functools import partial
 from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
-from .models import ProjectProposal, ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office
+from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem
+from indicators.models import CollectedData
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
@@ -71,90 +72,6 @@ class DatePicker(forms.DateInput):
     DateInput = partial(forms.DateInput, {'class': 'datepicker'})
 
 
-class ProjectProposalForm(forms.ModelForm):
-
-    class Meta:
-        model = ProjectProposal
-        fields = '__all__'
-
-
-    date_of_request = forms.DateField(widget=DatePicker.DateInput())
-    rejection_letter = forms.FileField(required=False)
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
-    approval = forms.ChoiceField(
-        choices=APPROVALS,
-        initial='in progress',
-        required=False,
-    )
-
-    def __init__(self,  *args, **kwargs):
-        #get the user object to check permissions with
-        self.request = kwargs.pop('request')
-        self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-6'
-        self.helper.form_error_title = 'Form Errors'
-        self.helper.error_text_inline = True
-        self.helper.help_text_inline = True
-        self.helper.html5_required = True
-        self.helper.layout = Layout(
-
-            HTML("""<br/>"""),
-            TabHolder(
-                Tab('General Information',
-                    Fieldset('Program', 'program', 'activity_code', 'date_of_request', 'office', 'sector', 'project_name', 'project_activity', 'project_type'
-                    ),
-                    Fieldset(
-                        'Community',
-                        'community',PrependedText('has_rej_letter', ''), 'rejection_letter', 'community_rep',
-                        'community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
-                    ),
-                ),
-                Tab('Description',
-                    Fieldset(
-                        'Proposal',
-                        Field('project_description', rows="3", css_class='input-xlarge'),
-                    ),
-                ),
-                Tab('Approval',
-                    Fieldset('Approval',
-                        'approval', 'estimated_by', 'approved_by', 'approval_submitted_by',
-                        Field('approval_remarks', rows="3", css_class='input-xlarge')
-                    ),
-                ),
-            ),
-
-            HTML("""<br/>"""),
-            FormActions(
-                Submit('submit', 'Save', css_class='btn-default'),
-                Reset('reset', 'Reset', css_class='btn-warning')
-            )
-        )
-
-
-        super(ProjectProposalForm, self).__init__(*args, **kwargs)
-
-        #override the program queryset to use request.user for country
-        countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
-
-        #override the office queryset to use request.user for country
-        self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
-
-        #override the community queryset to use request.user for country
-        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
-
-
-        if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
-            self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
-            self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
-            self.fields['approval'].help_text = "Approval level permissions required"
-
-
-
 class BudgetForm(forms.ModelForm):
 
     class Meta:
@@ -211,11 +128,23 @@ class ProjectAgreementCreateForm(forms.ModelForm):
 
             HTML("""<p>Create a Summary first then add additional fields after saving</p><br/>"""),
             TabHolder(
-                Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal','community', 'activity_code', 'office_code', 'project_name', 'sector', 'project_activity',
-                             'project_type', 'account_code', 'sub_code','mc_staff_responsible'
+                   Tab('Executive Summary',
+                        Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
+                                 'project_type','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
+                        ),
+
                     ),
-                ),
+                    Tab('Community Proposal',
+                        Fieldset(
+                            'Community',
+                            'community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
+                            'community_proposal','community',PrependedText('has_rej_letter', ''), 'rejection_letter',
+                        ),
+                        Fieldset(
+                            'Partners',
+                            PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list',
+                        ),
+                    ),
             ),
 
             HTML("""<br/>"""),
@@ -251,6 +180,7 @@ class ProjectAgreementForm(forms.ModelForm):
     me_reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     checked_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     estimated_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    finance_reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
 
@@ -266,18 +196,6 @@ class ProjectAgreementForm(forms.ModelForm):
     description_of_government_involvement = forms.CharField(help_text="This is an open-text field for describing the project. It does not need to be too long, but this is where you will be the main description and the main description that will be in the database.  Please make this a description from which someone can understand what this project is doing. You do not need to list all activities, such as those that will appear on your benchmark list. Just describe what you are doing. You should attach technical drawings, technical appraisals, bill of quantity or any other appropriate documentation", widget=forms.Textarea, required=False)
     documentation_government_approval = forms.CharField(help_text="Check the box if there IS documentation to show government request for or approval of the project. This should be attached to the proposal, and also kept in the program file.", widget=forms.Textarea, required=False)
     description_of_community_involvement = forms.CharField(help_text="How the community is involved in the planning, approval, or implementation of this project should be described. Indicate their approval (copy of a signed MOU, or their signed Project Prioritization request, etc.). But also describe how they will be involved in the implementation - supplying laborers, getting training, etc.", widget=forms.Textarea, required=False)
-
-    capacity = forms.ModelChoiceField(
-        queryset=Capacity.objects.all(),
-        initial='',
-        required=False,
-    )
-
-    evaluate = forms.ModelChoiceField(
-        queryset=Evaluate.objects.all(),
-        initial='',
-        required=False,
-    )
 
     approval = forms.ChoiceField(
         choices=APPROVALS,
@@ -304,21 +222,28 @@ class ProjectAgreementForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal','community', 'activity_code', 'office_code', 'project_name', 'sector', 'project_activity',
-                             'project_type', 'account_code', 'sub_code','mc_staff_responsible'
+                    Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
+                             'project_type','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
+                    ),
+
+                ),
+                Tab('Community Proposal',
+                    Fieldset(
+                        'Community',
+                        'community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
+                        'community_proposal','community',PrependedText('has_rej_letter', ''), 'rejection_letter',
+                    ),
+                    Fieldset(
+                        'Partners',
+                        PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list',
                     ),
                 ),
                 Tab('Budget',
                      Fieldset(
-                        'Partners',
-                        PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list', 'expected_start_date',
-                        'expected_end_date', 'expected_duration', 'beneficiary_type','estimated_num_direct_beneficiaries', 'average_household_size', 'estimated_num_indirect_beneficiaries',
+                        'Budget',
                         PrependedAppendedText('total_estimated_budget','$', '.00'), PrependedAppendedText('mc_estimated_budget','$', '.00'),
                         'estimation_date','other_budget','project_type_other',
                     ),
-                ),
-
-                Tab('Budget Other',
                     Fieldset("Other Budget Contributions:",
                         MultiField(
                                 "",
@@ -375,10 +300,37 @@ class ProjectAgreementForm(forms.ModelForm):
                 ),
                 Tab('Project Planning',
                     Fieldset(
-                        'Additional Planning Data Added via links below after save',
+                        '',
                         MultiField(
                             '',
-
+                             HTML("""
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Indicator Evidence</div>
+                                      {% if getQuantitative %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Targeted</th>
+                                            <th>Description</th>
+                                            <th>Indicator</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getQuantitative %}
+                                            <tr>
+                                                <td>{{ item.targeted}}</td>
+                                                <td>{{ item.description}}</td>
+                                                <td>{{ item.indicator}}</td>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
+                                      </div>
+                                    </div>
+                                     """),
                             HTML("""
 
                                     <div class='panel panel-default'>
@@ -443,6 +395,25 @@ class ProjectAgreementForm(forms.ModelForm):
                         ),
                     ),
                 ),
+                Tab('Project Impact',
+                     Fieldset(
+                        'Beneficiaries',
+                        'beneficiary_type','estimated_num_direct_beneficiaries', 'average_household_size', 'estimated_num_indirect_beneficiaries',
+                     ),
+                     Fieldset(
+                         'Training',
+                         'estimate_male_trained','estimate_female_trained','estimate_total_trained','estimate_trainings',
+                     ),
+                     Fieldset(
+                         'Distribution',
+                         'distribution_type','distribution_uom','distribution_estimate',
+                     ),
+                     Fieldset(
+                         'Cash For Work',
+                         'cfw_estimate_male','cfw_estimate_female','cfw_estimate_total','cfw_estimate_project_days','cfw_estimate_person_days',
+                         'cfw_estimate_cost_materials','cfw_estimate_wages_budgeted',
+                     ),
+                ),
                 Tab('Approval',
                     Fieldset('Approval',
                              'approval', 'estimated_by','estimated_by_date', 'checked_by','checked_by_date','reviewed_by','reviewed_by_date',
@@ -484,10 +455,10 @@ class ProjectCompleteCreateForm(forms.ModelForm):
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
 
-    expected_start_date = forms.DateField(widget=DatePicker.DateInput())
-    expected_end_date = forms.DateField(widget=DatePicker.DateInput())
-    actual_start_date = forms.DateField(widget=DatePicker.DateInput())
-    actual_end_date = forms.DateField(widget=DatePicker.DateInput())
+    expected_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    expected_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
 
@@ -540,10 +511,10 @@ class ProjectCompleteForm(forms.ModelForm):
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
 
-    expected_start_date = forms.DateField(widget=DatePicker.DateInput())
-    expected_end_date = forms.DateField(widget=DatePicker.DateInput())
-    actual_start_date = forms.DateField(widget=DatePicker.DateInput())
-    actual_end_date = forms.DateField(widget=DatePicker.DateInput())
+    expected_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    expected_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
 
@@ -624,7 +595,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                                 <td>{{ item.contributor}}</td>
                                                 <td>{{ item.contributor_description}}</td>
                                                 <td>{{ item.proposed_value}}</td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>View</a> | <a href='/activitydb/quantitative_delete/{{ item.id }}/' target="_new">Delete</a>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>View</a> | <a class="output" href='/activitydb/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
@@ -677,7 +648,7 @@ class CommunityForm(forms.ModelForm):
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
 
-    date_of_firstcontact = forms.DateField(widget=DatePicker.DateInput())
+    date_of_firstcontact = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     approval = forms.ChoiceField(
         choices=APPROVALS,
@@ -711,7 +682,7 @@ class CommunityForm(forms.ModelForm):
                 ),
                 Tab('Location',
                     Fieldset('Places',
-                        'country','province','district','village','latitude','longitude',
+                        'country','province','district','village','latitude','longitude','altitude', 'precision',
                     ),
                     Fieldset('Map',
                         'map',
@@ -727,7 +698,7 @@ class CommunityForm(forms.ModelForm):
                     ),
                     Fieldset('Land',
                         'total_land','total_agricultural_land','total_rainfed_land','total_horticultural_land',
-                        'population_owning_land', 'avg_landholding_size', 'population_owning_livestock','animal_types','num_animals_population_owning'
+                        'population_owning_land', 'avg_landholding_size', 'population_owning_livestock','animal_type'
                     ),
                     Fieldset('Literacy',
                         'total_num_literate','literate_males','literate_females','literacy_rate',
@@ -735,14 +706,41 @@ class CommunityForm(forms.ModelForm):
                 ),
                 Tab('Approval',
                     Fieldset('Approval',
-                        'approval', 'filled_by', 'approved_by',
+                        'approval', 'filled_by', 'location_verified_by', 'approved_by',
                     ),
                 ),
             ),
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
                 Reset('reset', 'Reset', css_class='btn-warning')
-            )
+            ),
+
+             HTML("""
+            <br/>
+            <div class='panel panel-default'>
+              <!-- Default panel contents -->
+              <div class='panel-heading'>Projects in this Community</div>
+              {% if getProjects %}
+                  <!-- Table -->
+                  <table class="table">
+                    <tr>
+                    <th>Project Name</th>
+                    <th>Program</th>
+                    <th>Activity Code</th>
+                    <th>View</th>
+                    </tr>
+                    {% for item in getProjects %}
+                    <tr>
+                        <td>{{ item.project_name }}</td>
+                        <td>{{ item.program.name }}</td>
+                        <td>{{ item.activity_code }}</td>
+                        <td><a target="_new" href='/activitydb/projectproposal_detail/{{ item.id }}/'>View</a>
+                    </tr>
+                    {% endfor %}
+                  </table>
+              {% endif %}
+            </div>
+             """),
         )
 
         super(CommunityForm, self).__init__(*args, **kwargs)
@@ -790,6 +788,35 @@ class DocumentationForm(forms.ModelForm):
 
         super(DocumentationForm, self).__init__(*args, **kwargs)
 
+class QuantitativeOutputsForm(forms.ModelForm):
+
+    class Meta:
+        model = CollectedData
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+
+                'targeted', 'indicator', Field('description', rows="3", css_class='input-xlarge'),'date_collected', 'agreement',
+
+        )
+
+        super(QuantitativeOutputsForm, self).__init__(*args, **kwargs)
+
+
+QuantitativeOutputsFormSet = formset_factory(QuantitativeOutputsForm)
+
+
 class BenchmarkForm(forms.ModelForm):
 
     class Meta:
@@ -811,7 +838,7 @@ class BenchmarkForm(forms.ModelForm):
         self.helper.layout = Layout(
 
                 'percent_complete', 'percent_cumulative', Field('description', rows="3", css_class='input-xlarge'), 'agreement',
-                'file_field','project',
+                'file_field'
 
         )
 
@@ -845,6 +872,32 @@ class MonitorForm(forms.ModelForm):
         )
 
         super(MonitorForm, self).__init__(*args, **kwargs)
+
+
+class ChecklistForm(forms.ModelForm):
+
+    class Meta:
+        model = Checklist
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.add_input(Submit('submit', 'Save'))
+
+        super(ChecklistForm, self).__init__(*args, **kwargs)
+
+        countries = getCountry(self.request.user)
+        #override the community queryset to use request.user for country
+        self.fields['item'].queryset = ChecklistItem.objects.filter(country__in=countries)
 
 
 class TrainingAttendanceForm(forms.ModelForm):

@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.db import models
 from django.contrib import admin
 from django.conf import settings
@@ -16,6 +18,7 @@ class Country(models.Model):
     class Meta:
         ordering = ('country',)
         verbose_name_plural = "Countries"
+        app_label = 'activitydb'
 
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
@@ -92,6 +95,35 @@ class ProgramAdmin(admin.ModelAdmin):
     display = 'Program'
 
 
+class ApprovalAuthority(models.Model):
+    approval_user = models.ForeignKey(settings.AUTH_USER_MODEL,help_text='User with Approval Authority', blank=True, null=True, related_name="auth_approving")
+    budget_limit = models.IntegerField(null=True, blank=True)
+    fund = models.IntegerField("Fund",null=True, blank=True)
+    country = models.ForeignKey("Country", null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('approval_user',)
+        verbose_name_plural = "Approval Authority"
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ApprovalAuthority, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.approval_user
+
+
+class ApprovalAuthorityAdmin(admin.ModelAdmin):
+    list_display = ('approval_user')
+    display = 'Approval Authority'
+
+
 class Province(models.Model):
     name = models.CharField("Province Name", max_length=255, blank=True)
     country = models.ForeignKey(Country)
@@ -163,7 +195,8 @@ class Office(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.name
+        new_name = unicode(self.name) + unicode(" - ") + unicode(self.code)
+        return new_name
 
 
 class OfficeAdmin(admin.ModelAdmin):
@@ -198,7 +231,7 @@ class VillageAdmin(admin.ModelAdmin):
 
 
 class ProfileType(models.Model):
-    profile = models.CharField("Profile Name", max_length=255, blank=True)
+    profile = models.CharField("Profile Type", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -231,7 +264,7 @@ class Community(models.Model):
     community_leader = models.CharField("Community Malik/Elder Name", max_length=255, blank=True, null=True)
     head_of_institution = models.CharField("Head of Shura/Institution", max_length=255, blank=True, null=True)
     date_of_firstcontact = models.DateTimeField(null=True, blank=True)
-    contact_number = models.CharField("Head of Shura/Institution", max_length=255, blank=True, null=True)
+    contact_number = models.CharField("Contact Number", max_length=255, blank=True, null=True)
     num_members = models.CharField("Number of Members", max_length=255, blank=True, null=True)
     distance_district_capital = models.IntegerField("Distance from District Capital", help_text="In KM", null=True, blank=True)
     distance_site_camp = models.IntegerField("Distance from Site Camp", help_text="In KM", null=True, blank=True)
@@ -247,6 +280,8 @@ class Community(models.Model):
     male_over_60 = models.IntegerField("Male Over 60", null=True, blank=True)
     female_over_60 = models.IntegerField("Female Over 60", null=True, blank=True)
     total_population = models.IntegerField(null=True, blank=True)
+    total_male = models.IntegerField(null=True, blank=True)
+    total_female = models.IntegerField(null=True, blank=True)
     total_land = models.IntegerField("Total Land", help_text="In hectares/jeribs", null=True, blank=True)
     total_agricultural_land = models.IntegerField("Total Agricultural Land", help_text="In hectares/jeribs", null=True, blank=True)
     total_rainfed_land = models.IntegerField("Total Rain-fed Land", help_text="In hectares/jeribs", null=True, blank=True)
@@ -258,17 +293,19 @@ class Community(models.Model):
     population_owning_land = models.IntegerField("Population Owning Land", help_text="(%)", null=True, blank=True)
     avg_landholding_size = models.IntegerField("Average Landholding Size", help_text="In hectares/jeribs", null=True, blank=True)
     population_owning_livestock = models.IntegerField("Population Owning Livestock", help_text="(%)", null=True, blank=True)
-    animal_type = models.CharField("Animal Types", help_text="See Guide for Calculation", max_length=255, null=True, blank=True)
-    num_animals_population_owning = models.CharField(help_text="What?", max_length=255, null=True, blank=True)
+    animal_type = models.CharField("Animal Types", help_text="List Animal Types", max_length=255, null=True, blank=True)
     country = models.ForeignKey(Country)
     province = models.ForeignKey(Province, null=True, blank=True)
     district = models.ForeignKey(District, null=True, blank=True)
     village = models.CharField("Village", help_text="", max_length=255, null=True, blank=True)
-    latitude = models.DecimalField("Latitude (Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
-    longitude = models.DecimalField("Longitude (Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
+    latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
+    longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
+    altitude = models.DecimalField("Altitude (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
+    precision = models.DecimalField("Precision (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
     approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(settings.AUTH_USER_MODEL,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="comm_approving")
     filled_by = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='This is the originator', blank=True, null=True, related_name="comm_estimate")
+    location_verified_by = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='This should be GIS Manager', blank=True, null=True, related_name="comm_gis")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -286,7 +323,8 @@ class Community(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.name
+        new_name = str(self.province) + " - " + str(self.name)
+        return new_name
 
 
 class CommunityAdmin(admin.ModelAdmin):
@@ -486,14 +524,21 @@ class ProjectProposalAdmin(admin.ModelAdmin):
 
 
 class ProjectAgreement(models.Model):
-    project_proposal = models.ForeignKey(ProjectProposal, null=False, blank=False)
-    program = models.ForeignKey(Program, null=True, blank=True, related_name="agreement")
+    program = models.ForeignKey(Program, related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
-    project_name = models.CharField("Activity Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255, blank=True, null=True)
+    project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255)
     project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
+    project_description = models.TextField("Project Description", help_text='Description must meet the Criteria.  Will translate description into three languages: English, Dari and Pashto)', blank=True, null=True)
     community = models.ManyToManyField(Community, blank=True)
-    activity_code = models.CharField("Activity Code", help_text='Please request Activity Code from Kabul MEL', max_length=255, blank=True, null=True)
+    community_rep = models.CharField("Community Representative", max_length=255, blank=True, null=True)
+    community_rep_contact = models.CharField("Community Representative Contact", help_text='Can have mulitple contact numbers', max_length=255, blank=True, null=True)
+    community_mobilizer = models.CharField("MC Community Mobilizer", max_length=255, blank=True, null=True)
+    community_mobilizer_contact = models.CharField("MC Community Mobilizer Contact Number", max_length=255, blank=True, null=True)
+    community_proposal = models.FileField("Community Proposal", upload_to='uploads', blank=True, null=True)
+    has_rej_letter = models.BooleanField("If Rejected: Rejection Letter Sent?", help_text='If yes attach copy', default=False)
+    rejection_letter = models.FileField("Rejection Letter", upload_to='uploads', blank=True, null=True)
+    activity_code = models.CharField("Activity Code", help_text='If applicable at this stage, please request Activity Code from MEL', max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
     sector = models.ForeignKey("Sector", blank=True, null=True)
@@ -517,6 +562,20 @@ class ProjectAgreement(models.Model):
     total_estimated_budget = models.CharField(help_text="In USD", max_length=255, blank=True, null=True)
     mc_estimated_budget = models.CharField(help_text="In USD", max_length=255, blank=True, null=True)
     project_type_other = models.ForeignKey(ProjectTypeOther, blank=True, null=True)
+    estimate_male_trained = models.IntegerField("Estimated # of Male Trained",blank=True,null=True)
+    estimate_female_trained = models.IntegerField("Estimated # of Female Trained",blank=True,null=True)
+    estimate_total_trained = models.IntegerField("Estimated Total # Trained",blank=True,null=True)
+    estimate_trainings = models.IntegerField("Estimated # of Trainings Conducted",blank=True,null=True)
+    distribution_type = models.CharField("Type of Items Distributed",max_length="255",null=True,blank=True)
+    distribution_uom = models.CharField("Unit of Measure",max_length="255",null=True,blank=True)
+    distribution_estimate = models.CharField("Estimated # of Items Distributed",max_length="255",null=True,blank=True)
+    cfw_estimate_male = models.IntegerField("Estimated # of Male Laborers",blank=True,null=True)
+    cfw_estimate_female = models.IntegerField("Estimated # of Female Laborers",blank=True,null=True)
+    cfw_estimate_total = models.IntegerField("Estimated Total # of Laborers",blank=True,null=True)
+    cfw_estimate_project_days = models.IntegerField("Estimated # of Project Days",blank=True,null=True)
+    cfw_estimate_person_days = models.IntegerField("Estimated # of Person Days",blank=True,null=True)
+    cfw_estimate_cost_materials = models.CharField("Estimated Total Cost of Materials",max_length="255",blank=True,null=True)
+    cfw_estimate_wages_budgeted= models.CharField("Estimated Wages Budgeted",max_length="255",blank=True,null=True)
     estimation_date = models.DateTimeField(blank=True, null=True)
     estimated_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="estimating")
     estimated_by_date = models.DateTimeField("Date Estimated", null=True, blank=True)
@@ -528,8 +587,8 @@ class ProjectAgreement(models.Model):
     finance_reviewed_by_date = models.DateTimeField("Date Reviewed by Finance", null=True, blank=True)
     me_reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="reviewing_me")
     me_reviewed_by_date = models.DateTimeField("Date Reviewed by M&E", null=True, blank=True)
-    capacity = models.CharField("Capacity",max_length=255, blank=True, null=True)
-    evaluate = models.CharField("How will you evaluate the outcome or impact of the project?",max_length=255, blank=True, null=True)
+    capacity = models.ManyToManyField(Capacity, blank=True)
+    evaluate = models.ManyToManyField(Evaluate, blank=True)
     approval = models.CharField("Status", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="approving_agreement")
     approved_by_date = models.DateTimeField("Date Approved", null=True, blank=True)
@@ -548,7 +607,7 @@ class ProjectAgreement(models.Model):
     class Meta:
         ordering = ('create_date',)
         permissions = (
-            ("can_approve", "Can approve proposal"),
+            ("can_approve", "Can approve agreement"),
         )
 
     #onsave add create date or update edit date
@@ -560,7 +619,8 @@ class ProjectAgreement(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.project_name
+        new_name = unicode(self.office) + unicode(" - ") + unicode(self.project_name)
+        return new_name
 
 
 class ProjectAgreementAdmin(admin.ModelAdmin):
@@ -570,10 +630,9 @@ class ProjectAgreementAdmin(admin.ModelAdmin):
 
 class ProjectComplete(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True, related_name="complete")
-    project_proposal = models.ForeignKey(ProjectProposal)
     project_agreement = models.ForeignKey(ProjectAgreement)
     activity_code = models.CharField("Activity Code", max_length=255, blank=True, null=True)
-    project_name = models.CharField("Activity Name", max_length=255, blank=True, null=True)
+    project_name = models.CharField("Project Name", max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     expected_start_date = models.DateTimeField(help_text="Comes from Form-04 Project Agreement", blank=True, null=True)
@@ -620,7 +679,8 @@ class ProjectComplete(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.project_name
+        new_name = unicode(self.office) + unicode(" - ") + unicode(self.project_name)
+        return new_name
 
 
 class ProjectCompleteAdmin(admin.ModelAdmin):
@@ -634,7 +694,7 @@ class Documentation(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     template = models.ForeignKey(Template, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
-    project = models.ForeignKey(ProjectProposal, blank=True, null=True)
+    project = models.ForeignKey(ProjectAgreement, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -654,7 +714,7 @@ class Documentation(models.Model):
 
 
 class DocumentationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'documentation_type', 'file_field', 'project_proposal_id', 'program_id', 'create_date', 'edit_date')
+    list_display = ('name', 'description', 'documentation_type', 'file_field', 'program_id', 'create_date', 'edit_date')
     display = 'Documentation'
 
 
@@ -747,7 +807,6 @@ class BudgetAdmin(admin.ModelAdmin):
 
 
 class MergeMap(models.Model):
-    project_proposal = models.ForeignKey(ProjectProposal, null=True, blank=False)
     project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=False)
     project_completion = models.ForeignKey(ProjectComplete, null=True, blank=False)
     from_column = models.CharField(max_length=255, blank=True)
@@ -755,21 +814,14 @@ class MergeMap(models.Model):
 
 
 class MergeMapAdmin(admin.ModelAdmin):
-    list_display = ( 'project_proposal', 'project_agreement', 'project_completion', 'from_column', 'to_column')
-    display = 'project_proposal'
+    list_display = ('project_agreement', 'project_completion', 'from_column', 'to_column')
+    display = 'project_agreement'
 
 
 class ProgramDashboard(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True)
-    project_proposal = models.ForeignKey(ProjectProposal, null=True, blank=True)
-    project_proposal_count = models.IntegerField(null=True,blank=True)
-    project_proposal_count_approved = models.IntegerField(null=True,blank=True)
     project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
-    project_agreement_count = models.IntegerField(null=True,blank=True)
-    project_agreement_count_approved = models.IntegerField(null=True,blank=True)
     project_completion = models.ForeignKey(ProjectComplete, null=True, blank=True)
-    project_completion_count = models.IntegerField(null=True,blank=True)
-    project_completion_count_approved = models.IntegerField(null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -785,18 +837,18 @@ class ProgramDashboard(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return unicode("Program: %s  Proposal: %s" % (self.program, self.project_proposal))
+        return unicode("Program: %s " % (self.program, self.project_agreement))
 
 
 class ProgramDashboardAdmin(admin.ModelAdmin):
-    list_display = ('program', 'project_proposal', 'project_proposal_approved', 'create_date', 'edit_date')
+    list_display = ('program', 'create_date', 'edit_date')
     display = 'Program Dashboard'
 
 
 class TrainingAttendance(models.Model):
     training_name = models.CharField(max_length=255)
     program = models.ForeignKey(Program, null=True, blank=True)
-    project_proposal = models.ForeignKey(ProjectProposal, null=True, blank=True)
+    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
     implementer = models.CharField(max_length=255, null=True, blank=True)
     reporting_period = models.CharField(max_length=255, null=True, blank=True)
     total_participants = models.IntegerField(null=True, blank=True)
@@ -824,7 +876,7 @@ class TrainingAttendance(models.Model):
         ordering = ('training_name',)
 
     #onsave add create date or update edit date
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
@@ -836,7 +888,7 @@ class TrainingAttendance(models.Model):
 
 
 class TrainingAttendanceAdmin(admin.ModelAdmin):
-    list_display = ('training_name', 'program', 'project_proposal', 'create_date', 'edit_date')
+    list_display = ('training_name', 'program', 'project_agreement', 'create_date', 'edit_date')
     display = 'Program Dashboard'
 
 
@@ -856,7 +908,7 @@ class Beneficiary(models.Model):
         ordering = ('beneficiary_name',)
 
     #onsave add create date or update edit date
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
@@ -871,34 +923,56 @@ class BeneficiaryAdmin(admin.ModelAdmin):
     list_display = ('beneficiary_name', 'father_name', 'age', 'gender', 'community', 'signature', 'remarks', 'initials')
 
 
-class Contribution(models.Model):
-    contributor = models.CharField("Contributor", max_length=255, blank=True)
-    description = models.CharField("Description of Contribution", max_length=255, blank=True)
-    value = models.CharField("Value of Contribution", max_length=255, blank=True)
-    actual = models.BooleanField("Is an Actual Contribution", default=None)
-    project_agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="c_agreement")
-    project_complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="c_complete")
+class ChecklistItem(models.Model):
+    item = models.CharField(max_length=255, null=True, blank=True)
+    country = models.ForeignKey(Country,null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('contributor',)
+        ordering = ('item',)
 
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(Contribution, self).save()
+        super(ChecklistItem, self).save()
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.contributor
+        return unicode(self.item)
 
 
-class ContributionAdmin(admin.ModelAdmin):
-    list_display = ('contributor', 'create_date', 'edit_date')
-    display = 'Contribution'
+class ChecklistItemAdmin(admin.ModelAdmin):
+    list_display = ('agreement')
+
+
+class Checklist(models.Model):
+    agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
+    item = models.ForeignKey(ChecklistItem, null=True, blank=True)
+    in_file = models.BooleanField()
+    not_applicable = models.BooleanField()
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('agreement',)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Checklist, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.agreement)
+
+
+class ChecklistAdmin(admin.ModelAdmin):
+    list_display = ('agreement')
 
 
 # Documentation
@@ -920,8 +994,9 @@ class DocumentationApp(models.Model):
 
 
 class DocumentationAppAdmin(admin.ModelAdmin):
-    list_display = ( 'name', 'documentation', 'create_date',)
+    list_display = ('name', 'documentation', 'create_date',)
     display = 'DocumentationApp'
+
 
 # collect feedback from users
 class Feedback(models.Model):

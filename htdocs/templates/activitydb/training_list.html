@@ -2,8 +2,8 @@
 {% block bread_crumb %}
 <ol class="breadcrumb">
   <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
-  {%  if project_proposal_id != '0'%}
-    <li><a href="/activitydb/dashboard/project/{{ project_proposal_id }}/">Project Dashboards</a></li>
+  {%  if project_agreement_id != '0'%}
+    <li><a href="/activitydb/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a></li>
   {% endif %}
   <li class="active">Trainings</li>
 </ol>
@@ -13,8 +13,8 @@
 
 {% block content %}
 <div>
-    <a href="/activitydb/training_add/0/" class="btn btn-large btn-success">New Training</a> &nbsp;
-    <a href="/activitydb/training_import" class="btn btn-large btn-info">Import Training</a>
+    <a href="/activitydb/training_add/0/" class="btn btn-large btn-success">New Training</a>
+    <a href="/activitydb/training_import" class="btn btn-large btn-info" data-toggle="modal" data-target="#importModal">Import Training</a>
 <hr/>
 </div>
 
@@ -32,4 +32,12 @@
     <li class="list-group-item">No trainings yet.</li>
 {% endfor %}
 </ul>
+
+<!-- Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div> <!-- /.modal-content -->
+    </div> <!-- /.modal-dialog -->
+</div> <!-- /.modal -->
 {% endblock content %}

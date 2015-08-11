@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib import admin
 from django.conf import settings
-from activitydb.models import Program, Sector, Community, ProjectAgreement, ProjectComplete
+from activitydb.models import Program, Sector, Community, ProjectAgreement, ProjectComplete, Country, Office
 from datetime import datetime
 
 
@@ -15,8 +15,14 @@ class IndicatorType(models.Model):
         return self.indicator_type
 
 
+class IndicatorTypeAdmin(admin.ModelAdmin):
+    list_display = ('indicator_type','description','create_date','edit_date')
+    display = 'Indicator Type'
+
+
 class Objective(models.Model):
     name = models.CharField(max_length=135, blank=True)
+    country = models.ForeignKey(Country, null=True, blank=True)
     description = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -25,9 +31,9 @@ class Objective(models.Model):
         return self.name
 
 
-class IndicatorTypeAdmin(admin.ModelAdmin):
-    list_display = ('indicator_type','description','create_date','edit_date')
-    display = 'Indicator Type'
+class ObjectiveAdmin(admin.ModelAdmin):
+    list_display = ('name')
+    display = 'Objectives'
 
 
 class DisaggregationType(models.Model):
@@ -76,7 +82,7 @@ class DisaggregationValueAdmin(admin.ModelAdmin):
 
 
 class ReportingFrequency(models.Model):
-    frequency= models.CharField(max_length=135, blank=True)
+    frequency = models.CharField(max_length=135, blank=True)
     description = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -106,7 +112,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 class Indicator(models.Model):
     owner = models.ForeignKey('auth.User')
-    indicator_type = models.ForeignKey(IndicatorType, null=True, blank=True)
+    indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     objectives = models.ManyToManyField(Objective, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     number = models.CharField(max_length=255, null=True, blank=True)
@@ -139,8 +145,13 @@ class Indicator(models.Model):
         self.edit_date = datetime.now()
         super(Indicator, self).save(*args, **kwargs)
 
-    def program_str(self):
-        return ', '.join([program.name for program in value.all()])
+    @property
+    def programs(self):
+        return ', '.join([x.name for x in self.program.all()])
+
+    @property
+    def indicator_types(self):
+        return ', '.join([x.indicator_type for x in self.indicator_type.all()])
 
     def __unicode__(self):
         return self.name
@@ -155,16 +166,24 @@ class CollectedData(models.Model):
     targeted = models.CharField("Targeted", max_length=255, blank=True, null=True)
     achieved = models.CharField("Achieved", max_length=255, blank=True, null=True)
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
-    description = models.CharField("Description", max_length=255, blank=True, null=True)
+    description = models.CharField("Remarks/comments", max_length=255, blank=True, null=True)
     indicator = models.ForeignKey(Indicator, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2")
     date_collected = models.DateTimeField(null=True, blank=True)
+    comment = models.CharField("Comment/Explanation", max_length=255, blank=True, null=True)
+    method = models.CharField("Method of Data Collection", max_length=255, blank=True, null=True)
+    tool = models.CharField("Tool/Source Developed By", max_length=255, blank=True, null=True)
+    date_of_training = models.DateTimeField("Date of Staff Training", null=True, blank=True)
+    date_of_analysis = models.DateTimeField("Date of Analysis", null=True, blank=True)
+    trainer_name = models.CharField("Name of Trainer", max_length=255, blank=True, null=True)
+    analysis_name = models.CharField("Analysis Done By", max_length=255, blank=True, null=True)
+    office = models.ForeignKey(Office, blank=True, null=True, related_name="q_office")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('indicator','date_collected','create_date')
+        ordering = ('agreement','indicator','date_collected','create_date')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"
 
     #onsave add create date or update edit date
@@ -180,7 +199,7 @@ class CollectedData(models.Model):
 
     def targeted_sum(self):
         targets=CollectedData.targeted.filter(indicator__id=self).sum('targeted')
-        return target
+        return targets
 
     def achieved_sum(self):
         achieved=CollectedData.targeted.filter(indicator__id=self).sum('achieved')

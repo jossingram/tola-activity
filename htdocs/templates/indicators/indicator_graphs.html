@@ -50,11 +50,12 @@ $(function () {
 
         series: [{
             name: 'Targets',
-            data: [ {% for indicator in getQuantitativeData %}  {{ indicator.targeted }}, {% endfor %}  ],
+            // add 0 to convert to int
+            data: [ {% for indicator in getQuantitativeData %}  {{ indicator.targeted|add:"0" }}, {% endfor %}  ],
             pointPlacement: 'on'
         }, {
             name: 'Actuals',
-            data: [ {% for indicator in getQuantitativeData %}  {{ indicator.achieved }}, {% endfor %}   ],
+            data: [ {% for indicator in getQuantitativeData %}  {{ indicator.achieved|add:"0" }}, {% endfor %}   ],
             pointPlacement: 'on'
         }]
 

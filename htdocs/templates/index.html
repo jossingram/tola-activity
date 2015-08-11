@@ -13,15 +13,15 @@ $(function () {
             type: 'bar'
         },
         title: {
-            text: 'Program Activites by Status {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>'
+            text: 'Program Projects by Status {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>'
         },
         xAxis: {
-            categories: ['Proposals', 'Agreements', 'Completions']
+            categories: ['Agreements', 'Completions']
         },
         yAxis: {
             min: 0,
             title: {
-                text: 'Number of Approved, Pending or Open Activities'
+                text: 'Number of Approved, Pending or Open Projects'
             }
         },
         legend: {
@@ -29,23 +29,33 @@ $(function () {
         },
         plotOptions: {
             series: {
-                stacking: 'normal'
+                stacking: 'normal',
+                point: {
+                    events: {
+                        click: function () {
+                            location.href = this.options.ownURL;
+                        }
+                    }
+                }
             }
         },
+
         series: [
         {
             name: 'Approved',
-            data: [{{ proposal_approved_count }}, {{ agreement_approved_count }}, {{ complete_approved_count }}]
+            data: [{ y:{{ agreement_approved_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_approved_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
         },
         {
             name: 'Pending',
-            data: [{{ proposal_wait_count }}, {{ agreement_wait_count }}, {{ complete_wait_count }}]
+            data: [{ y:{{ agreement_wait_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_wait_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
         },
         {
             name: 'Open',
-            data: [{{ proposal_total_count }}, {{ agreement_total_count }}, {{ complete_total_count }}]
+            data: [{ y:{{ agreement_open_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_open_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
         },
+
         ]
+
     });
 });
 
@@ -117,7 +127,7 @@ $(function () {
                     <h4>Tola-Activity Dashboard</h4>
                 </div>
                 <div style="float:right; display: inline-block; vertical-align: middle;">
-                    <a href="/activitydb/projectproposal_add/0/" class="btn btn-sm btn-success">Create a Project Proposal</a>
+                    <a href="/activitydb/projectagreement_add/" class="btn btn-sm btn-success">Create a Project</a>
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@
   <li class="active">Data</li>
 </ol>
 {% endblock %}
-{% block page_title %}Collected Indicator Ouput/Outcome Data List{% endblock %}
+{% block page_title %}Collected Indicator Data{% endblock %}
 
 {% block content %}
 <div class="dropdown">
@@ -19,7 +19,7 @@
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
     {% endfor %}
     </ul>
-    <a href="/indicators/collecteddata_add/0/0/" class="btn btn-large btn-success">New Data</a> &nbsp;
+    <a href="/indicators/collecteddata_add/0/0/" class="btn btn-large btn-success">New Data</a>
     <a href="/indicators/collecteddata_import/0/" class="btn btn-large btn-info">Import Data</a>
     <br/>
     <br/>
@@ -37,11 +37,16 @@
             {% regroup program.list by indicator as indicator_list %}
             {% for indicator in indicator_list %}
                 <tr class="success">
-                    <td colspan="5"><b>Indicator:</b> {{ indicator.id }} - {{ indicator.grouper }}</td>
+                    {% if indicator.grouper %}
+                        <td colspan="6"><b>Indicator:</b> {{ indicator.grouper }}</td>
+                    {% else %}
+                        <td colspan="6"><b>No Indicator</b>
+                    {% endif %}
                 </tr>
                 <tr>
                     <th>Date Created</th>
                     <th>Date Collected</th>
+                    <th>Agreement</th>
                     <th>Target</th>
                     <th>Actual</th>
                     <th>&nbsp;</th>
@@ -49,20 +54,17 @@
                 {% for item in getCollectedData %}
                 {% if item.indicator == indicator.grouper %}
                 <tr>
-                    <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.date_created}}</a></td>
+                    <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.create_date}}</a></td>
                     <td>{{ item.date_collected }}</td>
+                    <td>{{ item.agreement }}</td>
                     <td>{{ item.targeted }}</td>
                     <td>{{ item.achieved }}</td>
-                    <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a>&nbsp;<a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
+                    <td><a href="/indicators/collecteddata_add/{% if item.agreement.id %}{{ item.agreement.id }}{% else %}0{% endif %}/{% if item.indicator.id %}{{ item.indicator.id }}{% else %}0{% endif %}/" class="btn-xs btn-success">New</a><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
                 </tr>
+
                 {% endif %}
                 {% endfor %}
-                <tr>
-                    <td>&nbsp;</td>
-                    <td><b>TOTALS:</b></td>
-                    <td>{{ getCollectedData.targeted_sum }}</td>
-                    <td>{{ getCollectedData.achieved_sum }}</td>
-                </tr>
+
             {% endfor %}
             </table>
         </div>

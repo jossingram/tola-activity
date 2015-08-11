@@ -1,10 +1,9 @@
-from .views import ProjectProposalImport, ProjectProposalList, ProjectProposalCreate, ProjectProposalUpdate, ProjectProposalDelete, \
-    ProgramDash, ProjectAgreementCreate, ProjectAgreementList, ProjectAgreementUpdate, ProjectAgreementDetail, ProjectAgreementDelete, ProjectAgreementImport, ProjectCompleteCreate, ProjectCompleteUpdate,\
+from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, ProjectAgreementUpdate, ProjectAgreementDetail, ProjectAgreementDelete, ProjectAgreementImport, ProjectCompleteCreate, ProjectCompleteUpdate,\
     ProjectCompleteList, ProjectCompleteDelete, ProjectCompleteImport, CommunityList, CommunityCreate, CommunityUpdate, CommunityDelete,\
     DocumentationList, DocumentationCreate, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
     BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
-    BeneficiaryDelete, ProjectCompleteDetail, ProjectProposalDetail,\
-    CommunityReport, BudgetCreate, BudgetDelete, BudgetUpdate, BudgetList, ProgramDashboardCounts
+    BeneficiaryDelete, ProjectCompleteDetail, CommunityReport, ChecklistCreate, ChecklistDelete, ChecklistUpdate, BudgetList, QuantitativeOutputsList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
+    ChecklistCreate, ChecklistDelete, ChecklistUpdate, ChecklistList, BudgetCreate, BudgetUpdate, BudgetDelete
 
 
 try:
@@ -20,16 +19,8 @@ urlpatterns = patterns('',
                        url(r'^dashboard/(?P<pk>\w+)/$', ProgramDash.as_view(), name='dashboard'),
                        url(r'^dashboard/project/(?P<pk>\w+)/$', ProjectDash.as_view(), name='project_dashboard'),
 
-                       #project proposal
-                       url(r'^projectproposal_list/(?P<pk>\w+)/$', ProjectProposalList.as_view(), name='projectproposal_list'),
-                       url(r'^projectproposal_add', ProjectProposalCreate.as_view(), name='projectproposal_add'),
-                       url(r'^projectproposal_update/(?P<pk>\w+)/$', ProjectProposalUpdate.as_view(), name='projectproposal_update'),
-                       url(r'^projectproposal_delete/(?P<pk>\w+)/$', ProjectProposalDelete.as_view(), name='projectproposal_delete'),
-                       url(r'^projectproposal_import', ProjectProposalImport.as_view(), name='projectproposal_import'),
-                       url(r'^projectproposal_detail/(?P<pk>\w+)/$', ProjectProposalDetail.as_view(), name='projectproposal_detail'),
-
                        url(r'^projectagreement_list/(?P<pk>\w+)/$', ProjectAgreementList.as_view(), name='projectagreement_list'),
-                       url(r'^projectagreement_add/(?P<pk>\w+)/$', ProjectAgreementCreate.as_view(), name='projectagreement_add'),
+                       url(r'^projectagreement_add/$', ProjectAgreementCreate.as_view(), name='projectagreement_add'),
                        url(r'^projectagreement_update/(?P<pk>\w+)/$', ProjectAgreementUpdate.as_view(), name='projectagreement_update'),
                        url(r'^projectagreement_delete/(?P<pk>\w+)/$', ProjectAgreementDelete.as_view(), name='projectagreement_delete'),
                        url(r'^projectagreement_import', ProjectAgreementImport.as_view(), name='projectagreement_import'),
@@ -42,7 +33,7 @@ urlpatterns = patterns('',
                        url(r'^projectcomplete_import', ProjectCompleteImport.as_view(), name='projectcomplete_import'),
                        url(r'^projectcomplete_detail/(?P<pk>\w+)/$', ProjectCompleteDetail.as_view(), name='projectcomplete_detail'),
 
-                       url(r'^community_list/(?P<pk>\w+)/$', CommunityList.as_view(), name='community_list'),
+                       url(r'^community_list/(?P<program_id>\w+)/(?P<activity_id>\w+)/$', CommunityList.as_view(), name='community_list'),
                        url(r'^community_report/(?P<pk>\w+)/$', CommunityReport.as_view(), name='community_report'),
                        url(r'^community_add', CommunityCreate.as_view(), name='community_add'),
                        url(r'^community_update/(?P<pk>\w+)/$', CommunityUpdate.as_view(), name='community_update'),
@@ -58,6 +49,12 @@ urlpatterns = patterns('',
                        url(r'^monitor_update/(?P<pk>\w+)/$', MonitorUpdate.as_view(), name='monitor_update'),
                        url(r'^monitor_delete/(?P<pk>\w+)/$', MonitorDelete.as_view(), name='monitor_delete'),
 
+                       url(r'^quantitative_list/(?P<pk>\w+)/$', QuantitativeOutputsList.as_view(), name='quantitative_list'),
+                       url(r'^quantitative_add/(?P<id>\w+)/$', QuantitativeOutputsCreate.as_view(), name='quantitative_add'),
+                       url(r'^quantitative_update/(?P<pk>\w+)/$', QuantitativeOutputsUpdate.as_view(), name='quantitative_update'),
+                       url(r'^quantitative_delete/(?P<pk>\w+)/$', QuantitativeOutputsDelete.as_view(), name='quantitative_delete'),
+
+
                        url(r'^benchmark_add/(?P<id>\w+)/$', BenchmarkCreate.as_view(), name='benchmark_add'),
                        url(r'^benchmark_update/(?P<pk>\w+)/$', BenchmarkUpdate.as_view(), name='benchmark_update'),
                        url(r'^benchmark_delete/(?P<pk>\w+)/$', BenchmarkDelete.as_view(), name='benchmark_delete'),
@@ -66,6 +63,11 @@ urlpatterns = patterns('',
                        url(r'^training_add/(?P<id>\w+)/$', TrainingCreate.as_view(), name='training_add'),
                        url(r'^training_update/(?P<pk>\w+)/$', TrainingUpdate.as_view(), name='training_update'),
                        url(r'^training_delete/(?P<pk>\w+)/$', TrainingDelete.as_view(), name='training_delete'),
+
+                       url(r'^checklist_list/(?P<pk>\w+)/$', ChecklistList.as_view(), name='checklist_list'),
+                       url(r'^checklist_add/(?P<id>\w+)/$', ChecklistCreate.as_view(), name='checklist_add'),
+                       url(r'^checklist_update/(?P<pk>\w+)/$', ChecklistUpdate.as_view(), name='checklist_update'),
+                       url(r'^checklist_delete/(?P<pk>\w+)/$', ChecklistDelete.as_view(), name='checklistdelete'),
 
                        url(r'^beneficiary_list/(?P<pk>\w+)/$', BeneficiaryList.as_view(), name='beneficiary_list'),
                        url(r'^beneficiary_add/(?P<id>\w+)/$', BeneficiaryCreate.as_view(), name='beneficiary_add'),

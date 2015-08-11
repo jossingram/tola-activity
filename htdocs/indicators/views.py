@@ -219,21 +219,19 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
     getIndicators = Indicator.objects.select_related()
 
     if int(id) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(indicator__id = id).select_related()
-        getCommunity = Community.objects.all()
-        print "id"
+        getQuantitativeData = CollectedData.objects.all().filter(indicator__id=id).select_related()
+        getCommunity = CollectedData.objects.all().filter(indicator__id=id).select_related()
     else:
         getQuantitativeData = CollectedData.objects.all().select_related()
         getCommunity = Community.objects.all().select_related()
 
     if int(program) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(agreement__program__id = program).select_related()
-        getCommunity = Community.objects.all().filter(q_agreement__program__id = program).select_related()
+        getQuantitativeData = CollectedData.objects.all().filter(agreement__program__id=program).select_related()
+        getCommunity = Community.objects.all().filter(projectagreement__program__id=program).select_related()
 
     if int(agreement) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(agreement__id = agreement).select_related()
-        getCommunity = Community.objects.all().filter(q_agreement__id = agreement).select_related()
-
+        getQuantitativeData = CollectedData.objects.all().filter(agreement__id=agreement).select_related()
+        getCommunity = Community.objects.all().filter(projectagreement__id=agreement).select_related()
 
     table = IndicatorDataTable(getQuantitativeData)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
@@ -289,26 +287,24 @@ class CollectedDataCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataCreate, self).get_context_data(**kwargs)
-
+        print self.kwargs['indicator']
         try:
             getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationLabel = None
 
-        try:
-            getDisaggregationValue = DisaggregationValue.objects.all().filter(disaggregation_label__disaggregation_type__indicator__id=self.kwargs['indicator'])
-        except DisaggregationLabel.DoesNotExist:
-            getDisaggregationValue = None
+        #set values to None so the form doesn't display empty fields for previous entries
+        getDisaggregationValue = None
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
-        context.update({'indicator': self.kwargs['indicator']})
+        context.update({'indicator_id': self.kwargs['indicator']})
         return context
 
     def get_initial(self):
         initial = {
             'indicator': self.kwargs['indicator'],
-            'program': self.kwargs['program'],
+            'agreement': self.kwargs['agreement'],
 
         }
 
@@ -345,23 +341,11 @@ class CollectedDataCreate(CreateView):
                 insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=getCollectedData)
                 insert_disaggregationvalue.save()
 
-        for label in getDisaggregationLabel:
-            for key, value in self.request.POST.iteritems():
-                if key == "update_" + str(label.id):
-                    value_to_update = value
-                else:
-                    value_to_update = None
-            if value_to_update:
-                update_disaggregatedvalue = DisaggregationValue.objects.filter(disaggregation_label=label,collecteddata=getCollectedData).update(value=value_to_update)
-                update_disaggregatedvalue.save()
-
         form.save()
         messages.success(self.request, 'Success, Data Created!')
 
         form = ""
         return self.render_to_response(self.get_context_data(form=form))
-
-
 
 
 class CollectedDataUpdate(UpdateView):
@@ -374,19 +358,22 @@ class CollectedDataUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataUpdate, self).get_context_data(**kwargs)
+        #get the indicator_id for the collected data
+        getIndicator = CollectedData.objects.get(id=self.kwargs['pk'])
         try:
-            getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__collecteddata__id=self.kwargs['pk'])
+            getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=getIndicator.indicator_id)
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationLabel = None
 
         try:
-            getDisaggregationValue = DisaggregationValue.objects.all().filter(disaggregation_label__disaggregation_type__indicator__collecteddata__id=self.kwargs['pk'])
+            getDisaggregationValue = DisaggregationValue.objects.all().filter(collecteddata=self.kwargs['pk'])
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationValue = None
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
+        context.update({'indicator_id': getIndicator.indicator_id})
         return context
 
     def form_invalid(self, form):
@@ -400,7 +387,21 @@ class CollectedDataUpdate(UpdateView):
         return kwargs
 
     def form_valid(self, form):
+
+        getCollectedData = CollectedData.objects.get(id=self.kwargs['pk'])
+        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.request.POST['indicator'])
+
+        #save the form then update manytomany relationships
         form.save()
+
+        #Insert or update disagg values
+        for label in getDisaggregationLabel:
+            for key, value in self.request.POST.iteritems():
+                if key == str(label.id):
+                    value_to_insert = value
+                    save = getCollectedData.disaggregation_value.create(disaggregation_label=label, value=value_to_insert)
+                    getCollectedData.disaggregation_value.add(save.id)
+
         messages.success(self.request, 'Success, Data Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
