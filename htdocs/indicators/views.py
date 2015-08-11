@@ -219,21 +219,19 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
     getIndicators = Indicator.objects.select_related()
 
     if int(id) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(indicator__id = id).select_related()
-        getCommunity = Community.objects.all()
-        print "id"
+        getQuantitativeData = CollectedData.objects.all().filter(indicator__id=id).select_related()
+        getCommunity = CollectedData.objects.all().filter(indicator__id=id).select_related()
     else:
         getQuantitativeData = CollectedData.objects.all().select_related()
         getCommunity = Community.objects.all().select_related()
 
     if int(program) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(agreement__program__id = program).select_related()
-        getCommunity = Community.objects.all().filter(projectagreement__program__id = program).select_related()
+        getQuantitativeData = CollectedData.objects.all().filter(agreement__program__id=program).select_related()
+        getCommunity = Community.objects.all().filter(projectagreement__program__id=program).select_related()
 
     if int(agreement) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(agreement__id = agreement).select_related()
-        getCommunity = Community.objects.all().filter(projectagreement__id = agreement).select_related()
-
+        getQuantitativeData = CollectedData.objects.all().filter(agreement__id=agreement).select_related()
+        getCommunity = Community.objects.all().filter(projectagreement__id=agreement).select_related()
 
     table = IndicatorDataTable(getQuantitativeData)
     table.paginate(page=request.GET.get('page', 1), per_page=20)

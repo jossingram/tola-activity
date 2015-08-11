@@ -28,6 +28,9 @@
         <li role="presentation"><a role="menuitem" tabindex="2" href="/indicators/data/0/{{ item.id }}">{{ item.id}} - {{ item.name }}</a></li>
     {% endfor %}
   </ul>
+</div>
+<div class="btn-group" role="group">
+  <button class="btn btn-default" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ agreement }}/table/'" name="map">Table</button>&nbsp;
   <button class="btn btn-default" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ agreement }}/map/'" name="map">Map</button>&nbsp;
   <button class="btn btn-default" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ agreement }}/graph/'" name="map">Graph</button>
 </div>
@@ -52,7 +55,6 @@
     <div id="map"></div>
     {% include "indicators/community_map.html" %}
 {% elif "graph" in request.get_full_path %}
-
     {% include "indicators/indicator_graphs.html" %}
 {% else %}
     {% render_table table %}

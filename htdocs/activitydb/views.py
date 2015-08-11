@@ -1293,6 +1293,7 @@ class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
     QuantitativeOutput Form
     """
     model = CollectedData
+    template_name = 'activitydb/quantitativeoutputs_form.html'
 
     def get_context_data(self, **kwargs):
         context = super(QuantitativeOutputsUpdate, self).get_context_data(**kwargs)

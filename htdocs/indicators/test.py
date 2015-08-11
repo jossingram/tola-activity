@@ -25,7 +25,7 @@ class IndicatorTestCase(TestCase):
         user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
         user.save()
         get_user = User.objects.get(username='john')
-        new_indicator = Indicator.objects.create(name="testindicator",number="1.2.3",source="testing", indicator_type=get_indicator_type,
+        new_indicator = Indicator.objects.create(name="testindicator",number="1.2.3",source="testing",
                                                  disaggregation=get_disaggregation, baseline="10",lop_target="10", reporting_frequency=get_frequency,owner=get_user)
         new_indicator.save()
         get_indicator = Indicator.objects.get(name="testindicator")
