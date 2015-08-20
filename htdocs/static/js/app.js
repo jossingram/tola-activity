@@ -157,5 +157,9 @@ $(document).ready(function() {
     }
     $(document).on("change, keyup", "#id_cfw_estimate_male", updateCFW);
     $(document).on("change, keyup", "#id_cfw_estimate_female", updateCFW);
+
+    $('.dropdown-menu a').on('click', function(){
+        $(this).parent().parent().prev().html($(this).html() + '<span class="caret"></span>');
+    })
 });
 

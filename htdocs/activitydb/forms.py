@@ -734,7 +734,7 @@ class CommunityForm(forms.ModelForm):
                         <td>{{ item.project_name }}</td>
                         <td>{{ item.program.name }}</td>
                         <td>{{ item.activity_code }}</td>
-                        <td><a target="_new" href='/activitydb/projectproposal_detail/{{ item.id }}/'>View</a>
+                        <td><a target="_new" href='/activitydb/projectagreement_detail/{{ item.id }}/'>View</a>
                     </tr>
                     {% endfor %}
                   </table>

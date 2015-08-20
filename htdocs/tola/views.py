@@ -35,22 +35,26 @@ def index(request,id=0,sector=0):
 
     if int(sector) == 0:
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).exclude(proposal__isnull=True)
+        sectors = Sector.objects.all()
     else:
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries, sector=sector).exclude(proposal__isnull=True)
-
+        sectors = Sector.objects.all().filter(id=sector)
 
     if int(program_id) == 0:
         getFilteredName=None
-        agreement_total_count = ProjectAgreement.objects.all().filter(program__country__in=countries).count()
-        complete_total_count = ProjectComplete.objects.all().filter(program__country__in=countries).count()
-        agreement_approved_count = ProjectAgreement.objects.all().filter(approval='approved', program__country__in=countries).count()
-        complete_approved_count = ProjectComplete.objects.all().filter(approval='approved', program__country__in=countries).count()
-        agreement_open_count = ProjectAgreement.objects.all().filter(approval='open', program__country__in=countries).count()
-        complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="")), program__country__in=countries).count()
-        agreement_wait_count = ProjectAgreement.objects.all().filter(approval='in progress', program__country__in=countries).count()
-        complete_wait_count = ProjectComplete.objects.all().filter(approval='in progress', program__country__in=countries).count()
-        getCommunity = Community.objects.all().filter(country__in=countries)
-        getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__country__in=countries).order_by('indicator__number').values('indicator__number','indicator__name').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+        agreement_total_count = ProjectAgreement.objects.all().filter(sector__in=sectors, program__country__in=countries).count()
+        complete_total_count = ProjectComplete.objects.all().filter(project_agreement__sector__in=sectors, program__country__in=countries).count()
+        agreement_approved_count = ProjectAgreement.objects.all().filter(approval='approved', sector__in=sectors, program__country__in=countries).count()
+        complete_approved_count = ProjectComplete.objects.all().filter(approval='approved', project_agreement__sector__in=sectors, program__country__in=countries).count()
+        agreement_open_count = ProjectAgreement.objects.all().filter(approval='open', sector__id__in=sectors, program__country__in=countries).count()
+        complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="")), project_agreement__sector__in=sectors, program__country__in=countries).count()
+        agreement_wait_count = ProjectAgreement.objects.all().filter(approval='in progress', sector__in=sectors, program__country__in=countries).count()
+        complete_wait_count = ProjectComplete.objects.all().filter(approval='in progress', project_agreement__sector__in=sectors, program__country__in=countries).count()
+        if int(sector) > 0:
+            getCommunity = Community.objects.all().filter(Q(Q(projectagreement__sector__in=sectors)), country__in=countries)
+        else:
+            getCommunity = Community.objects.all().filter(country__in=countries)
+        getQuantitativeDataSums = CollectedData.objects.all().filter(Q(Q(agreement__sector__in=sectors)|Q(agreement__sector__isnull=True)), indicator__program__country__in=countries).order_by('indicator__number').values('indicator__number','indicator__name').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
 
     else:
         getFilteredName=Program.objects.get(id=program_id)
@@ -59,10 +63,10 @@ def index(request,id=0,sector=0):
         agreement_approved_count = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved', program__country__in=countries).count()
         complete_approved_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='approved', program__country__in=countries).count()
         agreement_open_count = ProjectAgreement.objects.all().filter(program__id=program_id, approval='open', program__country__in=countries).count()
-        complete_open_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='open', program__country__in=countries).count()
+        complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="")), program__id=program_id, program__country__in=countries).count()
         agreement_wait_count = ProjectAgreement.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
         complete_wait_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
-        getCommunity = Community.objects.all().filter(projectproposal__program__id=program_id)
+        getCommunity = Community.objects.all().filter(projectagreement__program__id=program_id, projectagreement__sector__id=sector)
         getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id).order_by('indicator__number').values('indicator__number','indicator__name').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
 
     table = IndicatorDataTable(getQuantitativeDataSums)
