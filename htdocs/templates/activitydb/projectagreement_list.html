@@ -44,7 +44,7 @@
         <td>{{ item.activity_code}}</td>
         <td>{% if item.approval %} {{ item.approval}} {% else %} Open {% endif %}</td>
         <td>
-            <a href="/activitydb/dashboard/project/{{ item.project_proposal.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
+            <a href="/activitydb/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
             <a href="/activitydb/projectagreement_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Agreement</a>
         </td>
     </tr>
