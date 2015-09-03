@@ -159,8 +159,6 @@ class ProjectAgreementImport(ListView):
         return render(request, self.template_name, {'getAgreements': data})
 
 
-
-
 class ProjectAgreementCreate(CreateView):
     """
     Project Agreement Form
@@ -1232,6 +1230,7 @@ class BeneficiaryDelete(DeleteView):
 
     form_class = BeneficiaryForm
 
+
 class QuantitativeOutputsList(ListView):
     """
     QuantitativeOutput List
@@ -1334,6 +1333,7 @@ class QuantitativeOutputsDelete(AjaxableResponseMixin, DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = QuantitativeOutputsForm
+
 
 class BudgetList(ListView):
     """

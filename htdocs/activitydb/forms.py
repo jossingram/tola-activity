@@ -501,7 +501,6 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
 
-
 class ProjectCompleteForm(forms.ModelForm):
 
     class Meta:
@@ -734,7 +733,7 @@ class CommunityForm(forms.ModelForm):
                         <td>{{ item.project_name }}</td>
                         <td>{{ item.program.name }}</td>
                         <td>{{ item.activity_code }}</td>
-                        <td><a target="_new" href='/activitydb/projectproposal_detail/{{ item.id }}/'>View</a>
+                        <td><a target="_new" href='/activitydb/projectagreement_detail/{{ item.id }}/'>View</a>
                     </tr>
                     {% endfor %}
                   </table>
@@ -788,6 +787,7 @@ class DocumentationForm(forms.ModelForm):
 
         super(DocumentationForm, self).__init__(*args, **kwargs)
 
+
 class QuantitativeOutputsForm(forms.ModelForm):
 
     class Meta:
@@ -812,9 +812,6 @@ class QuantitativeOutputsForm(forms.ModelForm):
         )
 
         super(QuantitativeOutputsForm, self).__init__(*args, **kwargs)
-
-
-QuantitativeOutputsFormSet = formset_factory(QuantitativeOutputsForm)
 
 
 class BenchmarkForm(forms.ModelForm):
