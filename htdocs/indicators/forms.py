@@ -58,8 +58,8 @@ class IndicatorForm(forms.ModelForm):
                         'means_of_verification','data_collection_method','responsible_person',
                         ),
                 ),
-                Tab('Analyses and Reporting',
-                    Fieldset('Analyses and Reporting',
+                Tab('Analysis and Reporting',
+                    Fieldset('Analysis and Reporting',
                         'method_of_analysis','information_use', 'reporting_frequency','comments'
                     ),
                 ),
