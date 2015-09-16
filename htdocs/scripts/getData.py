@@ -153,7 +153,8 @@ print "Program"
 getCountries = Country.objects.all()
 for country in getCountries:
     print country.country
-    program_url = "http://mcapi.mercycorps.org/gaitprogram/?country=%s&format=json" % (country.country)
+    safe_country = urllib.quote_plus(country.country)
+    program_url = "http://mcapi.mercycorps.org/gaitprogram/?country=%s&format=json" % (safe_country)
     print program_url
     getAllData(program_url, "Program", country.id)
 
