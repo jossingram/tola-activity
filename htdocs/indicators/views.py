@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect
 from django.db import models
 from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData
 from activitydb.models import Program, ProjectAgreement, Community
+from djangocosign.models import UserProfile
 from indicators.forms import IndicatorForm, CollectedDataForm
 from django.shortcuts import render_to_response
 from django.contrib import messages
@@ -53,6 +54,15 @@ class IndicatorCreate(CreateView):
     """
     model = Indicator
     template_name = 'indicators/indicator_form.html'
+
+    #pre-populate parts of the form
+    def get_initial(self):
+        user_profile = UserProfile.objects.get(user=self.request.user)
+        initial = {
+            'country': user_profile.country,
+            }
+
+        return initial
 
     def get_context_data(self, **kwargs):
         context = super(IndicatorCreate, self).get_context_data(**kwargs)
@@ -148,7 +158,7 @@ def indicatorReport(request, program=0):
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
     if int(program) == 0:
-        getIndicators = Indicator.objects.all().select_related()
+        getIndicators = Indicator.objects.all().select_related().filter(country__in=countries)
     else:
         getIndicators = Indicator.objects.all().filter(program__id=program).select_related()
 
@@ -215,14 +225,14 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    getAgreements = ProjectAgreement.objects.all()
-    getIndicators = Indicator.objects.select_related()
+    getAgreements = ProjectAgreement.objects.all().filter(country__in=countries)
+    getIndicators = Indicator.objects.select_related().filter(country__in=countries)
 
     if int(id) != 0:
         getQuantitativeData = CollectedData.objects.all().filter(indicator__id=id).select_related()
         getCommunity = CollectedData.objects.all().filter(indicator__id=id).select_related()
     else:
-        getQuantitativeData = CollectedData.objects.all().select_related()
+        getQuantitativeData = CollectedData.objects.all().select_related().filter(indicator__country__in=countries)
         getCommunity = Community.objects.all().select_related()
 
     if int(program) != 0:
@@ -270,7 +280,7 @@ class CollectedDataList(ListView):
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
 
         if int(self.kwargs['pk']) == 0:
-            getCollectedData = CollectedData.objects.all()
+            getCollectedData = CollectedData.objects.all().filter(indicator__country__in=countries)
         else:
             getCollectedData = CollectedData.objects.all().filter(indicator__program__id=self.kwargs['pk'])
 

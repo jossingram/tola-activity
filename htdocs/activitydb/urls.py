@@ -5,11 +5,7 @@ from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, Pr
     BeneficiaryDelete, ProjectCompleteDetail, CommunityReport, ChecklistCreate, ChecklistDelete, ChecklistUpdate, BudgetList, QuantitativeOutputsList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
     ChecklistCreate, ChecklistDelete, ChecklistUpdate, ChecklistList, BudgetCreate, BudgetUpdate, BudgetDelete
 
-
-try:
-    from django.conf.urls import *
-except ImportError:  # django < 1.4
-    from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 # place app url patterns here
 
@@ -83,7 +79,7 @@ urlpatterns = patterns('',
 
                        url(r'^province/(?P<province>[-\w]+)/province_json/', 'activitydb.views.province_json', name='province_json'),
 
-                        url(r'^count/$', 'activitydb.views.ProgramDashboardCounts', name='ProgramDashboardCounts'),
+                       url(r'^count/$', 'activitydb.views.ProgramDashboardCounts', name='ProgramDashboardCounts'),
 
 
                        )

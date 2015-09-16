@@ -54,7 +54,7 @@ def index(request,id=0,sector=0):
             getCommunity = Community.objects.all().filter(Q(Q(projectagreement__sector__in=sectors)), country__in=countries)
         else:
             getCommunity = Community.objects.all().filter(country__in=countries)
-        getQuantitativeDataSums = CollectedData.objects.all().filter(Q(Q(agreement__sector__in=sectors)|Q(agreement__sector__isnull=True)), indicator__program__country__in=countries).order_by('indicator__number').values('indicator__number','indicator__name').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+        getQuantitativeDataSums = CollectedData.objects.all().filter(Q(Q(agreement__sector__in=sectors)|Q(agreement__sector__isnull=True)), indicator__country__in=countries).order_by('indicator__number').values('indicator__number','indicator__name').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
 
     else:
         getFilteredName=Program.objects.get(id=program_id)
