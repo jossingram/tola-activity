@@ -320,7 +320,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                             <tr>
                                                 <td>{{ item.targeted}}</td>
                                                 <td>{{ item.description}}</td>
-                                                <td>{{ item.indicator}}</td>
+                                                <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
                                                 <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
                                             </tr>
                                             {% endfor %}
