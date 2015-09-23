@@ -45,7 +45,7 @@ class IndicatorForm(forms.ModelForm):
             TabHolder(
                 Tab('Performance',
                      Fieldset('Performance',
-                        'name', 'type', 'objectives', 'number', 'source', 'definition', 'disaggregation','owner', 'country', 'program','sector','indicator_type'
+                        'name', 'type', 'levels', 'objectives', 'number', 'source', 'definition', 'disaggregation','owner', 'country', 'program','sector','indicator_type'
                         ),
                 ),
                 Tab('Targets',
