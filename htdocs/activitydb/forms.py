@@ -298,7 +298,7 @@ class ProjectAgreementForm(forms.ModelForm):
 
                     ),
                 ),
-                Tab('Project Planning',
+                Tab('Planning',
                     Fieldset(
                         '',
                         MultiField(
@@ -328,35 +328,6 @@ class ProjectAgreementForm(forms.ModelForm):
                                       {% endif %}
                                       <div class="panel-footer">
                                         <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
-                                      </div>
-                                    </div>
-                                     """),
-                            HTML("""
-
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Monitoring</div>
-                                      {% if getMonitor %}
-                                          <!-- Table -->
-                                          <table class="table">
-                                            <tr>
-                                            <th>Person Responsible</th>
-                                            <th>Frequency</th>
-                                            <th>Type</th>
-                                            <th>View</th>
-                                            </tr>
-                                            {% for item in getMonitor %}
-                                            <tr>
-                                                <td>{{ item.responsible_person}}</td>
-                                                <td>{{ item.frequency}}</td>
-                                                <td>{{ item.type}}</td>
-                                                <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/activitydb/monitor_update/{{ item.id }}/'>Edit</a> | <a class="monitoring" href='/activitydb/monitor_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
-                                            </tr>
-                                            {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
-                                        <a class="monitoring" data-toggle="modal" data-target="#myModal" href="/activitydb/monitor_add/{{ pk }}">Add Monitoring Data</a>
                                       </div>
                                     </div>
                                      """),
@@ -391,10 +362,51 @@ class ProjectAgreementForm(forms.ModelForm):
                                     </div>
                                      """),
 
-                            'capacity', 'evaluate',
+                            'capacity',
                         ),
                     ),
                 ),
+                 Tab('M&E',
+                    Fieldset(
+                        '',
+                        MultiField(
+                            '',
+                            HTML("""
+
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Monitoring</div>
+                                      {% if getMonitor %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Person Responsible</th>
+                                            <th>Frequency</th>
+                                            <th>Type</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getMonitor %}
+                                            <tr>
+                                                <td>{{ item.responsible_person}}</td>
+                                                <td>{{ item.frequency}}</td>
+                                                <td>{{ item.type}}</td>
+                                                <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/activitydb/monitor_update/{{ item.id }}/'>Edit</a> | <a class="monitoring" href='/activitydb/monitor_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a class="monitoring" data-toggle="modal" data-target="#myModal" href="/activitydb/monitor_add/{{ pk }}">Add Monitoring Data</a>
+                                      </div>
+                                    </div>
+                                     """),
+
+                            'evaluate',
+                        ),
+                    ),
+                ),
+
+
                 Tab('Project Impact',
                      Fieldset(
                         'Beneficiaries',
