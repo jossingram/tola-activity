@@ -137,8 +137,8 @@ class ProjectAgreementCreateForm(forms.ModelForm):
                     Tab('Community Proposal',
                         Fieldset(
                             'Community',
-                            'community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
-                            'community_proposal','community',PrependedText('has_rej_letter', ''), 'rejection_letter',
+                            'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
+                            'community_proposal',PrependedText('has_rej_letter', ''), 'rejection_letter',
                         ),
                         Fieldset(
                             'Partners',
@@ -230,8 +230,8 @@ class ProjectAgreementForm(forms.ModelForm):
                 Tab('Community Proposal',
                     Fieldset(
                         'Community',
-                        'community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
-                        'community_proposal','community',PrependedText('has_rej_letter', ''), 'rejection_letter',
+                        'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
+                        'community_proposal',PrependedText('has_rej_letter', ''), 'rejection_letter',
                     ),
                     Fieldset(
                         'Partners',

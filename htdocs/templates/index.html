@@ -79,7 +79,7 @@ $(function () {
         },
 
         xAxis: {
-            categories: [ {% for indicator in getQuantitativeDataSums %}  '{{ indicator.indicator__number }}', {% endfor %} ],
+            categories: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  '{{ indicator.indicator__number }}', {% endfor %} ],
             tickmarkPlacement: 'on',
             lineWidth: 0
         },
@@ -104,11 +104,11 @@ $(function () {
 
         series: [{
             name: 'Targets',
-            data: [ {% for indicator in getQuantitativeDataSums %}  {{ indicator.targets }}, {% endfor %}  ],
+            data: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  {{ indicator.targets }}, {% endfor %}  ],
             pointPlacement: 'on'
         }, {
             name: 'Actuals',
-            data: [ {% for indicator in getQuantitativeDataSums %}  {{ indicator.actuals }}, {% endfor %}   ],
+            data: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  {{ indicator.actuals }}, {% endfor %}   ],
             pointPlacement: 'on'
         }]
 
@@ -119,7 +119,7 @@ $(function () {
 
 
 </script>
-<div class="container">
+
     <div class="row">
         <div class="panel panel-default">
             <div class="panel-body">
@@ -198,7 +198,6 @@ $(function () {
             </div>
         </div>
     </div>
-</div>
 
 
 {% endblock content %}
