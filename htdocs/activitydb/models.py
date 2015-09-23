@@ -595,7 +595,7 @@ class ProjectAgreement(models.Model):
     approval_submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="submitted_by_agreement")
     approval_remarks = models.CharField("Approval Remarks", max_length=255, blank=True, null=True)
     justification_background = models.TextField("General background and problem statement", blank=True, null=True)
-    justification_description_community_selection = models.TextField("Description of community selection criteria", blank=True, null=True)
+    justification_description_community_selection = models.TextField("Description of Stakeholder Selection Criteria", blank=True, null=True)
     description_of_project_activities = models.TextField(blank=True, null=True)
     description_of_government_involvement = models.TextField(blank=True, null=True)
     description_of_community_involvement = models.TextField(blank=True, null=True)
