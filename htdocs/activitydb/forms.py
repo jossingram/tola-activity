@@ -181,7 +181,7 @@ class ProjectAgreementForm(forms.ModelForm):
     checked_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     estimated_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     finance_reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-
+    exchange_rate_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
 
     documentation_government_approval = forms.FileField(required=False)
@@ -223,7 +223,7 @@ class ProjectAgreementForm(forms.ModelForm):
             TabHolder(
                 Tab('Executive Summary',
                     Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
-                             'project_type','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
+                             'project_type', 'project_type_other', 'mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
                     ),
 
                 ),
@@ -242,7 +242,8 @@ class ProjectAgreementForm(forms.ModelForm):
                      Fieldset(
                         'Budget',
                         PrependedAppendedText('total_estimated_budget','$', '.00'), PrependedAppendedText('mc_estimated_budget','$', '.00'),
-                        'estimation_date','other_budget','project_type_other','account_code','lin_code',
+                        AppendedText('local_total_estimated_budget', '.00'), AppendedText('local_mc_estimated_budget', '.00'),
+                        'exchange_rate','exchange_rate_date','estimation_date','other_budget','account_code','lin_code',
                     ),
                     Fieldset("Other Budget Contributions:",
                         MultiField(
@@ -444,7 +445,7 @@ class ProjectAgreementForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset(
-                '',
+                'Project Files',
                 MultiField(
                     '',
                     HTML("""
