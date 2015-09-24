@@ -43,9 +43,14 @@ class IndicatorForm(forms.ModelForm):
 
             HTML("""<br/>"""),
             TabHolder(
+                Tab('Summary',
+                     Fieldset('',
+                        'program','sector','objectives',
+                        ),
+                ),
                 Tab('Performance',
                      Fieldset('Performance',
-                        'name', 'type', 'level', 'objectives', 'number', 'source', 'definition', 'disaggregation','owner', 'country', 'program','sector','indicator_type'
+                        'name', 'type', 'level', 'number', 'source', 'definition', 'disaggregation','owner', 'country','indicator_type'
                         ),
                 ),
                 Tab('Targets',
