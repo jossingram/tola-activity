@@ -163,3 +163,12 @@ $(document).ready(function() {
     })
 });
 
+/*
+* Pop-up window for help docs and guidance on forms
+*/
+
+function newPopup(url, windowName) {
+    return window.open(url,windowName,'height=768,width=1366,left=1200,top=10,titlebar=no,toolbar=no,menubar=no,location=no,directories=no,status=no');
+}
+
+// EXAMPLE: <a onclick="newPopup('https://docs.google.com/document/d/1tDwo3m1ychefNiAMr-8hCZnhEugQlt36AOyUYHlPbVo/edit?usp=sharing','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a>
