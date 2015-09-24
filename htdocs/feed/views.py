@@ -1,9 +1,9 @@
-from .serializers import UserSerializer, ProposalSerializer, ProgramSerializer, SectorSerializer, ProjectTypeSerializer, OfficeSerializer, CommunitySerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer
+from .serializers import UserSerializer, ProgramSerializer, SectorSerializer, ProjectTypeSerializer, OfficeSerializer, CommunitySerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer
 
 from django.contrib.auth.decorators import login_required
 import json as simplejson
 from tola.util import siloToDict
-from activitydb.models import ProjectProposal, Program, Sector, ProjectType, Office, Community, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
+from activitydb.models import Program, Sector, ProjectType, Office, Community, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
 
 from django.contrib import messages
 from django.template import RequestContext
@@ -25,15 +25,6 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, re
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
-
-class ProposalViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
-    """
-    queryset = ProjectProposal.objects.all()
-    serializer_class = ProposalSerializer
 
 
 class ProgramViewSet(viewsets.ModelViewSet):

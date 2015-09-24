@@ -461,68 +461,6 @@ class TemplateAdmin(admin.ModelAdmin):
     display = 'Template'
 
 
-class ProjectProposal(models.Model):
-    program = models.ForeignKey(Program, null=True, blank=True, related_name="proposal")
-    proposal_num = models.CharField("Proposal Number", max_length=255, blank=True, null=True)
-    date_of_request = models.DateTimeField("Date of Request", null=True, blank=True)
-    project_name = models.CharField("Activity Name", help_text='Please be specific in your name.  Consider that your Activity Name includes WHO, WHAT, WHERE, HOW', max_length=255)
-    sector = models.ForeignKey(Sector, max_length=255, blank=True, null=True)
-    project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
-    project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
-    office = models.ForeignKey(Office, null=True, blank=True)
-    community = models.ManyToManyField(Community, blank=True)
-    community_rep = models.CharField("Community Representative", max_length=255, blank=True, null=True)
-    community_rep_contact = models.CharField("Community Representative Contact", help_text='Can have mulitple contact numbers', max_length=255, blank=True, null=True)
-    community_mobilizer = models.CharField("MC Community Mobilizer", max_length=255, blank=True, null=True)
-    community_mobilizer_contact = models.CharField("MC Community Mobilizer Contact Number", max_length=255, blank=True, null=True)
-    has_rej_letter = models.BooleanField("If Rejected: Rejection Letter Sent?", help_text='If yes attach copy', default=False)
-    rejection_letter = models.FileField("Rejection Letter", upload_to='uploads', blank=True, null=True)
-    activity_code = models.CharField("Activity Code", help_text='If applicable at this stage, please request Activity Code from Kabul MEL', max_length=255, blank=True, null=True)
-    project_description = models.TextField("Project Description", help_text='Description must meet the Criteria.  Will translate description into three languages: English, Dari and Pashto)', blank=True, null=True)
-    approval = models.CharField("Status", default="in progress", max_length=255, blank=True, null=True)
-    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="approving")
-    estimated_by = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='This is the originator', blank=True, null=True, related_name="estimate")
-    approval_submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="requesting")
-    approval_remarks = models.CharField("Approval Remarks", max_length=255, blank=True, null=True)
-    device_id = models.CharField("Device ID", max_length=255, blank=True, null=True)
-    date_approved = models.DateTimeField(null=True, blank=True)
-    create_date = models.DateTimeField("Date Created", null=True, blank=True)
-    edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
-    latitude = models.CharField("Latitude (Coordinates)", max_length=255, blank=True, null=True)
-    longitude = models.CharField("Longitude (Coordinates)", max_length=255, blank=True, null=True)
-
-
-    class Meta:
-        ordering = ('create_date',)
-        permissions = (
-            ("can_approve", "Can approve proposal"),
-          )
-
-    #onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(ProjectProposal, self).save()
-
-    def agreement_count(self):
-        agree_count = ProjectAgreement.objects.all().filter(project_proposal=self.id).count()
-        return agree_count
-
-    def complete_count(self):
-        complete_count = ProjectComplete.objects.all().filter(project_proposal=self.id).count()
-        return complete_count
-
-    #displayed in admin templates
-    def __unicode__(self):
-        return self.project_name
-
-
-class ProjectProposalAdmin(admin.ModelAdmin):
-    list_display = ('project_name')
-    display = 'project_name'
-
-
 class ProjectAgreement(models.Model):
     program = models.ForeignKey(Program, related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
