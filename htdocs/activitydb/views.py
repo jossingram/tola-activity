@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
-from tola.util import getCountry, getTolaDataSilos, emailGroup
+from tola.util import getCountry, emailGroup
 from mixins import AjaxableResponseMixin
 """
 project_agreement_id is the key to link each related form
@@ -256,6 +256,12 @@ class ProjectAgreementUpdate(UpdateView):
         except Budget.DoesNotExist:
             getBudget = None
         context.update({'getBudget': getBudget})
+
+        try:
+            getDocuments = Documentation.objects.all().filter(project__id=self.kwargs['pk']).order_by('name')
+        except Documentation.DoesNotExist:
+            getDocuments = None
+        context.update({'getDocuments': getDocuments})
 
         return context
 
@@ -626,6 +632,110 @@ class DocumentationList(ListView):
             getDocumentation = Documentation.objects.all().filter(project__id=self.kwargs['pk'])
 
         return render(request, self.template_name, {'getDocumentation':getDocumentation, 'project_agreement_id': project_agreement_id})
+
+
+class DocumentationAgreementCreate(AjaxableResponseMixin, CreateView):
+    """
+    Documentation Form
+    """
+    model = Documentation
+    template_name = 'activitydb/documentation_popup_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(DocumentationAgreementCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(DocumentationAgreementCreate, self).get_context_data(**kwargs)
+        getProject = ProjectAgreement.objects.get(id=self.kwargs['id'])
+        context.update({'project': getProject})
+        context.update({'id': self.kwargs['id']})
+        return context
+
+    def get_initial(self):
+        initial = {
+            'project': self.kwargs['id'],
+            }
+
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Documentation Created!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = DocumentationForm
+
+
+class DocumentationAgreementUpdate(AjaxableResponseMixin, UpdateView):
+    """
+    Documentation Form
+    """
+    model = Documentation
+    template_name = 'activitydb/documentation_popup_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(DocumentationAgreementUpdate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(DocumentationAgreementUpdate, self).get_context_data(**kwargs)
+        getProject = ProjectAgreement.objects.get(id=self.kwargs['id'])
+        context.update({'project': getProject})
+        context.update({'id': self.kwargs['id']})
+        context.update({'pk': self.kwargs['pk']})
+        return context
+
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Documentation Updated!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = DocumentationForm
+
+
+class DocumentationAgreementDelete(AjaxableResponseMixin, DeleteView):
+    """
+    Documentation Delete popup window
+    """
+    model = Documentation
+    template_name = 'activitydb/documentation_agreement_confirm_delete.html'
+    success_url = "/"
+
+    def get_context_data(self, **kwargs):
+        context = super(DocumentationAgreementDelete, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Documentation Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = DocumentationForm
 
 
 class DocumentationCreate(CreateView):
@@ -1229,25 +1339,6 @@ class BeneficiaryDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = BeneficiaryForm
-
-
-class QuantitativeOutputsList(ListView):
-    """
-    QuantitativeOutput List
-    """
-    model = CollectedData
-    template_name = 'activitydb/quantitative_list.html'
-
-    def get(self, request, *args, **kwargs):
-
-        project_proposal_id = self.kwargs['pk']
-
-        if int(self.kwargs['pk']) == 0:
-            getQuantitativeOutputs = QuantitativeOutputs.objects.all()
-        else:
-            getQuantitativeOutputs = QuantitativeOutputs.objects.all().filter(project_proposal_id=self.kwargs['pk'])
-
-        return render(request, self.template_name, {'getQuantitativeOutputs': getQuantitativeOutputs, 'project_proposal_id': project_proposal_id})
 
 
 class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):

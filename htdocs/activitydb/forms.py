@@ -231,7 +231,7 @@ class ProjectAgreementForm(forms.ModelForm):
                     Fieldset(
                         'Community',
                         'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
-                        'community_proposal',PrependedText('has_rej_letter', ''), 'rejection_letter',
+                        'community_proposal',PrependedText('has_rej_letter', ''),
                     ),
                     Fieldset(
                         'Partners',
@@ -435,7 +435,49 @@ class ProjectAgreementForm(forms.ModelForm):
                 ),
             ),
 
+            FormActions(
+                Submit('submit', 'Save', css_class='btn-default'),
+                Reset('reset', 'Reset', css_class='btn-warning')
+            ),
+
+
             HTML("""<br/>"""),
+
+            Fieldset(
+                '',
+                MultiField(
+                    '',
+                    HTML("""
+
+                            <div class='panel panel-default'>
+                              <!-- Default panel contents -->
+                              <div class='panel-heading'>Documentation</div>
+                              {% if getMonitor %}
+                                  <!-- Table -->
+                                  <table class="table">
+                                    <tr>
+                                    <th>Name</th>
+                                    <th>Link(URL)</th>
+                                    <th>Description</th>
+                                    <th>&nbsp;</th>
+                                    </tr>
+                                    {% for item in getDocuments %}
+                                    <tr>
+                                        <td>{{ item.name}}</td>
+                                        <td><a href="{{ item.url}}" target="_new">{{ item.url}}</a></td>
+                                        <td>{{ item.description}}</td>
+                                        <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/activitydb/documentation_agreement_update/{{ item.id }}/{{ pk }}/'>Edit</a> | <a class="monitoring" href='/activitydb/documentation_agreement_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
+                                    </tr>
+                                    {% endfor %}
+                                  </table>
+                              {% endif %}
+                              <div class="panel-footer">
+                                <a class="documents" data-toggle="modal" data-target="#myModal" href="/activitydb/documentation_agreement_add/{{ pk }}">Add Documentation</a>
+                              </div>
+                            </div>
+                             """),
+                ),
+            ),
 
         )
         super(ProjectAgreementForm, self).__init__(*args, **kwargs)
@@ -788,7 +830,7 @@ class DocumentationForm(forms.ModelForm):
 
             HTML("""<br/>"""),
 
-                'name', 'url', Field('description', rows="3", css_class='input-xlarge'),'silo',
+                'name', 'url', Field('description', rows="3", css_class='input-xlarge'),'file_field',
                 'project',
 
             FormActions(
