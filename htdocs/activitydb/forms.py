@@ -284,7 +284,7 @@ class ProjectAgreementForm(forms.ModelForm):
                 Tab('Justification and Description',
                     Fieldset(
                         'Justification',
-                        Field('program_objectives'),Field('mc_objectives'),Field('effect_or_impact'),
+                        Field('mc_objectives'),Field('program_objectives'),Field('effect_or_impact'),
                         Field('justification_background', rows="3", css_class='input-xlarge'),
                         Field('justification_description_community_selection', rows="3", css_class='input-xlarge'),
                     ),
