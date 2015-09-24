@@ -400,7 +400,7 @@ class ProjectCompleteList(ListView):
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
         if int(self.kwargs['pk']) == 0:
-            getDashboard = ProjectComplete.objects.all()
+            getDashboard = ProjectComplete.objects.all().filter(program__country__in=countries)
             return render(request, self.template_name, {'form': form, 'getDashboard':getDashboard,'getPrograms':getPrograms})
         else:
             getDashboard = ProjectComplete.objects.all().filter(program__id=self.kwargs['pk'])
