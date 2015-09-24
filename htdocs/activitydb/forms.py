@@ -242,7 +242,7 @@ class ProjectAgreementForm(forms.ModelForm):
                      Fieldset(
                         'Budget',
                         PrependedAppendedText('total_estimated_budget','$', '.00'), PrependedAppendedText('mc_estimated_budget','$', '.00'),
-                        'estimation_date','other_budget','project_type_other',
+                        'estimation_date','other_budget','project_type_other','account_code','lin_code',
                     ),
                     Fieldset("Other Budget Contributions:",
                         MultiField(
