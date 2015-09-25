@@ -501,6 +501,13 @@ class ProjectCompleteUpdate(UpdateView):
             getBudget = None
         context.update({'getBudget': getBudget})
 
+        #get Quantitative data
+        try:
+            getQuantitative = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('indicator')
+        except CollectedData.DoesNotExist:
+            getQuantitative = None
+        context.update({'getQuantitative': getQuantitative})
+
         return context
 
     # add the request to the kwargs

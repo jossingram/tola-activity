@@ -534,7 +534,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name'
+                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','project_activity','community'
                     ),
                     Fieldset(
                         'Dates',
@@ -601,7 +601,7 @@ class ProjectCompleteForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name'
+                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'project_activity','community'
                     ),
                     Fieldset(
                         'Dates',
@@ -610,21 +610,14 @@ class ProjectCompleteForm(forms.ModelForm):
 
                     ),
                 ),
-                Tab('Budget and Issues',
+                Tab('Budget',
                     Fieldset(
-                        'Budget',
-                        'estimated_budget','actual_budget', 'budget_variance', 'explanation_of_variance', 'actual_contribution', 'direct_beneficiaries',
+                        '','account_code','lin_code',
+                        PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00'), 'budget_variance', 'explanation_of_variance',
+                        PrependedAppendedText('total_cost','$', '.00'), PrependedAppendedText('agency_cost','$', '.00'),
+                        AppendedText('local_total_cost', '.00'), AppendedText('local_agency_cost', '.00'),'exchange_rate','exchange_rate_date',
                     ),
-                     Fieldset(
-                        'Jobs',
-                        'jobs_created','jobs_part_time','jobs_full_time','government_involvement','capacity_built',
 
-                    ),
-                     Fieldset(
-                        'Issues',
-                        'issues_and_challenges','lessons_learned','quantitative_outputs'
-
-                    ),
                 ),
                 Tab('Budget Other',
                     Fieldset("Other Budget Contributions:",
@@ -658,12 +651,58 @@ class ProjectCompleteForm(forms.ModelForm):
                                         <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ pk }}">Add Budget Contribution</a>
                                       </div>
                                     </div>
-                                     """),
+                                """),
                         ),
                     ),
 
                 ),
+                Tab('Justifications',
+                    Fieldset(
+                        'Involvement','government_involvement', 'community_involvement',
+                    ),
 
+                ),
+                Tab('Impact',
+                    Fieldset(
+                        '',
+                        MultiField(
+                            '',
+                             HTML("""
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Indicator Evidence</div>
+                                      {% if getQuantitative %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Targeted</th>
+                                            <th>Achieved</th>
+                                            <th>Description</th>
+                                            <th>Indicator</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getQuantitative %}
+                                            <tr>
+                                                <td>{{ item.targeted}}</td>
+                                                <td>{{ item.achieved}}</td>
+                                                <td>{{ item.description}}</td>
+                                                <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
+                                      </div>
+                                    </div>
+                             """),
+                        ),
+                    ),
+                    Fieldset(
+                        '','actual_contribution', 'direct_beneficiaries',
+                    ),
+                ),
                 Tab('Approval',
                     Fieldset('Approval',
                              'approval', 'approved_by', 'approval_submitted_by',
@@ -862,7 +901,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
 
-                'targeted', 'indicator', Field('description', rows="3", css_class='input-xlarge'),'date_collected', 'agreement',
+                'targeted','achieved','indicator', Field('description', rows="3", css_class='input-xlarge'),'date_collected', 'agreement',
 
         )
 
