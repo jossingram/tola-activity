@@ -108,8 +108,6 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         model = ProjectAgreement
         fields = '__all__'
 
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
-
     def __init__(self, *args, **kwargs):
 
         #get the user object from request to check permissions
@@ -230,7 +228,7 @@ class ProjectAgreementForm(forms.ModelForm):
                 Tab('Community Proposal',
                     Fieldset(
                         'Community',
-                        'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
+                        'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact','community_project_description'
                         'community_proposal',PrependedText('has_rej_letter', ''),
                     ),
                     Fieldset(
@@ -865,6 +863,7 @@ class DocumentationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.request = kwargs.pop('request')
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-6'
@@ -886,6 +885,10 @@ class DocumentationForm(forms.ModelForm):
         )
 
         super(DocumentationForm, self).__init__(*args, **kwargs)
+
+        #override the program queryset to use request.user for country
+        countries = getCountry(self.request.user)
+        self.fields['project'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
 
 
 class QuantitativeOutputsForm(forms.ModelForm):
