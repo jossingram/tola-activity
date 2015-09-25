@@ -700,8 +700,14 @@ class ProjectCompleteForm(forms.ModelForm):
                         ),
                     ),
                     Fieldset(
-                        '','actual_contribution', 'direct_beneficiaries',
+                        '','actual_contribution','beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','community_handover'
                     ),
+                ),
+                Tab('Lessons Learned',
+                    Fieldset(
+                        '', 'issues_and_challenges', 'lessons_learned',
+                    ),
+
                 ),
                 Tab('Approval',
                     Fieldset('Approval',
