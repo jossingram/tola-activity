@@ -7,7 +7,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
-from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete, Program, Community, Sector,Country as ActivityCountry, Feedback, FAQ, Documentation
+from activitydb.models import ProjectAgreement, ProjectComplete, Program, Community, Sector,Country as ActivityCountry, Feedback, FAQ, Documentation
 from indicators.models import CollectedData
 from djangocosign.models import UserProfile
 from djangocosign.models import Country
@@ -34,10 +34,10 @@ def index(request,id=0,sector=0):
     getSectors = Sector.objects.all().exclude(program__isnull=True).select_related()
 
     if int(sector) == 0:
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).exclude(proposal__isnull=True)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).exclude(agreement__isnull=True)
         sectors = Sector.objects.all()
     else:
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries, sector=sector).exclude(proposal__isnull=True)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries, sector=sector).exclude(agreement__isnull=True)
         sectors = Sector.objects.all().filter(id=sector)
 
     if int(program_id) == 0:

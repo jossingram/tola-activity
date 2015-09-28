@@ -2,12 +2,12 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <title>Add/Edit Monitoring</title>
+  <title>Add/Edit Documentation</title>
 </head>
 <body>
 
 <script type="text/javascript">
-    var frm = $('#monitorForm');
+    var frm = $('#outputForm');
     frm.submit(function () {
         $.ajax({
             type: frm.attr('method'),
@@ -17,7 +17,6 @@
                 $("#alert-error").html("Success! ");
             },
             error: function(data) {
-                alert(data.error);
                 $("#alert-error").html("Something went wrong!");
             }
         });
@@ -31,23 +30,22 @@
         <strong>{{ error|escape }}</strong>
     </div>
 
-    <h4 class="modal-title">{% block page_title %}Monitor Form {{ id }} {% endblock %}</h4>
-
+    <h4 class="modal-title">{% block page_title %}Documentation for {{ project }} {% endblock %}</h4>
     </div>
     <div class="modal-body">
-    <form class="form-horizontal" method="post" id="monitorForm" action="/activitydb/monitor_add/{{ id }}/">
-
+    {% if "/activitydb/documentation_agreement_add/" in request.get_full_path  %}
+        <form class="form-horizontal" method="post" id="outputForm" action="/activitydb/documentation_agreement_add/{{ id }}/">
+    {% else %}
+        <form class="form-horizontal" method="post" id="outputForm" action="/activitydb/documentation_agreement_update/{{ pk }}/{{ id }}/">
+    {% endif %}
     {% load crispy_forms_tags %}
     {% csrf_token %}
     {% crispy form %}
-
-    <input type="submit" class="btn btn-primary" name="Save changes" value="Save changes"/>
     </form>
     </div>
     <div class="modal-footer">
-       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/activitydb/projectagreement_update/{{ id }}/#me';parent.location.reload();">Close</button>
+       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="parent.location.reload();">Close</button>
     </div>
 
 </body>
 </html>
-

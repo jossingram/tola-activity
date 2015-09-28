@@ -1,6 +1,6 @@
 from django.forms import widgets
 from rest_framework import serializers
-from activitydb.models import ProjectProposal, Program, Sector, ProjectType, Office, Community, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
+from activitydb.models import Program, Sector, ProjectType, Office, Community, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
 from django.contrib.auth.models import User
 
 
@@ -10,11 +10,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ('url', 'username', 'email', 'is_staff')
 
-
-class ProposalSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = ProjectProposal
 
 class ProgramSerializer(serializers.HyperlinkedModelSerializer):
 

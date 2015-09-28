@@ -31,7 +31,7 @@
     <div class='panel panel-default'>
     {% regroup getCollectedData by program as DataByProgram %}
     {% for program in DataByProgram %}
-        <div class='panel-heading'><h4>Program: {{ program }} </h4></div>
+        <div class='panel-heading'><h4>Program: {{ grouper }} </h4></div>
             <!-- Table -->
             <table class="table">
             {% regroup program.list by indicator as indicator_list %}

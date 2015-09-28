@@ -132,12 +132,18 @@
     <table class="table" border="1">
         <tr>
             <th>Total Estimated Budget</th>
-            <th>MC Estimated Budget</th>
+            <th>Agency Estimated Budget</th>
+            <th>Total Estimated Budget in Local Currency</th>
+            <th>Agency Estimated Budget in Local Currency</th>
+            <th>Exchange Rate Date</th>
             <th>Estimation Date</th>
         </tr>
         <tr>
             <td>{{ agreement.total_estimated_budget }}</td>
             <td>{{ agreement.mc_estimated_budget }}</td>
+            <td>{{ agreement.local_total_estimated_budget }}</td>
+            <td>{{ agreement.local_mc_estimated_budget }}</td>
+            <td>{{ agreement.exchange_rate_date }}</td>
             <td>{{ agreement.estimation_date }}</td>
         </tr>
     </table>

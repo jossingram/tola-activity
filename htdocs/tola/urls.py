@@ -1,6 +1,6 @@
 from feed import views
 from tola import views
-from feed.views import UserViewSet, ProposalViewSet, ProgramViewSet, SectorViewSet, ProjectTypeViewSet, OfficeViewSet, CommunityViewSet, AgreementViewSet, CompleteViewSet, CountryViewSet, ProjectTypeOtherViewSet
+from feed.views import UserViewSet, ProgramViewSet, SectorViewSet, ProjectTypeViewSet, OfficeViewSet, CommunityViewSet, AgreementViewSet, CompleteViewSet, CountryViewSet, ProjectTypeOtherViewSet
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
@@ -18,7 +18,6 @@ admin.autodiscover()
 #REST FRAMEWORK
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'proposals', ProposalViewSet)
 router.register(r'programs', ProgramViewSet)
 router.register(r'sector', SectorViewSet)
 router.register(r'projecttype', ProjectTypeViewSet)

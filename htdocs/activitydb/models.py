@@ -461,68 +461,6 @@ class TemplateAdmin(admin.ModelAdmin):
     display = 'Template'
 
 
-class ProjectProposal(models.Model):
-    program = models.ForeignKey(Program, null=True, blank=True, related_name="proposal")
-    proposal_num = models.CharField("Proposal Number", max_length=255, blank=True, null=True)
-    date_of_request = models.DateTimeField("Date of Request", null=True, blank=True)
-    project_name = models.CharField("Activity Name", help_text='Please be specific in your name.  Consider that your Activity Name includes WHO, WHAT, WHERE, HOW', max_length=255)
-    sector = models.ForeignKey(Sector, max_length=255, blank=True, null=True)
-    project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
-    project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
-    office = models.ForeignKey(Office, null=True, blank=True)
-    community = models.ManyToManyField(Community, blank=True)
-    community_rep = models.CharField("Community Representative", max_length=255, blank=True, null=True)
-    community_rep_contact = models.CharField("Community Representative Contact", help_text='Can have mulitple contact numbers', max_length=255, blank=True, null=True)
-    community_mobilizer = models.CharField("MC Community Mobilizer", max_length=255, blank=True, null=True)
-    community_mobilizer_contact = models.CharField("MC Community Mobilizer Contact Number", max_length=255, blank=True, null=True)
-    has_rej_letter = models.BooleanField("If Rejected: Rejection Letter Sent?", help_text='If yes attach copy', default=False)
-    rejection_letter = models.FileField("Rejection Letter", upload_to='uploads', blank=True, null=True)
-    activity_code = models.CharField("Activity Code", help_text='If applicable at this stage, please request Activity Code from Kabul MEL', max_length=255, blank=True, null=True)
-    project_description = models.TextField("Project Description", help_text='Description must meet the Criteria.  Will translate description into three languages: English, Dari and Pashto)', blank=True, null=True)
-    approval = models.CharField("Status", default="in progress", max_length=255, blank=True, null=True)
-    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="approving")
-    estimated_by = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='This is the originator', blank=True, null=True, related_name="estimate")
-    approval_submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="requesting")
-    approval_remarks = models.CharField("Approval Remarks", max_length=255, blank=True, null=True)
-    device_id = models.CharField("Device ID", max_length=255, blank=True, null=True)
-    date_approved = models.DateTimeField(null=True, blank=True)
-    create_date = models.DateTimeField("Date Created", null=True, blank=True)
-    edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
-    latitude = models.CharField("Latitude (Coordinates)", max_length=255, blank=True, null=True)
-    longitude = models.CharField("Longitude (Coordinates)", max_length=255, blank=True, null=True)
-
-
-    class Meta:
-        ordering = ('create_date',)
-        permissions = (
-            ("can_approve", "Can approve proposal"),
-          )
-
-    #onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(ProjectProposal, self).save()
-
-    def agreement_count(self):
-        agree_count = ProjectAgreement.objects.all().filter(project_proposal=self.id).count()
-        return agree_count
-
-    def complete_count(self):
-        complete_count = ProjectComplete.objects.all().filter(project_proposal=self.id).count()
-        return complete_count
-
-    #displayed in admin templates
-    def __unicode__(self):
-        return self.project_name
-
-
-class ProjectProposalAdmin(admin.ModelAdmin):
-    list_display = ('project_name')
-    display = 'project_name'
-
-
 class ProjectAgreement(models.Model):
     program = models.ForeignKey(Program, related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
@@ -533,25 +471,23 @@ class ProjectAgreement(models.Model):
     community = models.ManyToManyField(Community, blank=True)
     community_rep = models.CharField("Community Representative", max_length=255, blank=True, null=True)
     community_rep_contact = models.CharField("Community Representative Contact", help_text='Can have mulitple contact numbers', max_length=255, blank=True, null=True)
-    community_mobilizer = models.CharField("MC Community Mobilizer", max_length=255, blank=True, null=True)
-    community_mobilizer_contact = models.CharField("MC Community Mobilizer Contact Number", max_length=255, blank=True, null=True)
+    community_mobilizer = models.CharField("Community Mobilizer", max_length=255, blank=True, null=True)
+    community_mobilizer_contact = models.CharField("Community Mobilizer Contact Number", max_length=255, blank=True, null=True)
     community_proposal = models.FileField("Community Proposal", upload_to='uploads', blank=True, null=True)
     has_rej_letter = models.BooleanField("If Rejected: Rejection Letter Sent?", help_text='If yes attach copy', default=False)
-    rejection_letter = models.FileField("Rejection Letter", upload_to='uploads', blank=True, null=True)
     activity_code = models.CharField("Activity Code", help_text='If applicable at this stage, please request Activity Code from MEL', max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
     sector = models.ForeignKey("Sector", blank=True, null=True)
-    external_stakeholder_list = models.FileField("External stakeholder list", help_text="Please refer to PM@MC Section 01: Identification and Design under 1.1", upload_to='uploads', blank=True, null=True)
     project_design = models.CharField("Activity design for", max_length=255, blank=True, null=True)
-    account_code = models.CharField("Account Code", help_text='optional - request from finance', max_length=255, blank=True, null=True)
-    lin_code = models.CharField("LIN Sub Code", help_text='optional - request from finance', max_length=255, blank=True, null=True)
+    account_code = models.CharField("Account Code", help_text='', max_length=255, blank=True, null=True)
+    lin_code = models.CharField("LIN Sub Code", help_text='', max_length=255, blank=True, null=True)
     staff_responsible = models.CharField("MC Staff Responsible", max_length=255, blank=True, null=True)
     partners = models.BooleanField("Are there partners involved?", default=0)
     name_of_partners = models.CharField("Name of Partners", max_length=255, blank=True, null=True)
     program_objectives = models.TextField("What Program Objectives does this help fulfill?", blank=True, null=True)
-    mc_objectives = models.TextField("What MC strategic Objectives does this help fulfill?", blank=True, null=True)
-    effect_or_impact = models.TextField("What is the anticipated effect of impact of this project?", blank=True, null=True)
+    mc_objectives = models.TextField("What strategic Objectives does this help fulfill?", blank=True, null=True)
+    effect_or_impact = models.TextField("What is the anticipated Outcome or Goal?", blank=True, null=True)
     expected_start_date = models.DateTimeField("Expected starting date", blank=True, null=True)
     expected_end_date = models.DateTimeField("Expected ending date",blank=True, null=True)
     expected_duration = models.CharField("Expected duration", help_text="[MONTHS]/[DAYS]", blank=True, null=True, max_length=255)
@@ -561,6 +497,10 @@ class ProjectAgreement(models.Model):
     estimated_num_indirect_beneficiaries = models.CharField("Estimated Number of indirect beneficiaries", help_text="This is a calculation - multiply direct beneficiaries by average household size",max_length=255, blank=True, null=True)
     total_estimated_budget = models.CharField(help_text="In USD", max_length=255, blank=True, null=True)
     mc_estimated_budget = models.CharField(help_text="In USD", max_length=255, blank=True, null=True)
+    local_total_estimated_budget = models.CharField("Estimated Total in Local Currency", help_text="In Local Currency", max_length=255, blank=True, null=True)
+    local_mc_estimated_budget = models.CharField("Estimated Organization Total in Local Currency", help_text="Total portion of estimate for your agency", max_length=255, blank=True, null=True)
+    exchange_rate = models.CharField(help_text="Local Currency exchange rate to USD", max_length=255, blank=True, null=True)
+    exchange_rate_date = models.DateField(help_text="Date of exchange rate", blank=True, null=True)
     project_type_other = models.ForeignKey(ProjectTypeOther, blank=True, null=True)
     estimate_male_trained = models.IntegerField("Estimated # of Male Trained",blank=True,null=True)
     estimate_female_trained = models.IntegerField("Estimated # of Female Trained",blank=True,null=True)
@@ -581,11 +521,11 @@ class ProjectAgreement(models.Model):
     estimated_by_date = models.DateTimeField("Date Estimated", null=True, blank=True)
     checked_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="checking")
     checked_by_date = models.DateTimeField("Date Checked", null=True, blank=True)
-    reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="reviewing")
-    reviewed_by_date = models.DateTimeField("Date Reviewed", null=True, blank=True)
+    reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Field Verification By" ,blank=True, null=True, related_name="reviewing")
+    reviewed_by_date = models.DateTimeField("Date Verified", null=True, blank=True)
     finance_reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="finance_reviewing")
     finance_reviewed_by_date = models.DateTimeField("Date Reviewed by Finance", null=True, blank=True)
-    me_reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="reviewing_me")
+    me_reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name="M&E Reviewed by", related_name="reviewing_me")
     me_reviewed_by_date = models.DateTimeField("Date Reviewed by M&E", null=True, blank=True)
     capacity = models.ManyToManyField(Capacity, blank=True)
     evaluate = models.ManyToManyField(Evaluate, blank=True)
@@ -594,13 +534,12 @@ class ProjectAgreement(models.Model):
     approved_by_date = models.DateTimeField("Date Approved", null=True, blank=True)
     approval_submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="submitted_by_agreement")
     approval_remarks = models.CharField("Approval Remarks", max_length=255, blank=True, null=True)
-    justification_background = models.TextField("General background and problem statement", blank=True, null=True)
-    justification_description_community_selection = models.TextField("Description of community selection criteria", blank=True, null=True)
+    justification_background = models.TextField("General Background and Problem Statement", blank=True, null=True)
+    justification_description_community_selection = models.TextField("Description of Stakeholder Selection Criteria", blank=True, null=True)
     description_of_project_activities = models.TextField(blank=True, null=True)
     description_of_government_involvement = models.TextField(blank=True, null=True)
     description_of_community_involvement = models.TextField(blank=True, null=True)
-    documentation_government_approval = models.FileField("Upload Government Documentation of Approval", upload_to='uploads', blank=True, null=True)
-    documentation_community_approval = models.FileField("Upload Community Documentation of Approval", upload_to='uploads', blank=True, null=True)
+    community_project_description = models.TextField("Describe the project you would like the program to consider",blank=True, null=True, help_text="Description must describe how the Community Proposal meets the project criteria")
     create_date = models.DateTimeField("Date Created", null=True, blank=True)
     edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
 
@@ -634,7 +573,9 @@ class ProjectComplete(models.Model):
     activity_code = models.CharField("Activity Code", max_length=255, blank=True, null=True)
     project_name = models.CharField("Project Name", max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", max_length=255, blank=True, null=True)
+    project_type = models.ForeignKey(ProjectType, max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
+    sector = models.ForeignKey("Sector", blank=True, null=True)
     expected_start_date = models.DateTimeField(help_text="Comes from Form-04 Project Agreement", blank=True, null=True)
     expected_end_date = models.DateTimeField(help_text="Comes from Form-04 Project Agreement", blank=True, null=True)
     expected_duration = models.CharField("Expected Duration", max_length=255, help_text="Comes from Form-04 Project Agreement", blank=True, null=True)
@@ -643,15 +584,28 @@ class ProjectComplete(models.Model):
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
     on_time = models.BooleanField(default=None)
     no_explanation = models.TextField("If not on time explain delay", blank=True, null=True)
+    account_code = models.CharField("Account Code", help_text='', max_length=255, blank=True, null=True)
+    lin_code = models.CharField("LIN Sub Code", help_text='', max_length=255, blank=True, null=True)
     estimated_budget = models.CharField("Estimated Budget", help_text="Comes from Form-04 Project Agreement", max_length=255, null=True, blank=True)
     actual_budget = models.CharField("Actual Budget", help_text="What was the actual final cost?  This should match any financial documentation you have in the file.   It should be completely documented and verifiable by finance and any potential audit", max_length=255, null=True, blank=True)
     budget_variance = models.CharField("Budget Variance", blank=True, null=True, max_length=255)
     explanation_of_variance = models.CharField("Explanation of variance", blank=True, null=True, max_length=255)
+    total_cost = models.CharField(help_text="In USD", max_length=255, blank=True, null=True)
+    agency_cost = models.CharField(help_text="In USD", max_length=255, blank=True, null=True)
+    local_total_cost = models.CharField("Total in Local Currency", help_text="In Local Currency", max_length=255, blank=True, null=True)
+    local_agency_cost = models.CharField("Organization Total in Local Currency", help_text="Total portion of cost for your agency", max_length=255, blank=True, null=True)
+    exchange_rate = models.CharField(help_text="Local Currency exchange rate to USD", max_length=255, blank=True, null=True)
+    exchange_rate_date = models.DateField(help_text="Date of exchange rate", blank=True, null=True)
+    beneficiary_type = models.CharField("Type of direct beneficiaries", help_text="i.e. Farmer, Association, Student, Govt, etc.", max_length=255, blank=True, null=True)
+    average_household_size = models.CharField("Average Household Size", help_text="Refer to Form 01 - Community Profile",max_length=255, blank=True, null=True)
+    indirect_beneficiaries = models.CharField("Estimated Number of indirect beneficiaries", help_text="This is a calculation - multiply direct beneficiaries by average household size",max_length=255, blank=True, null=True)
     direct_beneficiaries = models.CharField("Actual Direct Beneficiaries", max_length=255, blank=True, null=True)
     jobs_created = models.CharField("Number of Jobs Created", max_length=255, blank=True, null=True)
     jobs_part_time = models.CharField("Part Time Jobs", max_length=255, blank=True, null=True)
     jobs_full_time = models.CharField("Full Time Jobs", max_length=255, blank=True, null=True)
     government_involvement = models.CharField("Government Involvement", max_length=255, blank=True, null=True)
+    community_involvement = models.CharField("Community Involvement", max_length=255, blank=True, null=True)
+    community_handover = models.BooleanField("CommunityHandover/Sustainability Maintenance Plan", help_text='Check box if it was completed', default=None)
     capacity_built = models.CharField("What capacity was built to ensure sustainability?", max_length=255, blank=True, null=True)
     issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)", blank=True, null=True)
     lessons_learned= models.TextField("Lessons learned", blank=True, null=True)

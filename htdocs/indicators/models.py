@@ -36,6 +36,21 @@ class ObjectiveAdmin(admin.ModelAdmin):
     display = 'Objectives'
 
 
+class Level(models.Model):
+    name = models.CharField(max_length=135, blank=True)
+    description = models.CharField(max_length=765, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class LevelAdmin(admin.ModelAdmin):
+    list_display = ('name')
+    display = 'Levels'
+
+
 class DisaggregationType(models.Model):
     disaggregation_type = models.CharField(max_length=135, blank=True)
     description = models.CharField(max_length=765, blank=True)
@@ -114,6 +129,7 @@ class Indicator(models.Model):
     owner = models.ForeignKey('auth.User')
     country = models.ForeignKey(Country, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
+    level = models.ManyToManyField(Level, blank=True)
     objectives = models.ManyToManyField(Objective, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     number = models.CharField(max_length=255, null=True, blank=True)

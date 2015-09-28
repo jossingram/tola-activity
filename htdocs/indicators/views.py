@@ -60,13 +60,14 @@ class IndicatorCreate(CreateView):
         user_profile = UserProfile.objects.get(user=self.request.user)
         initial = {
             'country': user_profile.country,
+            'program': id,
             }
 
         return initial
 
     def get_context_data(self, **kwargs):
         context = super(IndicatorCreate, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['id']})
+        #context.update({'id': self.kwargs['id']})
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -225,7 +226,7 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    getAgreements = ProjectAgreement.objects.all().filter(country__in=countries)
+    getAgreements = ProjectAgreement.objects.all().filter(program__country__in=countries)
     getIndicators = Indicator.objects.select_related().filter(country__in=countries)
 
     if int(id) != 0:

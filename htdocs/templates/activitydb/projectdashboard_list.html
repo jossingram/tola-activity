@@ -27,13 +27,13 @@
 </div>
 <br/>
 <ul class="list-group">
-<h3>{{getProgram.gaitid }} - {{ getProgram.name }}</h3>
+<h3><a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ getProgram.gaitid }}" target=_new">GAITID: {{ getProgram.gaitid }}</a> {{ getProgram.name }}<span style="float: right;"><a href="/activitydb/projectagreement_detail/{{ getAgreement.id }}/" class="btn btn-sm btn-info">Print View</a></span></h3>
     {% if getAgreement %}
     <div class="jumbotron">
         <ul class="list-group">
             <li class="list-group-item list-group-item-info">
                 <h4>Project Agreement</h4>
-                <span><a href="/activitydb/projectagreement_detail/{{ getAgreement.id }}/">Print View</a></span>
+                <span></span>
             </li>
 
             <li class="list-group-item"><b>Name: </b>{{ getAgreement.project_name }}<br/>

@@ -108,8 +108,6 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         model = ProjectAgreement
         fields = '__all__'
 
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
-
     def __init__(self, *args, **kwargs):
 
         #get the user object from request to check permissions
@@ -137,8 +135,8 @@ class ProjectAgreementCreateForm(forms.ModelForm):
                     Tab('Community Proposal',
                         Fieldset(
                             'Community',
-                            'community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
-                            'community_proposal','community',PrependedText('has_rej_letter', ''), 'rejection_letter',
+                            'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
+                            'community_proposal',PrependedText('has_rej_letter', ''), 'rejection_letter',
                         ),
                         Fieldset(
                             'Partners',
@@ -177,11 +175,11 @@ class ProjectAgreementForm(forms.ModelForm):
     estimation_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     approved_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    me_reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    me_reviewed_by_date = forms.DateField(label="M&E Reviewed by Date", widget=DatePicker.DateInput(), required=False)
     checked_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     estimated_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     finance_reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-
+    exchange_rate_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
 
     documentation_government_approval = forms.FileField(required=False)
@@ -223,15 +221,15 @@ class ProjectAgreementForm(forms.ModelForm):
             TabHolder(
                 Tab('Executive Summary',
                     Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
-                             'project_type','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
+                             'project_type', 'project_type_other', 'mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
                     ),
 
                 ),
                 Tab('Community Proposal',
                     Fieldset(
                         'Community',
-                        'community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
-                        'community_proposal','community',PrependedText('has_rej_letter', ''), 'rejection_letter',
+                        'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact','community_project_description'
+                        'community_proposal',PrependedText('has_rej_letter', ''),
                     ),
                     Fieldset(
                         'Partners',
@@ -242,7 +240,8 @@ class ProjectAgreementForm(forms.ModelForm):
                      Fieldset(
                         'Budget',
                         PrependedAppendedText('total_estimated_budget','$', '.00'), PrependedAppendedText('mc_estimated_budget','$', '.00'),
-                        'estimation_date','other_budget','project_type_other',
+                        AppendedText('local_total_estimated_budget', '.00'), AppendedText('local_mc_estimated_budget', '.00'),
+                        'exchange_rate','exchange_rate_date','estimation_date','other_budget','account_code','lin_code',
                     ),
                     Fieldset("Other Budget Contributions:",
                         MultiField(
@@ -284,7 +283,7 @@ class ProjectAgreementForm(forms.ModelForm):
                 Tab('Justification and Description',
                     Fieldset(
                         'Justification',
-                        Field('program_objectives'),Field('mc_objectives'),Field('effect_or_impact'),
+                        Field('mc_objectives'),Field('program_objectives'),Field('effect_or_impact'),
                         Field('justification_background', rows="3", css_class='input-xlarge'),
                         Field('justification_description_community_selection', rows="3", css_class='input-xlarge'),
                     ),
@@ -298,7 +297,7 @@ class ProjectAgreementForm(forms.ModelForm):
 
                     ),
                 ),
-                Tab('Project Planning',
+                Tab('Planning',
                     Fieldset(
                         '',
                         MultiField(
@@ -320,7 +319,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                             <tr>
                                                 <td>{{ item.targeted}}</td>
                                                 <td>{{ item.description}}</td>
-                                                <td>{{ item.indicator}}</td>
+                                                <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
                                                 <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
                                             </tr>
                                             {% endfor %}
@@ -328,35 +327,6 @@ class ProjectAgreementForm(forms.ModelForm):
                                       {% endif %}
                                       <div class="panel-footer">
                                         <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
-                                      </div>
-                                    </div>
-                                     """),
-                            HTML("""
-
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Monitoring</div>
-                                      {% if getMonitor %}
-                                          <!-- Table -->
-                                          <table class="table">
-                                            <tr>
-                                            <th>Person Responsible</th>
-                                            <th>Frequency</th>
-                                            <th>Type</th>
-                                            <th>View</th>
-                                            </tr>
-                                            {% for item in getMonitor %}
-                                            <tr>
-                                                <td>{{ item.responsible_person}}</td>
-                                                <td>{{ item.frequency}}</td>
-                                                <td>{{ item.type}}</td>
-                                                <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/activitydb/monitor_update/{{ item.id }}/'>Edit</a> | <a class="monitoring" href='/activitydb/monitor_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
-                                            </tr>
-                                            {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
-                                        <a class="monitoring" data-toggle="modal" data-target="#myModal" href="/activitydb/monitor_add/{{ pk }}">Add Monitoring Data</a>
                                       </div>
                                     </div>
                                      """),
@@ -391,10 +361,51 @@ class ProjectAgreementForm(forms.ModelForm):
                                     </div>
                                      """),
 
-                            'capacity', 'evaluate',
+                            'capacity',
                         ),
                     ),
                 ),
+                 Tab('M&E',
+                    Fieldset(
+                        '',
+                        MultiField(
+                            '',
+                            HTML("""
+
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Monitoring</div>
+                                      {% if getMonitor %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Person Responsible</th>
+                                            <th>Frequency</th>
+                                            <th>Type</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getMonitor %}
+                                            <tr>
+                                                <td>{{ item.responsible_person}}</td>
+                                                <td>{{ item.frequency}}</td>
+                                                <td>{{ item.type}}</td>
+                                                <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/activitydb/monitor_update/{{ item.id }}/'>Edit</a> | <a class="monitoring" href='/activitydb/monitor_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a class="monitoring" data-toggle="modal" data-target="#myModal" href="/activitydb/monitor_add/{{ pk }}">Add Monitoring Data</a>
+                                      </div>
+                                    </div>
+                                     """),
+
+                            'evaluate',
+                        ),
+                    ),
+                ),
+
+
                 Tab('Project Impact',
                      Fieldset(
                         'Beneficiaries',
@@ -416,14 +427,56 @@ class ProjectAgreementForm(forms.ModelForm):
                 ),
                 Tab('Approval',
                     Fieldset('Approval',
-                             'approval', 'estimated_by','estimated_by_date', 'checked_by','checked_by_date','reviewed_by','reviewed_by_date',
+                             'approval', 'estimated_by','estimated_by_date', 'reviewed_by','reviewed_by_date',
                              'finance_reviewed_by','finance_reviewed_by_date','me_reviewed_by','me_reviewed_by_date','approved_by', 'approved_by_date', 'approval_submitted_by',
                              Field('approval_remarks', rows="3", css_class='input-xlarge')
                     ),
                 ),
             ),
 
+            FormActions(
+                Submit('submit', 'Save', css_class='btn-default'),
+                Reset('reset', 'Reset', css_class='btn-warning')
+            ),
+
+
             HTML("""<br/>"""),
+
+            Fieldset(
+                'Project Files',
+                MultiField(
+                    '',
+                    HTML("""
+
+                            <div class='panel panel-default'>
+                              <!-- Default panel contents -->
+                              <div class='panel-heading'>Documentation</div>
+                              {% if getMonitor %}
+                                  <!-- Table -->
+                                  <table class="table">
+                                    <tr>
+                                    <th>Name</th>
+                                    <th>Link(URL)</th>
+                                    <th>Description</th>
+                                    <th>&nbsp;</th>
+                                    </tr>
+                                    {% for item in getDocuments %}
+                                    <tr>
+                                        <td>{{ item.name}}</td>
+                                        <td><a href="{{ item.url}}" target="_new">{{ item.url}}</a></td>
+                                        <td>{{ item.description}}</td>
+                                        <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/activitydb/documentation_agreement_update/{{ item.id }}/{{ pk }}/'>Edit</a> | <a class="monitoring" href='/activitydb/documentation_agreement_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
+                                    </tr>
+                                    {% endfor %}
+                                  </table>
+                              {% endif %}
+                              <div class="panel-footer">
+                                <a class="documents" data-toggle="modal" data-target="#myModal" href="/activitydb/documentation_agreement_add/{{ pk }}">Add Documentation</a>
+                              </div>
+                            </div>
+                             """),
+                ),
+            ),
 
         )
         super(ProjectAgreementForm, self).__init__(*args, **kwargs)
@@ -479,7 +532,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name'
+                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','project_activity','community'
                     ),
                     Fieldset(
                         'Dates',
@@ -546,7 +599,7 @@ class ProjectCompleteForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name'
+                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'project_activity','community'
                     ),
                     Fieldset(
                         'Dates',
@@ -555,21 +608,14 @@ class ProjectCompleteForm(forms.ModelForm):
 
                     ),
                 ),
-                Tab('Budget and Issues',
+                Tab('Budget',
                     Fieldset(
-                        'Budget',
-                        'estimated_budget','actual_budget', 'budget_variance', 'explanation_of_variance', 'actual_contribution', 'direct_beneficiaries',
+                        '','account_code','lin_code',
+                        PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00'), 'budget_variance', 'explanation_of_variance',
+                        PrependedAppendedText('total_cost','$', '.00'), PrependedAppendedText('agency_cost','$', '.00'),
+                        AppendedText('local_total_cost', '.00'), AppendedText('local_agency_cost', '.00'),'exchange_rate','exchange_rate_date',
                     ),
-                     Fieldset(
-                        'Jobs',
-                        'jobs_created','jobs_part_time','jobs_full_time','government_involvement','capacity_built',
 
-                    ),
-                     Fieldset(
-                        'Issues',
-                        'issues_and_challenges','lessons_learned','quantitative_outputs'
-
-                    ),
                 ),
                 Tab('Budget Other',
                     Fieldset("Other Budget Contributions:",
@@ -603,12 +649,64 @@ class ProjectCompleteForm(forms.ModelForm):
                                         <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ pk }}">Add Budget Contribution</a>
                                       </div>
                                     </div>
-                                     """),
+                                """),
                         ),
                     ),
 
                 ),
+                Tab('Justifications',
+                    Fieldset(
+                        'Involvement','government_involvement', 'community_involvement',
+                    ),
 
+                ),
+                Tab('Impact',
+                    Fieldset(
+                        '',
+                        MultiField(
+                            '',
+                             HTML("""
+                                    <div class='panel panel-default'>
+                                      <!-- Default panel contents -->
+                                      <div class='panel-heading'>Indicator Evidence</div>
+                                      {% if getQuantitative %}
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Targeted</th>
+                                            <th>Achieved</th>
+                                            <th>Description</th>
+                                            <th>Indicator</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getQuantitative %}
+                                            <tr>
+                                                <td>{{ item.targeted}}</td>
+                                                <td>{{ item.achieved}}</td>
+                                                <td>{{ item.description}}</td>
+                                                <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                      {% endif %}
+                                      <div class="panel-footer">
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
+                                      </div>
+                                    </div>
+                             """),
+                        ),
+                    ),
+                    Fieldset(
+                        '','actual_contribution','beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','community_handover'
+                    ),
+                ),
+                Tab('Lessons Learned',
+                    Fieldset(
+                        '', 'issues_and_challenges', 'lessons_learned',
+                    ),
+
+                ),
                 Tab('Approval',
                     Fieldset('Approval',
                              'approval', 'approved_by', 'approval_submitted_by',
@@ -765,6 +863,7 @@ class DocumentationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.request = kwargs.pop('request')
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-6'
@@ -776,7 +875,7 @@ class DocumentationForm(forms.ModelForm):
 
             HTML("""<br/>"""),
 
-                'name', 'url', Field('description', rows="3", css_class='input-xlarge'),'silo',
+                'name', 'url', Field('description', rows="3", css_class='input-xlarge'),'file_field',
                 'project',
 
             FormActions(
@@ -786,6 +885,10 @@ class DocumentationForm(forms.ModelForm):
         )
 
         super(DocumentationForm, self).__init__(*args, **kwargs)
+
+        #override the program queryset to use request.user for country
+        countries = getCountry(self.request.user)
+        self.fields['project'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
 
 
 class QuantitativeOutputsForm(forms.ModelForm):
@@ -807,7 +910,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
 
-                'targeted', 'indicator', Field('description', rows="3", css_class='input-xlarge'),'date_collected', 'agreement',
+                'targeted','achieved','indicator', Field('description', rows="3", css_class='input-xlarge'),'date_collected', 'agreement',
 
         )
 
