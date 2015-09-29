@@ -135,7 +135,7 @@ class Indicator(models.Model):
     number = models.CharField(max_length=255, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
     definition = models.CharField(max_length=255, null=True, blank=True)
-    disaggregation = models.ForeignKey(DisaggregationType, null=True, blank=True)
+    disaggregation = models.ManyToManyField(DisaggregationType, null=True, blank=True)
     baseline = models.CharField(max_length=255, null=True, blank=True)
     lop_target = models.CharField("LOP Target",max_length=255, null=True, blank=True)
     means_of_verification = models.CharField(max_length=255, null=True, blank=True)
