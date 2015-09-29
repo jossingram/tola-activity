@@ -25,8 +25,6 @@ class IndicatorForm(forms.ModelForm):
         model = Indicator
         exclude = ['create_date','edit_date']
 
-    program = forms.ModelMultipleChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
-
     def __init__(self, *args, **kwargs):
         #get the user object to check permissions with
         self.request = kwargs.pop('request')

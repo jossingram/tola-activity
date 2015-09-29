@@ -14,8 +14,7 @@
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
     {% endfor %}
     </ul>
-    <a href="/indicators/indicator_add/0/" class="btn btn-large btn-success">New Indicator</a>
-    <a href="/indicators/indicator_import/0/" class="btn btn-large btn-info">Import Indicator</a>
+    <a href="/indicators/indicator_import/0/" class="btn btn-large btn-info">Import Indicators</a>
     <br/>
     <br/>
 </div>
@@ -26,7 +25,7 @@
     {% for program in getProgramsIndicator %}
         {% if program.indicator_set.all %}
             <div class='panel panel-default'>
-                <div class='panel-heading'><h4>{{ program.gaitid }} - {{ program.name }}<span style="float: right;"><a href="/indicators/indicator_add/{{ program.id }}/" class="btn btn-sm btn-info">New Indicator</a></span><span style="float: right;"><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-sm btn-info">Grid/Print Report</a></span></h4></div>
+                <div class='panel-heading'><h4>{{ program.gaitid }} - {{ program.name }}<span style="float: right;" class="btn-group" role="group"><a href="/indicators/indicator_add/{{ program.id }}/" class="btn btn-xs btn-success">New Indicator</a><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-xs btn-info">Grid/Print Report</a></span></h4></div>
                 <!-- Table -->
                 <table class="table table-striped">
                     <tr>
