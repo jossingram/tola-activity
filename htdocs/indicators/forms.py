@@ -114,7 +114,7 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved', 'description','indicator','date_collected','agreement','comment','method','tool','date_of_training','trainer_name','date_of_analysis','analysis_name','office'
+                'targeted', 'achieved', 'description','indicator','date_collected','program','comment','method','tool','date_of_training','trainer_name','date_of_analysis','analysis_name','office'
             ),
 
 

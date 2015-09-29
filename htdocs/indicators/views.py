@@ -315,7 +315,7 @@ class CollectedDataCreate(CreateView):
     def get_initial(self):
         initial = {
             'indicator': self.kwargs['indicator'],
-            'agreement': self.kwargs['agreement'],
+            'program': self.kwargs['program'],
 
         }
 
