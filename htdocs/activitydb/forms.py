@@ -108,6 +108,9 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         model = ProjectAgreement
         fields = '__all__'
 
+    expected_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    expected_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+
     def __init__(self, *args, **kwargs):
 
         #get the user object from request to check permissions
@@ -143,6 +146,10 @@ class ProjectAgreementCreateForm(forms.ModelForm):
                             PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list',
                         ),
                     ),
+            ),
+            FormActions(
+                Submit('submit', 'Save', css_class='btn-default'),
+                Reset('reset', 'Reset', css_class='btn-warning')
             ),
 
             HTML("""<br/>"""),
