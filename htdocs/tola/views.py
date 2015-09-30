@@ -7,7 +7,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
-from activitydb.models import ProjectAgreement, ProjectComplete, Program, Community, Sector,Country as ActivityCountry, Feedback, FAQ, Documentation
+from activitydb.models import ProjectAgreement, ProjectComplete, Program, Community, Sector,Country as ActivityCountry, Feedback, FAQ, DocumentationApp
 from indicators.models import CollectedData
 from djangocosign.models import UserProfile
 from djangocosign.models import Country
@@ -116,7 +116,7 @@ def documentation(request):
     Get Documentation and display them on template
     """
 
-    getDocumentation = Documentation.objects.all()
+    getDocumentation = DocumentationApp.objects.all()
 
     return render(request, 'documentation.html', {'getDocumentation': getDocumentation})
 
