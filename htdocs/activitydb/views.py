@@ -781,7 +781,7 @@ class DocumentationUpdate(UpdateView):
 
      # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(DocumentationCreate, self).get_form_kwargs()
+        kwargs = super(DocumentationUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
