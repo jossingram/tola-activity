@@ -19,7 +19,7 @@ from tables import IndicatorTable, IndicatorDataTable
 from django_tables2 import RequestConfig
 from activitydb.forms import FilterForm
 from .forms import IndicatorForm
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
@@ -279,13 +279,50 @@ class CollectedDataList(ListView):
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
+        getIndicators = Indicator.objects.select_related().filter(country__in=countries)
 
-        if int(self.kwargs['pk']) == 0:
-            getCollectedData = CollectedData.objects.all().filter(indicator__country__in=countries)
-        else:
-            getCollectedData = CollectedData.objects.all().filter(indicator__program__id=self.kwargs['pk'])
+        #filter by program or inidcator or both
+        if int(self.kwargs['indicator']) != 0:
+            getCollectedData = CollectedData.objects.all().filter(indicator__id=self.kwargs['indicator'])
+            collected_sum = CollectedData.objects.filter(indicator__id=self.kwargs['indicator']).aggregate(Sum('targeted'),Sum('achieved'))
+        elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) != 0:
+            getCollectedData = CollectedData.objects.all().filter(program=self.kwargs['program'])
+            collected_sum = CollectedData.objects.filter(program=self.kwargs['program']).aggregate(Sum('targeted'),Sum('achieved'))
+        elif int(self.kwargs['indicator']) != 0 and int(self.kwargs['program']) != 0:
+            getCollectedData = CollectedData.objects.all().filter(program=self.kwargs['program'],indicator__id=self.kwargs['indicator'])
+            collected_sum = CollectedData.objects.filter(program=self.kwargs['program'],indicator__id=self.kwargs['indicator']).aggregate(Sum('targeted'),Sum('achieved'))
 
-        return render(request, self.template_name, {'getCollectedData': getCollectedData, 'getPrograms': getPrograms})
+
+
+
+        #get details about the filtered indicator or program
+        try:
+            filter_indicator = Indicator.objects.get(id=self.kwargs['indicator'])
+        except Indicator.DoesNotExist:
+            filter_indicator = None
+
+        try:
+            filter_program = Program.objects.get(id=self.kwargs['program'])
+        except Program.DoesNotExist:
+            filter_program = None
+
+        #TEMP CODE to migrate inidcators for Afghanistan that do not have programs but have Agreements
+        for data in getCollectedData:
+            set_program = None
+            if data.program is None and data.agreement:
+                try:
+                    program_from_agreement = ProjectAgreement.objects.get(id=data.agreement.id)
+                    set_program = program_from_agreement.program
+                except ProjectAgreement.DoesNotExist:
+                    set_program = None
+                print set_program
+                if set_program:
+                    update=CollectedData.objects.filter(id=data.pk).update(program=set_program)
+                    print "yes"
+                    print data.pk
+        #END TEMP CODE
+
+        return render(request, self.template_name, {'getCollectedData': getCollectedData, 'getPrograms': getPrograms, 'getIndicators':getIndicators,'filter_program':filter_program,'filter_indicator': filter_indicator, 'collected_sum': collected_sum})
 
 
 class CollectedDataCreate(CreateView):

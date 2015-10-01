@@ -180,8 +180,8 @@ class IndicatorAdmin(admin.ModelAdmin):
 
 
 class CollectedData(models.Model):
-    targeted = models.CharField("Targeted", max_length=255, blank=True, null=True)
-    achieved = models.CharField("Achieved", max_length=255, blank=True, null=True)
+    targeted = models.IntegerField("Targeted", blank=True, null=True)
+    achieved = models.IntegerField("Achieved", blank=True, null=True)
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.CharField("Remarks/comments", max_length=255, blank=True, null=True)
     indicator = models.ForeignKey(Indicator, blank=True, null=True)

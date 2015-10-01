@@ -20,10 +20,10 @@ urlpatterns = patterns('',
     url(r'^indicator_update/(?P<pk>\w+)/$', IndicatorUpdate.as_view(), name='indicator_update'),
     url(r'^indicator_delete/(?P<pk>\w+)/$', IndicatorDelete.as_view(), name='indicator_delete'),
 
-    #Collected Data Form
-    url(r'^collecteddata/(?P<pk>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
-    url(r'^collecteddata/(?P<pk>\w+)/(?P<program>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
-    url(r'^collecteddata/(?P<pk>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
+    #Collected Data List
+    url(r'^collecteddata/(?P<indicator>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
+    url(r'^collecteddata/(?P<indicator>\w+)/(?P<program>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
+    url(r'^collecteddata/(?P<indicator>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
 
     url(r'^collecteddata_add/(?P<agreement>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
     url(r'^collecteddata_add/(?P<program>\w+)/(?P<indicator>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
