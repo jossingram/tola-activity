@@ -310,7 +310,8 @@ class CollectedDataList(ListView):
 
         #TEMP CODE to migrate inidcators for Afghanistan that do not have programs but have Agreements
         if getCollectedData:
-            for data in getCollectedData:
+            getAllData = CollectedData.objects.all()
+            for data in getAllData:
                 set_program = None
                 if data.program is None and data.agreement:
                     try:
