@@ -281,6 +281,7 @@ class CollectedDataList(ListView):
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
         getIndicators = Indicator.objects.select_related().filter(country__in=countries)
         getCollectedData = None
+        collected_sum = None
 
         #filter by program or inidcator or both
         if int(self.kwargs['indicator']) != 0:
