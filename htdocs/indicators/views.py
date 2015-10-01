@@ -307,19 +307,20 @@ class CollectedDataList(ListView):
             filter_program = None
 
         #TEMP CODE to migrate inidcators for Afghanistan that do not have programs but have Agreements
-        for data in getCollectedData:
-            set_program = None
-            if data.program is None and data.agreement:
-                try:
-                    program_from_agreement = ProjectAgreement.objects.get(id=data.agreement.id)
-                    set_program = program_from_agreement.program
-                except ProjectAgreement.DoesNotExist:
-                    set_program = None
-                print set_program
-                if set_program:
-                    update=CollectedData.objects.filter(id=data.pk).update(program=set_program)
-                    print "yes"
-                    print data.pk
+        if getCollectedData:
+            for data in getCollectedData:
+                set_program = None
+                if data.program is None and data.agreement:
+                    try:
+                        program_from_agreement = ProjectAgreement.objects.get(id=data.agreement.id)
+                        set_program = program_from_agreement.program
+                    except ProjectAgreement.DoesNotExist:
+                        set_program = None
+                    print set_program
+                    if set_program:
+                        update=CollectedData.objects.filter(id=data.pk).update(program=set_program)
+                        print "yes"
+                        print data.pk
         #END TEMP CODE
 
         return render(request, self.template_name, {'getCollectedData': getCollectedData, 'getPrograms': getPrograms, 'getIndicators':getIndicators,'filter_program':filter_program,'filter_indicator': filter_indicator, 'collected_sum': collected_sum})
