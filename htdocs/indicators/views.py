@@ -278,8 +278,8 @@ class CollectedDataList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
-        getIndicators = Indicator.objects.select_related().filter(country__in=countries)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+        getIndicators = Indicator.objects.select_related().filter(country__in=countries).exclude(collecteddata__isnull=True)
         getCollectedData = None
         collected_sum = None
 
@@ -293,7 +293,9 @@ class CollectedDataList(ListView):
         elif int(self.kwargs['indicator']) != 0 and int(self.kwargs['program']) != 0:
             getCollectedData = CollectedData.objects.all().filter(program=self.kwargs['program'],indicator__id=self.kwargs['indicator'])
             collected_sum = CollectedData.objects.filter(program=self.kwargs['program'],indicator__id=self.kwargs['indicator']).aggregate(Sum('targeted'),Sum('achieved'))
-
+        elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) == 0:
+            getCollectedData = CollectedData.objects.all()
+            collected_sum = CollectedData.objects.aggregate(Sum('targeted'),Sum('achieved'))
 
 
 
@@ -310,8 +312,7 @@ class CollectedDataList(ListView):
 
         #TEMP CODE to migrate inidcators for Afghanistan that do not have programs but have Agreements
         if getCollectedData:
-            getAllData = CollectedData.objects.all()
-            for data in getAllData:
+            for data in getCollectedData:
                 set_program = None
                 if data.program is None and data.agreement:
                     try:
