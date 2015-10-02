@@ -1368,15 +1368,19 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
     template_name = 'activitydb/quantitativeoutputs_form.html'
     def get_context_data(self, **kwargs):
         context = super(QuantitativeOutputsCreate, self).get_context_data(**kwargs)
+        getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
         context.update({'id': self.kwargs['id']})
+        context.update({'program': getProgram})
         return context
 
     def dispatch(self, request, *args, **kwargs):
         return super(QuantitativeOutputsCreate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
+        getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
         initial = {
             'agreement': self.kwargs['id'],
+            'program': getProgram.id,
             }
 
         return initial

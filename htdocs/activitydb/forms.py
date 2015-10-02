@@ -7,7 +7,7 @@ from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
 from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem
-from indicators.models import CollectedData
+from indicators.models import CollectedData, Indicator
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
@@ -917,11 +917,13 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
 
-                'targeted','achieved','indicator', Field('description', rows="3", css_class='input-xlarge'),'date_collected', 'agreement',
+                'targeted','achieved','indicator', Field('description', rows="3", css_class='input-xlarge'),'date_collected', 'agreement','program'
 
         )
 
         super(QuantitativeOutputsForm, self).__init__(*args, **kwargs)
+
+        self.fields['indicator'].queryset = Indicator.objects.filter(program__id=kwargs['initial']['program'])
 
 
 class BenchmarkForm(forms.ModelForm):
