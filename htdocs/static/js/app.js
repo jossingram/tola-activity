@@ -65,6 +65,12 @@ $('input[type="file"]').each(function() {
 
 
 $(document).ready(function() {
+
+    /*
+    * Fix for Jquery and bootstrap validator
+    */
+
+
     /*
      * Handle change in the province drop-down; updates the distirct drop-down accordingly.
      */

@@ -786,7 +786,7 @@ class CommunityForm(forms.ModelForm):
                 ),
                 Tab('Location',
                     Fieldset('Places',
-                        'country','province','district','village','latitude','longitude','altitude', 'precision',
+                        'country','province','district','village', Field('latitude', step="any"), Field('longitude', step="any"),'altitude', 'precision',
                     ),
                     Fieldset('Map',
                         'map',

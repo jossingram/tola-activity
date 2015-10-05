@@ -841,7 +841,6 @@ class CommunityList(ListView):
 
 
     def get(self, request, *args, **kwargs):
-        countries = getCountry(request.user)
         activity_id = int(self.kwargs['activity_id'])
         program_id = int(self.kwargs['program_id'])
 
@@ -906,9 +905,13 @@ class CommunityCreate(CreateView):
         return kwargs
 
     def get_initial(self):
+        countries = getCountry(self.request.user)
+        default_country = countries[0]
+
         initial = {
             'approved_by': self.request.user,
             'filled_by': self.request.user,
+            'country': default_country
         }
 
         return initial
