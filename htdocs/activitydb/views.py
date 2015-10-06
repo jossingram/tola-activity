@@ -966,7 +966,7 @@ class CommunityDelete(DeleteView):
     Community Form Delete an existing community
     """
     model = Community
-    success_url = reverse_lazy('community_list',args='0')
+    success_url = "/activitydb/community_list/0/0/"
 
     def form_invalid(self, form):
 
