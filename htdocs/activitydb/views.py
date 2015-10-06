@@ -651,6 +651,12 @@ class DocumentationAgreementCreate(AjaxableResponseMixin, CreateView):
     def dispatch(self, request, *args, **kwargs):
         return super(DocumentationAgreementCreate, self).dispatch(request, *args, **kwargs)
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(DocumentationAgreementCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super(DocumentationAgreementCreate, self).get_context_data(**kwargs)
         getProject = ProjectAgreement.objects.get(id=self.kwargs['id'])
@@ -690,6 +696,12 @@ class DocumentationAgreementUpdate(AjaxableResponseMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         return super(DocumentationAgreementUpdate, self).dispatch(request, *args, **kwargs)
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(DocumentationAgreementUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super(DocumentationAgreementUpdate, self).get_context_data(**kwargs)
