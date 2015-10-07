@@ -170,6 +170,14 @@ class Indicator(models.Model):
     def indicator_types(self):
         return ', '.join([x.indicator_type for x in self.indicator_type.all()])
 
+    @property
+    def levels(self):
+        return ', '.join([x.name for x in self.level.all()])
+
+    @property
+    def disaggregations(self):
+        return ', '.join([x.disaggregation_type for x in self.disaggregation.all()])
+
     def __unicode__(self):
         return self.name
 
