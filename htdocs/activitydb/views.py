@@ -865,13 +865,13 @@ class CommunityList(ListView):
             print "program"
             getCommunity = Community.objects.all().filter(Q(projectagreement__program__id=program_id)).distinct()
         else:
-            getCommunity = Community.objects.all().distinct()
+            getCommunity = Community.objects.all().filter(country__in=countries).distinct()
 
         if request.method == "GET" and "search" in request.GET:
             """
              fields = ('name', 'office')
             """
-            getCommunity = Community.objects.all().filter(Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
+            getCommunity = Community.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
                                                             Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
                                                              Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related().distinct()
 
