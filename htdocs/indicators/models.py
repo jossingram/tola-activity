@@ -121,7 +121,7 @@ class ReportingPeriod(models.Model):
 
 
 class ReportingPeriodAdmin(admin.ModelAdmin):
-    list_display = ('frequency','description','create_date','edit_date')
+    list_display = ('frequency','create_date','edit_date')
     display = 'Reporting Frequency'
 
 
@@ -183,7 +183,7 @@ class Indicator(models.Model):
 
 
 class IndicatorAdmin(admin.ModelAdmin):
-    list_display = ('owner','indicator_type','name','sector','description', 'program')
+    list_display = ('owner','indicator_types','name','sector','description', 'program')
     display = 'Indicators'
 
 
