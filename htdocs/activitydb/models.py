@@ -4,6 +4,15 @@ from django.db import models
 from django.contrib import admin
 from django.conf import settings
 from datetime import datetime
+from django.contrib.auth.models import User
+
+
+class TolaUser(User):
+   class Meta:
+      proxy = True
+
+   def __unicode__(self):
+        return self.first_name + " " + self.last_name
 
 
 class Country(models.Model):
@@ -96,7 +105,7 @@ class ProgramAdmin(admin.ModelAdmin):
 
 
 class ApprovalAuthority(models.Model):
-    approval_user = models.ForeignKey(settings.AUTH_USER_MODEL,help_text='User with Approval Authority', blank=True, null=True, related_name="auth_approving")
+    approval_user = models.ForeignKey(TolaUser,help_text='User with Approval Authority', blank=True, null=True, related_name="auth_approving")
     budget_limit = models.IntegerField(null=True, blank=True)
     fund = models.IntegerField("Fund",null=True, blank=True)
     country = models.ForeignKey("Country", null=True, blank=True)
@@ -303,9 +312,9 @@ class Community(models.Model):
     altitude = models.DecimalField("Altitude (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
     precision = models.DecimalField("Precision (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
     approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
-    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="comm_approving")
-    filled_by = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='This is the originator', blank=True, null=True, related_name="comm_estimate")
-    location_verified_by = models.ForeignKey(settings.AUTH_USER_MODEL, help_text='This should be GIS Manager', blank=True, null=True, related_name="comm_gis")
+    approved_by = models.ForeignKey(TolaUser,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="comm_approving")
+    filled_by = models.ForeignKey(TolaUser, help_text='This is the originator', blank=True, null=True, related_name="comm_estimate")
+    location_verified_by = models.ForeignKey(TolaUser, help_text='This should be GIS Manager', blank=True, null=True, related_name="comm_gis")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -517,22 +526,22 @@ class ProjectAgreement(models.Model):
     cfw_estimate_cost_materials = models.CharField("Estimated Total Cost of Materials",max_length="255",blank=True,null=True)
     cfw_estimate_wages_budgeted= models.CharField("Estimated Wages Budgeted",max_length="255",blank=True,null=True)
     estimation_date = models.DateTimeField(blank=True, null=True)
-    estimated_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="estimating")
+    estimated_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="estimating")
     estimated_by_date = models.DateTimeField("Date Estimated", null=True, blank=True)
-    checked_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="checking")
+    checked_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="checking")
     checked_by_date = models.DateTimeField("Date Checked", null=True, blank=True)
-    reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Field Verification By" ,blank=True, null=True, related_name="reviewing")
+    reviewed_by = models.ForeignKey(TolaUser, verbose_name="Field Verification By" ,blank=True, null=True, related_name="reviewing")
     reviewed_by_date = models.DateTimeField("Date Verified", null=True, blank=True)
-    finance_reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="finance_reviewing")
+    finance_reviewed_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="finance_reviewing")
     finance_reviewed_by_date = models.DateTimeField("Date Reviewed by Finance", null=True, blank=True)
-    me_reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name="M&E Reviewed by", related_name="reviewing_me")
+    me_reviewed_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="M&E Reviewed by", related_name="reviewing_me")
     me_reviewed_by_date = models.DateTimeField("Date Reviewed by M&E", null=True, blank=True)
     capacity = models.ManyToManyField(Capacity, blank=True)
     evaluate = models.ManyToManyField(Evaluate, blank=True)
     approval = models.CharField("Status", default="in progress", max_length=255, blank=True, null=True)
-    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="approving_agreement")
+    approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_agreement")
     approved_by_date = models.DateTimeField("Date Approved", null=True, blank=True)
-    approval_submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="submitted_by_agreement")
+    approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="submitted_by_agreement")
     approval_remarks = models.CharField("Approval Remarks", max_length=255, blank=True, null=True)
     justification_background = models.TextField("General Background and Problem Statement", blank=True, null=True)
     justification_description_community_selection = models.TextField("Description of Stakeholder Selection Criteria", blank=True, null=True)
@@ -610,12 +619,12 @@ class ProjectComplete(models.Model):
     issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)", blank=True, null=True)
     lessons_learned= models.TextField("Lessons learned", blank=True, null=True)
     community = models.ManyToManyField(Community, blank=True)
-    estimated_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="estimating_complete")
-    checked_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="checking_complete")
-    reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="reviewing_complete")
+    estimated_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="estimating_complete")
+    checked_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="checking_complete")
+    reviewed_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="reviewing_complete")
     approval = models.CharField("Status", default="in progress", max_length=255, blank=True, null=True)
-    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="approving_agreement_complete")
-    approval_submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="submitted_by_complete")
+    approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_agreement_complete")
+    approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="submitted_by_complete")
     approval_remarks = models.CharField("Approval Remarks", max_length=255, blank=True, null=True)
     create_date = models.DateTimeField("Date Created", null=True, blank=True)
     edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
@@ -954,7 +963,7 @@ class DocumentationAppAdmin(admin.ModelAdmin):
 
 # collect feedback from users
 class Feedback(models.Model):
-    submitter = models.ForeignKey(settings.AUTH_USER_MODEL)
+    submitter = models.ForeignKey(TolaUser)
     note = models.TextField()
     page = models.CharField(max_length=135)
     severity = models.CharField(max_length=135)

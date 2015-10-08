@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib import admin
 from django.conf import settings
-from activitydb.models import Program, Sector, Community, ProjectAgreement, ProjectComplete, Country, Office, Documentation
+from activitydb.models import Program, Sector, Community, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
 from datetime import datetime
 
 
@@ -147,8 +147,8 @@ class Indicator(models.Model):
     comments = models.CharField(max_length=255, null=True, blank=True)
     program = models.ManyToManyField(Program)
     sector = models.ForeignKey(Sector, null=True, blank=True)
-    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="approving_indicator")
-    approval_submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="indicator_submitted_by")
+    approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_indicator")
+    approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="indicator_submitted_by")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

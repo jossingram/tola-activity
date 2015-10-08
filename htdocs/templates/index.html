@@ -156,7 +156,7 @@ $(function () {
                     {%for program in programs%}
                         <li class="list-group-item">
                             <a href="/activitydb/dashboard/{{ program.id }}/">{{ program.name }}</a>&nbsp;
-                            <button type="button" class="btn btn-xs btn-success" style="float:right; vertical-align: middle;" onclick="location.href='/dashboard/{{ program.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/'"><span class="glyphicon glyphicon-arrow-right"></span></button>
+                            <button type="button" class="btn btn-xs btn-success" style="float:right;" onclick="location.href='/dashboard/{{ program.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/'"><span class="glyphicon glyphicon-arrow-right"></span></button>
                         </li>
                     {%endfor%}
                     </ul>
