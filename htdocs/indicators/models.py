@@ -23,16 +23,25 @@ class IndicatorTypeAdmin(admin.ModelAdmin):
 class Objective(models.Model):
     name = models.CharField(max_length=135, blank=True)
     country = models.ForeignKey(Country, null=True, blank=True)
+    program = models.ForeignKey(Program, null=True, blank=True)
     description = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        ordering = ('country','program','name')
+
     def __unicode__(self):
         return self.name
 
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(Objective, self).save()
+
 
 class ObjectiveAdmin(admin.ModelAdmin):
-    list_display = ('name')
+    list_display = ('country','program','name')
     display = 'Objectives'
 
 
@@ -45,6 +54,10 @@ class Level(models.Model):
     def __unicode__(self):
         return self.name
 
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(Level, self).save()
 
 class LevelAdmin(admin.ModelAdmin):
     list_display = ('name')
