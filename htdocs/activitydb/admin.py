@@ -2,13 +2,14 @@ from django.contrib import admin
 from .models import Country, Province, Office, Village, Program, Documentation, Template,District, Sector, \
      ProgramDashboard, ProjectAgreement, ProjectComplete, Community, Capacity, Monitor, \
     Benchmarks, Evaluate, ProjectType, ProjectTypeOther, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
-    ChecklistItem, DocumentationApp, ProvinceAdmin, DistrictAdmin
+    ChecklistItem, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin
 
 
 admin.site.register(Country)
 admin.site.register(Province, ProvinceAdmin)
 admin.site.register(Office)
 admin.site.register(District, DistrictAdmin)
+admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
 admin.site.register(Village)
 admin.site.register(Program)
 admin.site.register(Sector)

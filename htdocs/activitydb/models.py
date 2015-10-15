@@ -157,7 +157,7 @@ class Province(models.Model):
 class ProvinceAdmin(admin.ModelAdmin):
     list_display = ('name', 'country', 'create_date')
     search_fields = ('name','country')
-    list_filter = ('name','country')
+    list_filter = ('create_date','country')
     display = 'Province'
 
 
@@ -183,10 +183,38 @@ class District(models.Model):
 
 
 class DistrictAdmin(admin.ModelAdmin):
-    list_display = ('name', 'province', 'create_date', 'edit_date')
-    search_fields = ('name','province')
-    list_filter = ('name','province')
+    list_display = ('name', 'province', 'create_date')
+    search_fields = ('create_date','province')
+    list_filter = ('create_date','province')
     display = 'District'
+
+
+class AdminLevelThree(models.Model):
+    name = models.CharField("District Name", max_length=255, blank=True)
+    district = models.ForeignKey(District)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(AdminLevelThree, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
+class AdminLevelThreeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'district', 'create_date')
+    search_fields = ('name','district')
+    list_filter = ('create_date','district')
+    display = 'Admin Level Three'
 
 
 class Office(models.Model):
@@ -215,7 +243,7 @@ class Office(models.Model):
 class OfficeAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'province', 'create_date', 'edit_date')
     search_fields = ('name','province')
-    list_filter = ('name','province')
+    list_filter = ('create_date','province')
     display = 'Office'
 
 
