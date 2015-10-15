@@ -19,7 +19,7 @@ from activitydb.models import Country, Province, District, AdminLevelThree
 def run():
     print "Uploading Country Admin data"
 
-getCountry = Country.objects.get(id=4)
+getCountry = Country.objects.get(id=5)
 
 def getAllData():
 
