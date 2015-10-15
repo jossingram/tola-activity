@@ -155,7 +155,9 @@ class Province(models.Model):
 
 
 class ProvinceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'country', 'create_date', 'edit_date')
+    list_display = ('name', 'country', 'create_date')
+    search_fields = ('name','country')
+    list_filter = ('name','country')
     display = 'Province'
 
 
@@ -182,6 +184,8 @@ class District(models.Model):
 
 class DistrictAdmin(admin.ModelAdmin):
     list_display = ('name', 'province', 'create_date', 'edit_date')
+    search_fields = ('name','province')
+    list_filter = ('name','province')
     display = 'District'
 
 
@@ -210,6 +214,8 @@ class Office(models.Model):
 
 class OfficeAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'province', 'create_date', 'edit_date')
+    search_fields = ('name','province')
+    list_filter = ('name','province')
     display = 'Office'
 
 

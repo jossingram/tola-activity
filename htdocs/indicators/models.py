@@ -42,6 +42,7 @@ class Objective(models.Model):
 
 class ObjectiveAdmin(admin.ModelAdmin):
     list_display = ('country','program','name')
+    search_fields = ('country','program')
     display = 'Objectives'
 
 
@@ -196,7 +197,9 @@ class Indicator(models.Model):
 
 
 class IndicatorAdmin(admin.ModelAdmin):
-    list_display = ('owner','indicator_types','name','sector','description', 'program')
+    list_display = ('owner','indicator_types','name','sector')
+    search_fields = ('sector','program')
+    list_filter = ('sector','program')
     display = 'Indicators'
 
 
