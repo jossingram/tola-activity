@@ -78,7 +78,7 @@ $(document).ready(function() {
         if (selected_country == undefined || selected_country == -1 || selected_country == '') {
             $("select#id_province").html("<option>--Country--</option>");
         } else {
-            var url = "/activitydb/country/" + selected_province + "/country_json/";
+            var url = "/activitydb/country/" + selected_country + "/country_json/";
             $.getJSON(url, function(district) {
                 var options = '<option value="0">--Province--</option>';
                 for (var i = 0; i < province.length; i++) {
