@@ -6,7 +6,7 @@ from functools import partial
 from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
-from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem
+from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province
 from indicators.models import CollectedData, Indicator
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
@@ -852,6 +852,7 @@ class CommunityForm(forms.ModelForm):
         #override the office queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
+        self.fields['province'].queryset = Province.objects.filter(country__in=countries)
 
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
