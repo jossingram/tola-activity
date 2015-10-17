@@ -294,7 +294,7 @@ class CollectedDataList(ListView):
             getCollectedData = CollectedData.objects.all().filter(program=self.kwargs['program'],indicator__id=self.kwargs['indicator'])
             collected_sum = CollectedData.objects.filter(program=self.kwargs['program'],indicator__id=self.kwargs['indicator']).aggregate(Sum('targeted'),Sum('achieved'))
         elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) == 0:
-            getCollectedData = CollectedData.objects.all()
+            getCollectedData = CollectedData.objects.all().filter(indicator__country__in=countries)
             collected_sum = CollectedData.objects.aggregate(Sum('targeted'),Sum('achieved'))
 
 

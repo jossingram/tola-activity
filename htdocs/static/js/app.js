@@ -70,9 +70,33 @@ $(document).ready(function() {
     * Fix for Jquery and bootstrap validator
     */
 
+    /*
+     * Handle change in the country drop-down; updates the province drop-down accordingly.
+     */
+    $("select#id_country").change(function() {
+        var selected_country = $(this).val();
+        if (selected_country == undefined || selected_country == -1 || selected_country == '') {
+            $("select#id_province").html("<option>--Country--</option>");
+        } else {
+            var url = "/activitydb/country/" + selected_province + "/country_json/";
+            $.getJSON(url, function(district) {
+                var options = '<option value="0">--Province--</option>';
+                for (var i = 0; i < province.length; i++) {
+                    options += '<option value="' + province[i].pk + '">' + province[i].fields['name'] + '</option>';
+                }
+
+                $("select#id_province").html(options);
+                $("select#id_province_option:first").attr('selected', 'selected');
+            });
+        }
+
+        // page-specific-action call if a page has implemented the 'country_dropdwon_has_changed' function
+        if(typeof country_dropdwon_has_changed != 'undefined') country_dropdwon_has_changed(selected_country);
+    });
+
 
     /*
-     * Handle change in the province drop-down; updates the distirct drop-down accordingly.
+     * Handle change in the province drop-down; updates the district drop-down accordingly.
      */
     $("select#id_province").change(function() {
         var selected_province = $(this).val();

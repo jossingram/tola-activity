@@ -918,8 +918,10 @@ class CommunityCreate(CreateView):
 
     def get_initial(self):
         countries = getCountry(self.request.user)
-        default_country = countries[0]
-
+        default_country = None
+        if countries:
+            default_country = countries[0]
+            print default_country
         initial = {
             'approved_by': self.request.user,
             'filled_by': self.request.user,
