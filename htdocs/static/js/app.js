@@ -76,10 +76,10 @@ $(document).ready(function() {
     $("select#id_country").change(function() {
         var selected_country = $(this).val();
         if (selected_country == undefined || selected_country == -1 || selected_country == '') {
-            $("select#id_province").html("<option>--Country--</option>");
+            $("select#id_country").html("<option>--Country--</option>");
         } else {
             var url = "/activitydb/country/" + selected_country + "/country_json/";
-            $.getJSON(url, function(district) {
+            $.getJSON(url, function(province) {
                 var options = '<option value="0">--Province--</option>';
                 for (var i = 0; i < province.length; i++) {
                     options += '<option value="' + province[i].pk + '">' + province[i].fields['name'] + '</option>';
@@ -101,7 +101,7 @@ $(document).ready(function() {
     $("select#id_province").change(function() {
         var selected_province = $(this).val();
         if (selected_province == undefined || selected_province == -1 || selected_province == '') {
-            $("select#id_district").html("<option>--Province--</option>");
+            $("select#id_province").html("<option>--Province--</option>");
         } else {
             var url = "/activitydb/province/" + selected_province + "/province_json/";
             $.getJSON(url, function(district) {

@@ -79,6 +79,7 @@ urlpatterns = patterns('',
                        url(r'^report/', 'activitydb.views.report', name='report'),
 
                        url(r'^province/(?P<province>[-\w]+)/province_json/', 'activitydb.views.province_json', name='province_json'),
+                       url(r'^country/(?P<country>[-\w]+)/country_json/', 'activitydb.views.country_json', name='country_json'),
 
                        url(r'^count/$', 'activitydb.views.ProgramDashboardCounts', name='ProgramDashboardCounts'),
 
