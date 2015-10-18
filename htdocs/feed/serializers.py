@@ -1,7 +1,7 @@
 from django.forms import widgets
 from rest_framework import serializers
 from activitydb.models import Program, Sector, ProjectType, Office, Community, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
-from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType
+from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, Level
 from django.contrib.auth.models import User
 
 
@@ -95,3 +95,8 @@ class DisaggregationTypeSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = DisaggregationType
+
+class LevelSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Level

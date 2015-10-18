@@ -1,7 +1,7 @@
 from feed import views
 from tola import views
 from feed.views import UserViewSet, ProgramViewSet, SectorViewSet, ProjectTypeViewSet, OfficeViewSet, CommunityViewSet, AgreementViewSet, \
-    CompleteViewSet, CountryViewSet, ProjectTypeOtherViewSet, IndicatorViewSet, ReportingFrequencyViewSet, TolaUserViewSet, IndicatorTypeViewSet, ObjectiveViewSet, DisaggregationTypeViewSet
+    CompleteViewSet, CountryViewSet, ProjectTypeOtherViewSet, IndicatorViewSet, ReportingFrequencyViewSet, TolaUserViewSet, IndicatorTypeViewSet, ObjectiveViewSet, DisaggregationTypeViewSet, LevelViewSet
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
@@ -34,6 +34,8 @@ router.register(r'tolauser', TolaUserViewSet)
 router.register(r'indicatortype', IndicatorTypeViewSet)
 router.register(r'objective', ObjectiveViewSet)
 router.register(r'disaggregationtype', DisaggregationTypeViewSet)
+router.register(r'level', LevelViewSet)
+
 
 
 

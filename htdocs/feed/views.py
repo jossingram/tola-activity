@@ -1,11 +1,11 @@
 from .serializers import UserSerializer, ProgramSerializer, SectorSerializer, ProjectTypeSerializer, OfficeSerializer, \
-    CommunitySerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer, IndicatorSerializer, ReportingFrequencySerializer, TolaUserSerializer, IndicatorTypeSerializer, ObjectiveSerializer, DisaggregationTypeSerializer
+    CommunitySerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer, IndicatorSerializer, ReportingFrequencySerializer, TolaUserSerializer, IndicatorTypeSerializer, ObjectiveSerializer, DisaggregationTypeSerializer, LevelSerializer
 
 from django.contrib.auth.decorators import login_required
 import json as simplejson
 from tola.util import siloToDict
 from activitydb.models import Program, Sector, ProjectType, Office, Community, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
-from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType
+from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, Level
 
 from django.contrib import messages
 from django.template import RequestContext
@@ -156,3 +156,11 @@ class DisaggregationTypeViewSet(viewsets.ModelViewSet):
     """
     queryset = DisaggregationType.objects.all()
     serializer_class = DisaggregationTypeSerializer
+
+class LevelViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Level.objects.all()
+    serializer_class = LevelSerializer
