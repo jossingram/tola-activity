@@ -1,9 +1,11 @@
-from .serializers import UserSerializer, ProgramSerializer, SectorSerializer, ProjectTypeSerializer, OfficeSerializer, CommunitySerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer
+from .serializers import UserSerializer, ProgramSerializer, SectorSerializer, ProjectTypeSerializer, OfficeSerializer, \
+    CommunitySerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer, IndicatorSerializer, ReportingFrequencySerializer, TolaUserSerializer, IndicatorTypeSerializer, ObjectiveSerializer, DisaggregationTypeSerializer
 
 from django.contrib.auth.decorators import login_required
 import json as simplejson
 from tola.util import siloToDict
 from activitydb.models import Program, Sector, ProjectType, Office, Community, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
+from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType
 
 from django.contrib import messages
 from django.template import RequestContext
@@ -106,3 +108,51 @@ class ProjectTypeOtherViewSet(viewsets.ModelViewSet):
     """
     queryset = ProjectTypeOther.objects.all()
     serializer_class = ProjectTypeOtherSerializer
+
+class IndicatorViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Indicator.objects.all()
+    serializer_class = IndicatorSerializer
+
+class ReportingFrequencyViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = ReportingFrequency.objects.all()
+    serializer_class = ReportingFrequencySerializer
+
+class TolaUserViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = TolaUser.objects.all()
+    serializer_class = TolaUserSerializer
+
+class IndicatorTypeViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = IndicatorType.objects.all()
+    serializer_class = IndicatorTypeSerializer
+
+class ObjectiveViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Objective.objects.all()
+    serializer_class = ObjectiveSerializer
+
+class DisaggregationTypeViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = DisaggregationType.objects.all()
+    serializer_class = DisaggregationTypeSerializer
