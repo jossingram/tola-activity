@@ -884,7 +884,7 @@ class DocumentationForm(forms.ModelForm):
             HTML("""<br/>"""),
 
                 'name', 'url', Field('description', rows="3", css_class='input-xlarge'),'file_field',
-                'project',
+                'project','program',
 
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
@@ -897,7 +897,7 @@ class DocumentationForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['project'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
-
+        self.fields['program'].queryset = Program.objects.filter(country__in=countries)
 
 class QuantitativeOutputsForm(forms.ModelForm):
 
