@@ -179,9 +179,9 @@ class CollectedDataForm(forms.ModelForm):
         super(CollectedDataForm, self).__init__(*args, **kwargs)
 
         #override the program queryset to use request.user for country
-        if self.program:
+        if self.program != None:
             self.fields['evidence'].queryset = Documentation.objects.filter(program=self.program)
         else:
             countries = getCountry(self.request.user)
-            self.fields['evidence'].queryset = Documentation.objects.filter(country__in=countries)
+            self.fields['evidence'].queryset = Documentation.objects
 

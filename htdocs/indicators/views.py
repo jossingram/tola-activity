@@ -441,7 +441,7 @@ class CollectedDataUpdate(UpdateView):
     def get_form_kwargs(self):
         kwargs = super(CollectedDataUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        kwargs['program'] = self.kwargs['program']
+        kwargs['program'] = None
         return kwargs
 
     def form_valid(self, form):
