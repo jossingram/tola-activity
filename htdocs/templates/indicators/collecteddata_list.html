@@ -47,6 +47,7 @@
                     <th>Date Created</th>
                     <th>Date Collected</th>
                     <th>Program</th>
+                    <th>Evidence</th>
                     <th>Target</th>
                     <th>Actual</th>
                     <th>&nbsp;</th>
@@ -57,6 +58,7 @@
                     <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.create_date}}</a></td>
                     <td>{{ item.date_collected }}</td>
                     <td>{{ item.program }}</td>
+                    <td>{% if item.evidence %} {{ item.evidence }} </td>
                     <td>{{ item.targeted }}</td>
                     <td>{{ item.achieved }}</td>
                     <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
