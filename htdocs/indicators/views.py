@@ -275,6 +275,12 @@ class CollectedDataList(ListView):
     model = CollectedData
     template_name = 'indicators/collecteddata_list.html'
 
+        # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(ProjectAgreementUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
@@ -296,7 +302,6 @@ class CollectedDataList(ListView):
         elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) == 0:
             getCollectedData = CollectedData.objects.all().filter(indicator__country__in=countries)
             collected_sum = CollectedData.objects.aggregate(Sum('targeted'),Sum('achieved'))
-
 
 
         #get details about the filtered indicator or program
@@ -363,14 +368,13 @@ class CollectedDataCreate(CreateView):
 
         return initial
 
-    def dispatch(self, request, *args, **kwargs):
-        return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
-
     # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(CollectedDataCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
+        kwargs['program'] = self.kwargs['program']
         return kwargs
+
 
     def form_invalid(self, form):
 
@@ -437,6 +441,7 @@ class CollectedDataUpdate(UpdateView):
     def get_form_kwargs(self):
         kwargs = super(CollectedDataUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
+        kwargs['program'] = self.kwargs['program']
         return kwargs
 
     def form_valid(self, form):

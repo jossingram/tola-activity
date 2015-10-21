@@ -452,6 +452,31 @@ class ProjectTypeAdmin(admin.ModelAdmin):
     display = 'Project Type'
 
 
+class Stakeholder(models.Model):
+    name = models.CharField("Type of Activity", max_length=135)
+    description = models.CharField(max_length=255)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ProjectType, self).save()
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('name',)
+
+
+class StakeholderAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'create_date', 'edit_date')
+    display = 'Stakeholder'
+
+
 class ProjectTypeOther(models.Model):
     name = models.CharField("Type of Activity", max_length=135)
     description = models.CharField(max_length=255)
@@ -692,6 +717,7 @@ class Documentation(models.Model):
     template = models.ForeignKey(Template, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
     project = models.ForeignKey(ProjectAgreement, blank=True, null=True)
+    program = models.ForeignKey(Program, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

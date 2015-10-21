@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from indicators.models import Indicator, CollectedData
-from .models import Program, Community
+from activitydb.models import Program, Community, Documentation
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
@@ -100,6 +100,7 @@ class CollectedDataForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.request = kwargs.pop('request')
+        self.program = kwargs.pop('program')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -176,4 +177,11 @@ class CollectedDataForm(forms.ModelForm):
         )
 
         super(CollectedDataForm, self).__init__(*args, **kwargs)
+
+        #override the program queryset to use request.user for country
+        if self.program:
+            self.fields['evidence'].queryset = Documentation.objects.filter(program=self.program)
+        else:
+            countries = getCountry(self.request.user)
+            self.fields['evidence'].queryset = Documentation.objects.filter(country__in=countries)
 
