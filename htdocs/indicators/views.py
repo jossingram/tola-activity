@@ -150,7 +150,7 @@ class IndicatorDelete(DeleteView):
     form_class = IndicatorForm
 
 
-def indicatorReport(request, program=0):
+def indicator_report(request, program=0):
     """
     Show LIST of indicators with a filtered search view using django-tables2
     and django-filter
@@ -219,7 +219,7 @@ def programIndicatorReport(request, program=0):
     return render(request, "indicators/grid_report.html", {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgram': getProgram, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
-def indicatorDataReport(request, id=0, program=0, agreement=0):
+def indicator_data_report(request, id=0, program=0, agreement=0):
     """
     Show LIST of indicator based quantitative outputs with a filtered search view using django-tables2
     and django-filter

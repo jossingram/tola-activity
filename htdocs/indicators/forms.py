@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from indicators.models import Indicator, CollectedData
+from indicators.models import Indicator, CollectedData, Objective
 from activitydb.models import Program, Community, Documentation
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
@@ -85,6 +85,7 @@ class IndicatorForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['objectives'].queryset = Objective.objects.filter(country__in=countries)
 
 
 class CollectedDataForm(forms.ModelForm):

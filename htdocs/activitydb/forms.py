@@ -6,12 +6,13 @@ from functools import partial
 from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
-from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province
+from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact
 from indicators.models import CollectedData, Indicator
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
+
 
 #Global for approvals
 APPROVALS=(
@@ -20,6 +21,7 @@ APPROVALS=(
         ('approved', 'approved'),
         ('rejected', 'rejected'),
     )
+
 
 #Global for Budget Variance
 BUDGET_VARIANCE=(
@@ -139,11 +141,11 @@ class ProjectAgreementCreateForm(forms.ModelForm):
                         Fieldset(
                             'Community',
                             'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
-                            'community_proposal',PrependedText('has_rej_letter', ''),
+                            'community_proposal',
                         ),
                         Fieldset(
-                            'Partners',
-                            PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list',
+                            'Stakeholders',
+                            'stakeholder'
                         ),
                     ),
             ),
@@ -166,6 +168,9 @@ class ProjectAgreementCreateForm(forms.ModelForm):
 
         #override the community queryset to use request.user for country
         self.fields['community'].queryset = Community.objects.filter(country__in=countries)
+
+        #override the stakeholder queryset to use request.user for country
+        self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
 
 
 class ProjectAgreementForm(forms.ModelForm):
@@ -239,8 +244,8 @@ class ProjectAgreementForm(forms.ModelForm):
                         'community_proposal'
                     ),
                     Fieldset(
-                        'Partners',
-                        PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list',
+                        'Stakeholders',
+                        'stakeholder'
                     ),
                 ),
                 Tab('Budget',
@@ -497,6 +502,9 @@ class ProjectAgreementForm(forms.ModelForm):
 
         #override the community queryset to use request.user for country
         self.fields['community'].queryset = Community.objects.filter(country__in=countries)
+
+        #override the stakeholder queryset to use request.user for country
+        self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
@@ -1030,6 +1038,55 @@ class TrainingAttendanceForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
         super(TrainingAttendanceForm, self).__init__(*args, **kwargs)
+
+
+class ContactForm(forms.ModelForm):
+
+    class Meta:
+        model = Contact
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.add_input(Submit('submit', 'Save'))
+
+        super(ContactForm, self).__init__(*args, **kwargs)
+
+
+class StakeholderForm(forms.ModelForm):
+
+    class Meta:
+        model = Stakeholder
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.add_input(Submit('submit', 'Save'))
+        self.helper.layout = Layout(
+
+            HTML("""<br/>"""),
+
+                'name', 'type', 'contact',HTML("""<a href="/activitydb/contact_add/0/" target="_new">Add New Contact</a>"""), 'country', 'sector', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document',
+
+        )
+
+        super(StakeholderForm, self).__init__(*args, **kwargs)
 
 
 class BeneficiaryForm(forms.ModelForm):

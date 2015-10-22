@@ -71,6 +71,40 @@ class SectorAdmin(admin.ModelAdmin):
     display = 'Sector'
 
 
+class Contact(models.Model):
+    name = models.CharField("Name", max_length=255, blank=True, null=True)
+    title = models.CharField("Title", max_length=255, blank=True, null=True)
+    city = models.CharField("City/Town", max_length=255, blank=True, null=True)
+    address = models.TextField("Address", max_length=255, blank=True, null=True)
+    email = models.CharField("Email", max_length=255, blank=True, null=True)
+    phone = models.CharField("Phone", max_length=255, blank=True, null=True)
+    country = models.ForeignKey(Country)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('country','name','title')
+        verbose_name_plural = "Contact"
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Contact, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.count + "-" + self.name
+
+
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country', 'create_date', 'edit_date')
+    display = 'Contact'
+    list_filter = ('create_date','country')
+    search_fields = ('name','country','title','city')
+
+
 class Program(models.Model):
     gaitid = models.CharField("GAITID", max_length=255, blank=True, unique=True)
     name = models.CharField("Program Name", max_length=255, blank=True)
@@ -401,6 +435,34 @@ class CapacityAdmin(admin.ModelAdmin):
     display = 'Capacity'
 
 
+class StakeholderType(models.Model):
+    name = models.CharField("Stakeholder Type", max_length=255, blank=True, null=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name_plural = "Stakeholder Types"
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(StakeholderType, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
+class StakeholderTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Stakeholder Types'
+    list_filter = ('create_date')
+    search_fields = ('name')
+
+
 class Evaluate(models.Model):
     evaluate = models.CharField("How will you evaluate the outcome or impact of the project?", max_length=255, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -450,31 +512,6 @@ class ProjectType(models.Model):
 class ProjectTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'create_date', 'edit_date')
     display = 'Project Type'
-
-
-class Stakeholder(models.Model):
-    name = models.CharField("Type of Activity", max_length=135)
-    description = models.CharField(max_length=255)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    #onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(ProjectType, self).save()
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ('name',)
-
-
-class StakeholderAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'create_date', 'edit_date')
-    display = 'Stakeholder'
 
 
 class ProjectTypeOther(models.Model):
@@ -529,6 +566,40 @@ class TemplateAdmin(admin.ModelAdmin):
     display = 'Template'
 
 
+class Stakeholder(models.Model):
+    name = models.CharField("Stakholder/Organization Name", max_length=255, blank=True, null=True)
+    type = models.ForeignKey(StakeholderType)
+    contact = models.ManyToManyField(Contact, max_length=255, blank=True)
+    country = models.ForeignKey(Country)
+    sector = models.ForeignKey(Sector, blank=True, null=True)
+    stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?")
+    formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, related_name="relationship_document")
+    vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True, related_name="vetting_document")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('country','name','type')
+        verbose_name_plural = "Stakeholders"
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Stakeholder, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
+class StakeholderAdmin(admin.ModelAdmin):
+    list_display = ('name', 'type', 'country', 'create_date')
+    display = 'Stakeholders'
+    list_filter = ('create_date','country','type','sector')
+
+
 class ProjectAgreement(models.Model):
     program = models.ForeignKey(Program, related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
@@ -553,6 +624,7 @@ class ProjectAgreement(models.Model):
     staff_responsible = models.CharField("MC Staff Responsible", max_length=255, blank=True, null=True)
     partners = models.BooleanField("Are there partners involved?", default=0)
     name_of_partners = models.CharField("Name of Partners", max_length=255, blank=True, null=True)
+    stakeholder = models.ManyToManyField(Stakeholder, blank=True)
     program_objectives = models.TextField("What Program Objectives does this help fulfill?", blank=True, null=True)
     mc_objectives = models.TextField("What strategic Objectives does this help fulfill?", blank=True, null=True)
     effect_or_impact = models.TextField("What is the anticipated Outcome or Goal?", blank=True, null=True)

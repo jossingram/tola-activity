@@ -3,7 +3,7 @@ from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, Pr
     DocumentationList, DocumentationCreate, DocumentationAgreementCreate,DocumentationAgreementUpdate,DocumentationAgreementDelete, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
     BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
     BeneficiaryDelete, ProjectCompleteDetail, CommunityReport, ChecklistCreate, ChecklistDelete, ChecklistUpdate, BudgetList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
-    ChecklistCreate, ChecklistDelete, ChecklistUpdate, ChecklistList, BudgetCreate, BudgetUpdate, BudgetDelete
+    ChecklistCreate, ChecklistDelete, ChecklistUpdate, ChecklistList, BudgetCreate, BudgetUpdate, BudgetDelete, StakeholderList, StakeholderCreate, StakeholderDelete, StakeholderUpdate, ContactCreate, ContactList, ContactUpdate, ContactDelete
 
 from django.conf.urls import *
 
@@ -60,6 +60,16 @@ urlpatterns = patterns('',
                        url(r'^training_add/(?P<id>\w+)/$', TrainingCreate.as_view(), name='training_add'),
                        url(r'^training_update/(?P<pk>\w+)/$', TrainingUpdate.as_view(), name='training_update'),
                        url(r'^training_delete/(?P<pk>\w+)/$', TrainingDelete.as_view(), name='training_delete'),
+
+                       url(r'^stakeholder_list/(?P<pk>\w+)/$', StakeholderList.as_view(), name='stakeholder_list'),
+                       url(r'^stakeholder_add/(?P<id>\w+)/$', StakeholderCreate.as_view(), name='stakeholder_add'),
+                       url(r'^stakeholder_update/(?P<pk>\w+)/$', StakeholderUpdate.as_view(), name='stakeholder_update'),
+                       url(r'^stakeholder_delete/(?P<pk>\w+)/$', StakeholderDelete.as_view(), name='stakeholder_delete'),
+
+                       url(r'^contact_list/(?P<pk>\w+)/$', ContactList.as_view(), name='contact_list'),
+                       url(r'^contact_add/(?P<id>\w+)/$', ContactCreate.as_view(), name='contact_add'),
+                       url(r'^contact_update/(?P<pk>\w+)/$', ContactUpdate.as_view(), name='contact_update'),
+                       url(r'^contact_delete/(?P<pk>\w+)/$', ContactDelete.as_view(), name='contact_delete'),
 
                        url(r'^checklist_list/(?P<pk>\w+)/$', ChecklistList.as_view(), name='checklist_list'),
                        url(r'^checklist_add/(?P<id>\w+)/$', ChecklistCreate.as_view(), name='checklist_add'),
