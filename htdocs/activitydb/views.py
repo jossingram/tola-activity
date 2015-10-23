@@ -64,8 +64,9 @@ class ProjectDash(ListView):
         project_id = int(self.kwargs['pk'])
 
         if project_id == 0:
-            getAgreement = ProjectAgreement.objects.all()
-            getComplete = ProjectComplete.objects.all()
+            getAgreement = None
+            getComplete = None
+            getChecklist = None
             getDocumentCount = 0
             getCommunityCount = 0
             getTrainingCount = 0
