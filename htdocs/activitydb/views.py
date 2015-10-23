@@ -61,15 +61,17 @@ class ProjectDash(ListView):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
         form = ProgramDashboardForm
+        project_id = int(self.kwargs['pk'])
 
-        if int(self.kwargs['pk']) == 0:
+        if project_id == 0:
             getAgreement = ProjectAgreement.objects.all()
             getComplete = ProjectComplete.objects.all()
             getDocumentCount = 0
             getCommunityCount = 0
             getTrainingCount = 0
+            getChecklistCount = 0
         else:
-            getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
+            getAgreement = ProjectAgreement.objects.get(id=project_id)
             try:
                 getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['pk'])
             except ProjectComplete.DoesNotExist:
@@ -87,7 +89,7 @@ class ProjectDash(ListView):
 
         return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete,
                                                     'getPrograms':getPrograms, 'getDocumentCount':getDocumentCount,'getChecklistCount': getChecklistCount,
-                                                    'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount})
+                                                    'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount, 'project_id': project_id})
 
 
 class ProgramDash(ListView):
