@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib import admin
 from django.conf import settings
-from activitydb.models import Program, Sector, Community, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
+from activitydb.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
 from datetime import datetime
 
 

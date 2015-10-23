@@ -6,7 +6,7 @@ from functools import partial
 from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
-from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province
+from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province
 from indicators.models import CollectedData, Indicator
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
@@ -165,7 +165,7 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
         #override the community queryset to use request.user for country
-        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
+        self.fields['community'].queryset = SiteProfile.objects.filter(country__in=countries)
 
 
 class ProjectAgreementForm(forms.ModelForm):
@@ -496,7 +496,7 @@ class ProjectAgreementForm(forms.ModelForm):
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
         #override the community queryset to use request.user for country
-        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
+        self.fields['community'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
@@ -733,7 +733,7 @@ class ProjectCompleteForm(forms.ModelForm):
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
         #override the community queryset to use request.user for country
-        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
+        self.fields['community'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
@@ -743,10 +743,10 @@ class ProjectCompleteForm(forms.ModelForm):
             self.fields['approval'].help_text = "Approval level permissions required"
 
 
-class CommunityForm(forms.ModelForm):
+class SiteProfileForm(forms.ModelForm):
 
     class Meta:
-        model = Community
+        model = SiteProfile
         exclude = ['create_date', 'edit_date']
 
     map = forms.CharField(widget=GoogleMapsWidget(
@@ -780,7 +780,7 @@ class CommunityForm(forms.ModelForm):
                     Fieldset('Description',
                         'code', 'name', 'type', 'office', PrependedText('existing_village',''), 'existing_village_descr',
                     ),
-                    Fieldset('Community',
+                    Fieldset('Community Info',
                         'community_leader', 'head_of_institution', 'date_of_firstcontact', 'contact_number', 'num_members',
                     ),
                 ),
@@ -795,7 +795,7 @@ class CommunityForm(forms.ModelForm):
                         'distance_district_capital','distance_site_camp','distance_field_office',
                     ),
                 ),
-                Tab('For Geographic Communities',
+                Tab('For Geographic Sites',
                     Fieldset('Households',
                         'total_num_households','avg_household_size', 'male_0_14', 'female_0_14', 'male_15_24', 'female_15_24',
                         'male_25_59', 'female_25_59', 'male_over_60', 'female_over_60', 'total_population',
@@ -823,7 +823,7 @@ class CommunityForm(forms.ModelForm):
             <br/>
             <div class='panel panel-default'>
               <!-- Default panel contents -->
-              <div class='panel-heading'>Projects in this Community</div>
+              <div class='panel-heading'>Projects in this Site</div>
               {% if getProjects %}
                   <!-- Table -->
                   <table class="table">
@@ -847,7 +847,7 @@ class CommunityForm(forms.ModelForm):
              """),
         )
 
-        super(CommunityForm, self).__init__(*args, **kwargs)
+        super(SiteProfileForm, self).__init__(*args, **kwargs)
 
         #override the office queryset to use request.user for country
         countries = getCountry(self.request.user)

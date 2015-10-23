@@ -22,7 +22,7 @@
     #map { height: 480px; }
 </style>
 
-<p><b>{{ country.country }} Communities</b></p>
+<p><b>{{ country.country }} Sites</b></p>
 <div id="map"></div>
 
 {% include "activitydb/community_map.html" %}
@@ -31,7 +31,7 @@
 {% for item in getCommunity %}
     <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.name }}</b>
     <div class="btn-group align-right" role="group" aria-label="...">
-        <a href="/activitydb/community_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Community</a>
+        <a href="/activitydb/community_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Communitya>
     </div>
     </li>
 {% empty %}

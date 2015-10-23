@@ -1,5 +1,5 @@
 from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, ProjectAgreementUpdate, ProjectAgreementDetail, ProjectAgreementDelete, ProjectAgreementImport, ProjectCompleteCreate, ProjectCompleteUpdate,\
-    ProjectCompleteList, ProjectCompleteDelete, ProjectCompleteImport, CommunityList, CommunityCreate, CommunityUpdate, CommunityDelete,\
+    ProjectCompleteList, ProjectCompleteDelete, ProjectCompleteImport, SiteProfileList, SiteProfileCreate, CommunityUpdate, SiteProfileDelete,\
     DocumentationList, DocumentationCreate, DocumentationAgreementCreate,DocumentationAgreementUpdate,DocumentationAgreementDelete, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
     BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
     BeneficiaryDelete, ProjectCompleteDetail, CommunityReport, ChecklistCreate, ChecklistDelete, ChecklistUpdate, BudgetList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
@@ -29,11 +29,11 @@ urlpatterns = patterns('',
                        url(r'^projectcomplete_import', ProjectCompleteImport.as_view(), name='projectcomplete_import'),
                        url(r'^projectcomplete_detail/(?P<pk>\w+)/$', ProjectCompleteDetail.as_view(), name='projectcomplete_detail'),
 
-                       url(r'^community_list/(?P<program_id>\w+)/(?P<activity_id>\w+)/$', CommunityList.as_view(), name='community_list'),
+                       url(r'^siteprofile_list/(?P<program_id>\w+)/(?P<activity_id>\w+)/$', SiteProfileList.as_view(), name='siteprofile_list'),
                        url(r'^community_report/(?P<pk>\w+)/$', CommunityReport.as_view(), name='community_report'),
-                       url(r'^community_add', CommunityCreate.as_view(), name='community_add'),
+                       url(r'^siteprofile_add', SiteProfileCreate.as_view(), name='siteprofile_add'),
                        url(r'^community_update/(?P<pk>\w+)/$', CommunityUpdate.as_view(), name='community_update'),
-                       url(r'^community_delete/(?P<pk>\w+)/$', CommunityDelete.as_view(), name='community_delete'),
+                       url(r'^siteprofile_delete/(?P<pk>\w+)/$', SiteProfileDelete.as_view(), name='siteprofile_delete'),
 
                        url(r'^documentation_list/(?P<pk>\w+)/$', DocumentationList.as_view(), name='documentation_list'),
                        url(r'^documentation_add', DocumentationCreate.as_view(), name='documentation_add'),

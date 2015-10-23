@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from indicators.models import Indicator, CollectedData
-from activitydb.models import Program, Community, Documentation
+from activitydb.models import Program, SiteProfile, Documentation
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
