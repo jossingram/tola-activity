@@ -4,7 +4,7 @@ from django_tables2.utils import A
 
 class IndicatorDataTable(tables.Table):
 
-    indicator__name = tables.LinkColumn('indicatorDataReport', args=[A('indicator__id')])
+    indicator__name = tables.LinkColumn('indicator_data_report', args=[A('indicator__id')])
 
     class Meta:
         model = CollectedData

@@ -2,13 +2,13 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from django.views.generic import TemplateView
-from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem
+from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact
 from indicators.models import CollectedData
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistForm
+from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistForm, StakeholderForm, ContactForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -37,17 +37,11 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from tola.util import getCountry, emailGroup
 from mixins import AjaxableResponseMixin
-"""
-project_agreement_id is the key to link each related form
- ProjectAgreement, ProjectComplete, SiteProfile (Main Forms and Workflow)
-Monitor, Benchmark, TrainingAttendance and Beneficiary are related to Project Agreement via
-the project_agreement_id
-
-"""
 
 
 def date_handler(obj):
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+
 
 def group_required(*group_names, **url):
     #Requires user membership in at least one of the groups passed in.
@@ -67,15 +61,17 @@ class ProjectDash(ListView):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
         form = ProgramDashboardForm
+        project_id = int(self.kwargs['pk'])
 
-        if int(self.kwargs['pk']) == 0:
+        if project_id == 0:
             getAgreement = ProjectAgreement.objects.all()
             getComplete = ProjectComplete.objects.all()
             getDocumentCount = 0
             getCommunityCount = 0
             getTrainingCount = 0
+            getChecklistCount = 0
         else:
-            getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
+            getAgreement = ProjectAgreement.objects.get(id=project_id)
             try:
                 getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['pk'])
             except ProjectComplete.DoesNotExist:
@@ -93,7 +89,7 @@ class ProjectDash(ListView):
 
         return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete,
                                                     'getPrograms':getPrograms, 'getDocumentCount':getDocumentCount,'getChecklistCount': getChecklistCount,
-                                                    'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount})
+                                                    'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount, 'project_id': project_id})
 
 
 class ProgramDash(ListView):
@@ -155,7 +151,6 @@ class ProjectAgreementImport(ListView):
 
         data = jsondata['results']
 
-
         return render(request, self.template_name, {'getAgreements': data})
 
 
@@ -163,6 +158,7 @@ class ProjectAgreementCreate(CreateView):
     """
     Project Agreement Form
     :param request:
+    :param id:
     """
     model = ProjectAgreement
     template_name = 'activitydb/projectagreement_form.html'
@@ -183,7 +179,6 @@ class ProjectAgreementCreate(CreateView):
             'reviewed_by': self.request.user,
             'approval_submitted_by': self.request.user,
             }
-
 
         return initial
 
@@ -271,7 +266,6 @@ class ProjectAgreementUpdate(UpdateView):
         kwargs['request'] = self.request
         return kwargs
 
-
     def form_invalid(self, form):
 
         messages.error(self.request, 'Invalid Form', fail_silently=False)
@@ -323,8 +317,6 @@ class ProjectAgreementUpdate(UpdateView):
         context = self.get_context_data()
         self.object = form.save()
 
-
-
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ProjectAgreementForm
@@ -335,7 +327,6 @@ class ProjectAgreementDetail(DetailView):
     model = ProjectAgreement
     context_object_name = 'agreement'
     queryset = ProjectAgreement.objects.all()
-
 
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementDetail, self).get_context_data(**kwargs)
@@ -711,7 +702,6 @@ class DocumentationAgreementUpdate(AjaxableResponseMixin, UpdateView):
         context.update({'pk': self.kwargs['pk']})
         return context
 
-
     def form_invalid(self, form):
 
         messages.error(self.request, 'Invalid Form', fail_silently=False)
@@ -851,7 +841,6 @@ class SiteProfileList(ListView):
             template_name = 'activitydb/site_profile_list.html'
         return super(SiteProfileList, self).dispatch(request, *args, **kwargs)
 
-
     def get(self, request, *args, **kwargs):
         activity_id = int(self.kwargs['activity_id'])
         program_id = int(self.kwargs['program_id'])
@@ -884,7 +873,6 @@ class CommunityReport(ListView):
     """
     model = SiteProfile
     template_name = 'activitydb/site_profile_report.html'
-
 
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
@@ -1061,13 +1049,13 @@ class MonitorUpdate(AjaxableResponseMixin, UpdateView):
     """
     Monitor Form
     """
-
     model = Monitor
 
     def get_context_data(self, **kwargs):
         context = super(MonitorUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
         return context
+
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
@@ -1193,6 +1181,218 @@ class BenchmarkDelete(AjaxableResponseMixin, DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = BenchmarkForm
+
+
+class ContactList(ListView):
+    """
+    getStakeholders
+    """
+    model = Contact
+    template_name = 'activitydb/contact_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        project_agreement_id = self.kwargs['pk']
+
+        if int(self.kwargs['pk']) == 0:
+            getContacts = Contact.objects.all()
+        else:
+            getContacts = Contact.objects.all().filter(projectagreement=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getContacts': getContacts})
+
+
+class ContactCreate(CreateView):
+    """
+    Contact Form
+    """
+    model = Contact
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(ContactCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        return context
+
+    def get_initial(self):
+        initial = {
+            'agreement': self.kwargs['id'],
+            }
+
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Contact Created!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = ContactForm
+
+
+class ContactUpdate(UpdateView):
+    """
+    Contact Form
+    """
+    model = Contact
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Contact Updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = ContactForm
+
+
+class ContactDelete(DeleteView):
+    """
+    Benchmark Form
+    """
+    model = Contact
+    success_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactDelete, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Contact Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = ContactForm
+
+
+class StakeholderList(ListView):
+    """
+    getStakeholders
+    """
+    model = Stakeholder
+    template_name = 'activitydb/stakeholder_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        project_agreement_id = self.kwargs['pk']
+
+        if int(self.kwargs['pk']) == 0:
+            getStakeholders = Stakeholder.objects.all()
+        else:
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getStakeholders': getStakeholders, 'project_agreement_id': project_agreement_id})
+
+
+class StakeholderCreate(CreateView):
+    """
+    Stakeholder Form
+    """
+    model = Stakeholder
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(StakeholderCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(StakeholderCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        return context
+
+    def get_initial(self):
+        initial = {
+            'agreement': self.kwargs['id'],
+            }
+
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Stakeholder Created!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = StakeholderForm
+
+
+class StakeholderUpdate(UpdateView):
+    """
+    Stakeholder Form
+    """
+    model = Stakeholder
+
+    def get_context_data(self, **kwargs):
+        context = super(StakeholderUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Stakeholder Updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = StakeholderForm
+
+
+class StakeholderDelete(DeleteView):
+    """
+    Benchmark Form
+    """
+    model = Stakeholder
+    success_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(StakeholderDelete, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Stakeholder Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = StakeholderForm
 
 
 class TrainingList(ListView):

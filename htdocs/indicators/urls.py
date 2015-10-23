@@ -11,7 +11,7 @@ urlpatterns = patterns('',
     url(r'^home/(?P<pk>\w+)/$', IndicatorList.as_view(), name='indicator_list'),
 
     #Indicator Report
-    url(r'^report/(?P<program>\w+)/$', 'indicators.views.indicatorReport', name='indicatorReport'),
+    url(r'^report/(?P<program>\w+)/$', 'indicators.views.indicator_report', name='indicator_report'),
     url(r'^program_report/(?P<program>\w+)/$', 'indicators.views.programIndicatorReport', name='programIndicatorReport'),
 
     #Indicator Form
@@ -31,11 +31,11 @@ urlpatterns = patterns('',
     url(r'^collecteddata_delete/(?P<pk>\w+)/$', CollectedDataDelete.as_view(), name='collecteddata_delete'),
 
     #Indicator Data Report
-    url(r'^data/(?P<id>\w+)/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
-    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/map/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
-    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/graph/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
-    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/table/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
-    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
-    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/$', 'indicators.views.indicatorDataReport', name='indicatorDataReport'),
+    url(r'^data/(?P<id>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
+    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/map/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
+    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/graph/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
+    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/table/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
+    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
+    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     
 )
