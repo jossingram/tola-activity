@@ -191,6 +191,16 @@
         </button>
         </div>
     </ul>
+    {% if getChecklistCount %}
+        <div class="list-group">
+          <a href="#" class="list-group-item active">
+            Cras justo odio
+          </a>
+          {% for item in getChecklist %}
+            <a href="#" class="list-group-item">{{ item.item }} {% if item.infile %} <span class="glyphicon glyphicon-check"></span>{% else %}<span class="glyphicon glyphicon-unchecked"></span>{% endif %}</a>
+          {% endfor %}
+        </div>
+    {% endif %}
 {% endif %}
 >>>>>>> 77c14e0c1799596357dd63ab143f2e40c632c3dc
 

@@ -1021,6 +1021,7 @@ class BeneficiaryAdmin(admin.ModelAdmin):
 class ChecklistItem(models.Model):
     item = models.CharField(max_length=255, null=True, blank=True)
     country = models.ForeignKey(Country,null=True,blank=True)
+    global_item = models.BooleanField()
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
