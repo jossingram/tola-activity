@@ -27,7 +27,7 @@ def getAllData():
             try:
                 Checklist.objects.get(agreement=item)
             except Checklist.DoesNotExist:
-                new_checklist = Checklist(agreement=item)
+                new_checklist = Checklist(agreement=item,in_file=False,not_applicable=False)
                 new_checklist.save()
             print item
 

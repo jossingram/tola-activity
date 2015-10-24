@@ -84,7 +84,6 @@ class ProjectDash(ListView):
             getChecklist = Checklist.objects.all().filter(agreement_id=self.kwargs['pk'])
 
 
-
         if int(self.kwargs['pk']) == 0:
             getProgram =Program.objects.all().filter(funding_status="Funded", country__in=countries)
         else:

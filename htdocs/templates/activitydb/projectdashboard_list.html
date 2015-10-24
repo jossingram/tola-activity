@@ -138,10 +138,10 @@
     {% if getChecklistCount %}
         <div class="list-group">
           <a href="#" class="list-group-item active">
-            Cras justo odio
+              Project Checklist
           </a>
           {% for item in getChecklist %}
-            <a href="#" class="list-group-item">{{ item.item }} {% if item.infile %} <span class="glyphicon glyphicon-check"></span>{% else %}<span class="glyphicon glyphicon-unchecked"></span>{% endif %}</a>
+            <a href="#" class="list-group-item"><a href="/activitydb/checklist_update/{{ item.id }}/">{{ item.item }}</a> {% if item.infile %} <span class="glyphicon glyphicon-check"></span>{% else %}<span class="glyphicon glyphicon-unchecked"></span>{% endif %}</a>
           {% endfor %}
         </div>
     {% endif %}
