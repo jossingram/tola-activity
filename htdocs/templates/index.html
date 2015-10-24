@@ -169,13 +169,13 @@ $(function () {
         <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <p><b>Communities {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>
+                    <p><b>Sites {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>
                     <style>
                         #map { height: 350px; }
                     </style>
                     <div id="map"></div>
 
-                    {% include "small_community_map.html" %}
+                    {% include "small_site_profile_map.html" %}
 
                 </div>
             </div>

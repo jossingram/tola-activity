@@ -2,13 +2,13 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from django.views.generic import TemplateView
-from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact
+from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact
 from indicators.models import CollectedData
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistForm, StakeholderForm, ContactForm
+from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistForm, StakeholderForm, ContactForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -78,7 +78,7 @@ class ProjectDash(ListView):
             except ProjectComplete.DoesNotExist:
                 getComplete = None
             getDocumentCount = Documentation.objects.all().filter(project_id=self.kwargs['pk']).count()
-            getCommunityCount = Community.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
+            getCommunityCount = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
             getTrainingCount = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
             getChecklistCount = Checklist.objects.all().filter(agreement_id=self.kwargs['pk']).count()
             getChecklist = Checklist.objects.all().filter(agreement_id=self.kwargs['pk'])
@@ -435,11 +435,11 @@ class ProjectCompleteCreate(CreateView):
         }
 
         try:
-            getCommunites = Community.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
+            getCommunites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
             communites = {'community': [o for o in getCommunites],}
             initial = pre_initial.copy()
             initial.update(communites)
-        except Community.DoesNotExist:
+        except SiteProfile.DoesNotExist:
             getCommunites = None
 
         return initial
@@ -831,20 +831,20 @@ class DocumentationDelete(DeleteView):
     form_class = DocumentationForm
 
 
-class CommunityList(ListView):
+class SiteProfileList(ListView):
     """
-    Community list creates a map and list of communites by user country access and filters
+    SiteProfile list creates a map and list of communites by user country access and filters
     by either direct link from project or by program dropdown filter
     """
-    model = Community
-    template_name = 'activitydb/community_list.html'
+    model = SiteProfile
+    template_name = 'activitydb/site_profile_list.html'
 
     def dispatch(self, request, *args, **kwargs):
         if request.GET.has_key('report'):
-            template_name = 'activitydb/community_report.html'
+            template_name = 'activitydb/site_profile_report.html'
         else:
-            template_name = 'activitydb/community_list.html'
-        return super(CommunityList, self).dispatch(request, *args, **kwargs)
+            template_name = 'activitydb/site_profile_list.html'
+        return super(SiteProfileList, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         activity_id = int(self.kwargs['activity_id'])
@@ -852,20 +852,20 @@ class CommunityList(ListView):
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-        #Filter Community list and map by activity or program
+        #Filter SiteProfile list and map by activity or program
         if activity_id != 0:
-            getCommunity = Community.objects.all().filter(projectagreement__id=activity_id).distinct()
+            getCommunity = SiteProfile.objects.all().filter(projectagreement__id=activity_id).distinct()
         elif program_id != 0:
             print "program"
-            getCommunity = Community.objects.all().filter(Q(projectagreement__program__id=program_id)).distinct()
+            getCommunity = SiteProfile.objects.all().filter(Q(projectagreement__program__id=program_id)).distinct()
         else:
-            getCommunity = Community.objects.all().filter(country__in=countries).distinct()
+            getCommunity = SiteProfile.objects.all().filter(country__in=countries).distinct()
 
         if request.method == "GET" and "search" in request.GET:
             """
              fields = ('name', 'office')
             """
-            getCommunity = Community.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
+            getCommunity = SiteProfile.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
                                                             Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
                                                              Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related().distinct()
 
@@ -874,38 +874,38 @@ class CommunityList(ListView):
 
 class CommunityReport(ListView):
     """
-    Community Report filtered by project
+    SiteProfile Report filtered by project
     """
-    model = Community
-    template_name = 'activitydb/community_report.html'
+    model = SiteProfile
+    template_name = 'activitydb/site_profile_report.html'
 
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
         project_agreement_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
-            getCommunity = Community.objects.all()
+            getCommunity = SiteProfile.objects.all()
         else:
-            getCommunity = Community.objects.all().filter(projectagreement__id=self.kwargs['pk'])
+            getCommunity = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk'])
 
         id=self.kwargs['pk']
 
         return render(request, self.template_name, {'getCommunity':getCommunity,'project_agreement_id': project_agreement_id,'id':id,'country': countries})
 
 
-class CommunityCreate(CreateView):
+class SiteProfileCreate(CreateView):
     """
-    Community Form create a new community
+    Using SiteProfile Form, create a new site profile
     """
-    model = Community
+    model = SiteProfile
 
     @method_decorator(group_required('Editor',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
-        return super(CommunityCreate, self).dispatch(request, *args, **kwargs)
+        return super(SiteProfileCreate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(CommunityCreate, self).get_form_kwargs()
+        kwargs = super(SiteProfileCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
@@ -931,17 +931,17 @@ class CommunityCreate(CreateView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'Success, Community Created!')
+        messages.success(self.request, 'Success, Site Profile Created!')
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = CommunityForm
+    form_class = SiteProfileForm
 
 
 class CommunityUpdate(UpdateView):
     """
-    Community Form Update an existing community
+    SiteProfile Form Update an existing site profile
     """
-    model = Community
+    model = SiteProfile
 
     # add the request to the kwargs
     def get_form_kwargs(self):
@@ -961,19 +961,19 @@ class CommunityUpdate(UpdateView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'Success, Community Updated!')
+        messages.success(self.request, 'Success, SiteProfile Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = CommunityForm
+    form_class = SiteProfileForm
 
 
-class CommunityDelete(DeleteView):
+class SiteProfileDelete(DeleteView):
     """
-    Community Form Delete an existing community
+    SiteProfile Form Delete an existing community
     """
-    model = Community
-    success_url = "/activitydb/community_list/0/0/"
+    model = SiteProfile
+    success_url = "/activitydb/siteprofile_list/0/0/"
 
     def form_invalid(self, form):
 
@@ -985,10 +985,10 @@ class CommunityDelete(DeleteView):
 
         form.save()
 
-        messages.success(self.request, 'Success, Community Deleted!')
+        messages.success(self.request, 'Success, SiteProfile Deleted!')
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = CommunityForm
+    form_class = SiteProfileForm
 
 
 class MonitorList(ListView):

@@ -332,7 +332,7 @@ class SectorAdmin(admin.ModelAdmin):
     display = 'ProfileType'
 
 
-class Community(models.Model):
+class SiteProfile(models.Model):
     name = models.CharField("Profile Name", max_length=255, blank=True, null=True)
     type = models.ForeignKey(ProfileType, blank=True, null=True)
     office = models.ForeignKey(Office, default="1")
@@ -388,7 +388,7 @@ class Community(models.Model):
 
     class Meta:
         ordering = ('name',)
-        verbose_name_plural = "Communities"
+        verbose_name_plural = "Site Profiles"
 
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
@@ -396,7 +396,7 @@ class Community(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         self.code = str(self.country.code) + "-" + str(self.office.code) + "-" + str(self.name)
-        super(Community, self).save()
+        super(SiteProfile, self).save()
 
     #displayed in admin templates
     def __unicode__(self):
@@ -406,7 +406,7 @@ class Community(models.Model):
 
 class CommunityAdmin(admin.ModelAdmin):
     list_display = ('name', 'code','office', 'country', 'district', 'province', 'village', 'cluster', 'longitude', 'latitude', 'create_date', 'edit_date')
-    display = 'Community'
+    display = 'SiteProfile'
 
 
 class Capacity(models.Model):
@@ -607,7 +607,7 @@ class ProjectAgreement(models.Model):
     project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
     project_description = models.TextField("Project Description", help_text='Description must meet the Criteria.  Will translate description into three languages: English, Dari and Pashto)', blank=True, null=True)
-    community = models.ManyToManyField(Community, blank=True)
+    community = models.ManyToManyField(SiteProfile, blank=True)
     community_rep = models.CharField("Community Representative", max_length=255, blank=True, null=True)
     community_rep_contact = models.CharField("Community Representative Contact", help_text='Can have mulitple contact numbers', max_length=255, blank=True, null=True)
     community_mobilizer = models.CharField("Community Mobilizer", max_length=255, blank=True, null=True)
@@ -749,7 +749,7 @@ class ProjectComplete(models.Model):
     capacity_built = models.CharField("What capacity was built to ensure sustainability?", max_length=255, blank=True, null=True)
     issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)", blank=True, null=True)
     lessons_learned= models.TextField("Lessons learned", blank=True, null=True)
-    community = models.ManyToManyField(Community, blank=True)
+    community = models.ManyToManyField(SiteProfile, blank=True)
     estimated_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="estimating_complete")
     checked_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="checking_complete")
     reviewed_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="reviewing_complete")
@@ -993,7 +993,7 @@ class Beneficiary(models.Model):
     father_name = models.CharField(max_length=255, null=True, blank=True)
     age = models.IntegerField(null=True, blank=True)
     gender = models.CharField(max_length=255, null=True, blank=True)
-    community = models.ForeignKey(Community, null=True, blank=True)
+    community = models.ForeignKey(SiteProfile, null=True, blank=True)
     signature = models.BooleanField(default=True)
     remarks = models.CharField(max_length=255, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)

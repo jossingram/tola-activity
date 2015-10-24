@@ -1,10 +1,10 @@
 from .serializers import UserSerializer, ProgramSerializer, SectorSerializer, ProjectTypeSerializer, OfficeSerializer, \
-    CommunitySerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer, IndicatorSerializer, ReportingFrequencySerializer, TolaUserSerializer, IndicatorTypeSerializer, ObjectiveSerializer, DisaggregationTypeSerializer, LevelSerializer
+    SiteProfileSerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer, IndicatorSerializer, ReportingFrequencySerializer, TolaUserSerializer, IndicatorTypeSerializer, ObjectiveSerializer, DisaggregationTypeSerializer, LevelSerializer
 
 from django.contrib.auth.decorators import login_required
 import json as simplejson
 from tola.util import siloToDict
-from activitydb.models import Program, Sector, ProjectType, Office, Community, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
+from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, Level
 
 from django.contrib import messages
@@ -65,13 +65,13 @@ class OfficeViewSet(viewsets.ModelViewSet):
     serializer_class = OfficeSerializer
 
 
-class CommunityViewSet(viewsets.ModelViewSet):
+class SiteProfileViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-    queryset = Community.objects.all()
-    serializer_class = CommunitySerializer
+    queryset = SiteProfile .objects.all()
+    serializer_class = SiteProfileSerializer
 
 
 class CountryViewSet(viewsets.ModelViewSet):

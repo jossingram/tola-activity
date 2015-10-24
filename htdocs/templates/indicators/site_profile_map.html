@@ -8,7 +8,7 @@
     var country=[];
     var country_lat=[];
     var country_long=[];
-    {% for item in country %}
+    {% for item in countries %}
         country[{{forloop.counter}}] = "{{ item.country }}";
         country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
         country_long[{{forloop.counter}}] = "{{ item.longitude }}";
@@ -165,7 +165,8 @@
 
 
     {% for item in getCommunity %}
-        L.marker([{{ item.latitude }}, {{ item.longitude }}]).addTo(map).bindPopup("" + "<b>{{ item.country }}</b> <a href='/activitydb/community_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> Community: {{ item.name }} <br/> ").openPopup();
+        {{ item.agreement }}
+        L.marker([{{ item.agreement.community.latitude }}, {{ item.agreement.community.longitude }}]).addTo(map).bindPopup("" + "<b>{{ item.agreement.community.country }}</b> <a href='/activitydb/community_update/{{ item.agreement.community.id }}'>{{ item.agreement.community.name }}</a> <br/>Province: {{ item.agreement.community.province }} <br/>District: {{ item.agreement.community.district }} <br/> Village: {{ item.agreement.community.village }} <br/> SiteProfile{{ item.agreement.community.name }} <br/> ").openPopup();
     {%   endfor %}
 
 

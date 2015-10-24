@@ -1,6 +1,6 @@
 from feed import views
 from tola import views
-from feed.views import UserViewSet, ProgramViewSet, SectorViewSet, ProjectTypeViewSet, OfficeViewSet, CommunityViewSet, AgreementViewSet, \
+from feed.views import UserViewSet, ProgramViewSet, SectorViewSet, ProjectTypeViewSet, OfficeViewSet, SiteProfileViewSet, AgreementViewSet, \
     CompleteViewSet, CountryViewSet, ProjectTypeOtherViewSet, IndicatorViewSet, ReportingFrequencyViewSet, TolaUserViewSet, IndicatorTypeViewSet, ObjectiveViewSet, DisaggregationTypeViewSet, LevelViewSet
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
@@ -23,7 +23,7 @@ router.register(r'programs', ProgramViewSet)
 router.register(r'sector', SectorViewSet)
 router.register(r'projecttype', ProjectTypeViewSet)
 router.register(r'office', OfficeViewSet)
-router.register(r'community', CommunityViewSet)
+router.register(r'siteprofile', SiteProfileViewSet)
 router.register(r'country', CountryViewSet)
 router.register(r'agreements', AgreementViewSet)
 router.register(r'completes', CompleteViewSet)

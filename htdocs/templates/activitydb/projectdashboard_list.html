@@ -112,6 +112,62 @@
                           {% endif %}
                         </button>
                     {% endif %}
+<<<<<<< HEAD
+                    </button>
+                {% endif %}
+             </li>
+        </ul>
+    {% endif %}
+    {% if getComplete %}
+        <ul class="list-group">
+            <li class="list-group-item list-group-item-info">
+                <h4>Project Completion</h4>
+            </li>
+            <li class="list-group-item"><b>Name: </b>{{ getComplete.project_name }}<br/>
+                <b>Activity Code: </b>{{ getComplete.activity_code }}<br/>
+                <b>Created:</b> <span class="date-badge">{{ getComplete.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ getComplete.edit_date|date }}</span>
+            </li>
+            <li class="list-group-item">
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectcomplete_update/{{ getComplete.id }}'">Update Completion</button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectcomplete_delete/{{ getComplete.id }}'">Delete Completion</button>
+                </div>
+            </li>
+            <li class="list-group-item">
+                {% if getComplete.approval == "approved" %}
+                    <button class="btn btn-success" type="button">
+                      Approved
+                    </button>
+                {% else %}
+                    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/projectcomplete_update/{{ getComplete.id }}'">
+                      {% if getComplete.approval %}
+                        {{ getComplete.approval|title }}
+                      {% else %}
+                        Open
+                      {% endif %}
+                    </button>
+                {% endif %}
+             </li>
+        </ul>
+    {% endif %}
+    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/documentation_list/{{ getAgreement.id }}'">
+        Documents <span class="badge">{{ getDocumentCount }}</span>
+    </button>
+    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/siteprofile_list/0/{{ getAgreement.id }}'">
+        Sites <span class="badge">{{ getCommunityCount }}</span>
+    </button>
+    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/training_list/{{ getAgreement.id }}'">
+        Training <span class="badge">{{ getTrainingCount }}</span>
+    </button>
+    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/monitor_list/{{ getAgreement.id }}'">
+        Project Planning <span class="badge">{{ getMonitoringCount }}</span>
+    </button>
+    <button class="btn btn-primary" type="button" onclick="location.href='/activitydb/checklist_list/{{ getAgreement.id }}'">
+        Checklist <span class="badge">{{ getChecklistCount }}</span>
+    </button>
+    </div>
+</ul>
+=======
                  </li>
             </ul>
         {% endif %}
@@ -146,6 +202,7 @@
         </div>
     {% endif %}
 {% endif %}
+>>>>>>> 77c14e0c1799596357dd63ab143f2e40c632c3dc
 
 <!-- Modal -->
 <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
