@@ -76,6 +76,7 @@ urlpatterns = patterns('',
                        url(r'^checklist_list/(?P<pk>\w+)/$', ChecklistList.as_view(), name='checklist_list'),
                        url(r'^checklist_add/(?P<id>\w+)/$', ChecklistCreate.as_view(), name='checklist_add'),
                        url(r'^checklist_update/(?P<pk>\w+)/$', ChecklistUpdate.as_view(), name='checklist_update'),
+                       url(r'^checklist_update_link/(?P<pk>\w+)/(?P<type>\w+)/(?P<value>\w+)/$', 'activitydb.views.checklist_update_link', name='checklist_update_link'),
                        url(r'^checklist_delete/(?P<pk>\w+)/$', ChecklistDelete.as_view(), name='checklistdelete'),
 
                        url(r'^beneficiary_list/(?P<pk>\w+)/$', BeneficiaryList.as_view(), name='beneficiary_list'),

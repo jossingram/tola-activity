@@ -133,14 +133,14 @@ class ProjectAgreementCreateForm(forms.ModelForm):
             TabHolder(
                    Tab('Executive Summary',
                         Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
-                                 'project_type','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
+                                 'project_type','site','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
                         ),
 
                     ),
                     Tab('Community Proposal',
                         Fieldset(
                             'Community',
-                            'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
+                            'community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
                             'community_proposal',
                         ),
                         Fieldset(
@@ -167,7 +167,7 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
         #override the community queryset to use request.user for country
-        self.fields['community'].queryset = SiteProfile.objects.filter(country__in=countries)
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         #override the stakeholder queryset to use request.user for country
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
@@ -500,7 +500,7 @@ class ProjectAgreementForm(forms.ModelForm):
         #override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
-        #override the community queryset to use request.user for country
+        #override the site queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         #override the stakeholder queryset to use request.user for country
@@ -614,7 +614,7 @@ class ProjectCompleteForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'project_activity','community'
+                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'project_activity','site'
                     ),
                     Fieldset(
                         'Dates',
@@ -741,7 +741,7 @@ class ProjectCompleteForm(forms.ModelForm):
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
         #override the community queryset to use request.user for country
-        self.fields['community'].queryset = SiteProfile.objects.filter(country__in=countries)
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"

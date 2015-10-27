@@ -211,7 +211,11 @@ class ProjectAgreementCreate(CreateView):
         create_dashboard_entry.save()
 
         create_checklist = Checklist(agreement=getAgreement)
-        create_dashboard_entry.save()
+        create_checklist.save()
+
+        get_globals = ChecklistItem.objects.all().filter(global_item=True)
+        for item in get_globals:
+            ChecklistItem.objects.create(create_checklist=create_checklist,item=item.item, in_file=False,not_applicable=False)
 
         messages.success(self.request, 'Success, Agreement Created!')
         redirect_url = '/activitydb/projectagreement_update/' + str(latest.id)
@@ -1856,7 +1860,7 @@ class ChecklistUpdate(UpdateView):
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(ChecklistCreate, self).get_form_kwargs()
+        kwargs = super(ChecklistUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
@@ -1871,6 +1875,19 @@ class ChecklistUpdate(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ChecklistForm
+
+
+def checklist_update_link(request,pk,type,value):
+    """
+    Checklist Update from Link To Update if a Task is Done
+    """
+    if type == "in_file":
+        update = Checklist.objects.filter(id=pk).update(in_file=value)
+    elif type == "not_applicable":
+        update = Checklist.objects.filter(id=pk).update(not_applicable=value)
+
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 class ChecklistDelete(DeleteView):
