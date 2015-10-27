@@ -1882,10 +1882,14 @@ def checklist_update_link(request,pk,type,value):
     """
     Checklist Update from Link To Update if a Task is Done
     """
+    if value == 1:
+        value=True
+    else:
+        value=False
     if type == "in_file":
-        update = Checklist.objects.filter(id=pk).update(in_file=value)
+        update = ChecklistItem.objects.filter(id=pk).update(in_file=value)
     elif type == "not_applicable":
-        update = Checklist.objects.filter(id=pk).update(not_applicable=value)
+        update = ChecklistItem.objects.filter(id=pk).update(not_applicable=value)
 
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

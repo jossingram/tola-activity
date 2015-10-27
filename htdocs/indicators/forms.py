@@ -43,7 +43,7 @@ class IndicatorForm(forms.ModelForm):
             TabHolder(
                 Tab('Summary',
                      Fieldset('',
-                        'program','sector','objectives',
+                        'program','sector','objectives','strategic_objectives'
                         ),
                 ),
                 Tab('Performance',

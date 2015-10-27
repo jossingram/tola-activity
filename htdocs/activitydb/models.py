@@ -625,8 +625,6 @@ class ProjectAgreement(models.Model):
     partners = models.BooleanField("Are there partners involved?", default=0)
     name_of_partners = models.CharField("Name of Partners", max_length=255, blank=True, null=True)
     stakeholder = models.ManyToManyField(Stakeholder, blank=True)
-    program_objectives = models.TextField("What Program Objectives does this help fulfill?", blank=True, null=True)
-    mc_objectives = models.TextField("What strategic Objectives does this help fulfill?", blank=True, null=True)
     effect_or_impact = models.TextField("What is the anticipated Outcome or Goal?", blank=True, null=True)
     expected_start_date = models.DateTimeField("Expected starting date", blank=True, null=True)
     expected_end_date = models.DateTimeField("Expected ending date",blank=True, null=True)
