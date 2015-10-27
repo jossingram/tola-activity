@@ -567,7 +567,7 @@ class TemplateAdmin(admin.ModelAdmin):
 
 
 class Stakeholder(models.Model):
-    name = models.CharField("Stakholder/Organization Name", max_length=255, blank=True, null=True)
+    name = models.CharField("Stakeholder/Organization Name", max_length=255, blank=True, null=True)
     type = models.ForeignKey(StakeholderType)
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
     country = models.ForeignKey(Country)
