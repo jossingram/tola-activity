@@ -150,7 +150,7 @@
             {% for item in getChecklist %}
             <tr>
                 <td>
-                    <a href="/activitydb/checklist_update/{{ item.id }}/">{{ item.item }}</a>
+                    {{ item.item }}
                 </td>
                 <td>
                     {% if item.in_file == True%} <a href="/activitydb/checklist_update_link/{{ item.id }}/in_file/0"><span class="glyphicon glyphicon-check"></span></a>{% else %}<a href="/activitydb/checklist_update_link/{{ item.id }}/in_file/1"><span class="glyphicon glyphicon-unchecked"></span></a>{% endif %}

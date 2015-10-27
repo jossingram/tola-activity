@@ -145,7 +145,6 @@ class ProjectAgreementForm(forms.ModelForm):
     estimated_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     finance_reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     exchange_rate_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
 
     documentation_government_approval = forms.FileField(required=False)
     documentation_community_approval = forms.FileField(required=False)
