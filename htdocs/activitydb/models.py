@@ -1018,37 +1018,10 @@ class BeneficiaryAdmin(admin.ModelAdmin):
     list_display = ('beneficiary_name', 'father_name', 'age', 'gender', 'community', 'signature', 'remarks', 'initials')
 
 
-class ChecklistItem(models.Model):
-    item = models.CharField(max_length=255, null=True, blank=True)
-    country = models.ForeignKey(Country,null=True,blank=True)
-    global_item = models.BooleanField()
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('item',)
-
-    #onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(ChecklistItem, self).save()
-
-    #displayed in admin templates
-    def __unicode__(self):
-        return unicode(self.item)
-
-
-class ChecklistItemAdmin(admin.ModelAdmin):
-    list_display = ('agreement')
-
-
 class Checklist(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True,default="Checklist")
     agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
-    item = models.ForeignKey(ChecklistItem, null=True, blank=True)
-    in_file = models.BooleanField()
-    not_applicable = models.BooleanField()
+    country = models.ForeignKey(Country,null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -1068,7 +1041,35 @@ class Checklist(models.Model):
 
 
 class ChecklistAdmin(admin.ModelAdmin):
-    list_display = ('agreement')
+    list_display = ('name','agreement','country')
+
+
+class ChecklistItem(models.Model):
+    item = models.CharField(max_length=255, null=True, blank=True)
+    checklist = models.ForeignKey(Checklist)
+    in_file = models.BooleanField(default=False)
+    not_applicable = models.BooleanField(default=False)
+    global_item = models.BooleanField(default=False)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('item',)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ChecklistItem, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.item)
+
+
+class ChecklistItemAdmin(admin.ModelAdmin):
+    list_display = ('item','checklist','in_file')
 
 
 # Documentation

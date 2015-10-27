@@ -81,7 +81,7 @@ class ProjectDash(ListView):
             getCommunityCount = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
             getTrainingCount = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
             getChecklistCount = Checklist.objects.all().filter(agreement_id=self.kwargs['pk']).count()
-            getChecklist = Checklist.objects.all().filter(agreement_id=self.kwargs['pk'])
+            getChecklist = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk'])
 
 
         if int(self.kwargs['pk']) == 0:
@@ -213,12 +213,13 @@ class ProjectAgreementCreate(CreateView):
         create_checklist = Checklist(agreement=getAgreement)
         create_checklist.save()
 
+        get_checklist = Checklist.objects.get(id=create_checklist.id)
         get_globals = ChecklistItem.objects.all().filter(global_item=True)
         for item in get_globals:
-            ChecklistItem.objects.create(create_checklist=create_checklist,item=item.item, in_file=False,not_applicable=False)
+            ChecklistItem.objects.create(checklist=get_checklist,item=item.item)
 
         messages.success(self.request, 'Success, Agreement Created!')
-        redirect_url = '/activitydb/projectagreement_update/' + str(latest.id)
+        redirect_url = '/activitydb/dashboard/project/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
     form_class = ProjectAgreementCreateForm

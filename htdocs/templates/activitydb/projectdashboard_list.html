@@ -146,8 +146,9 @@
                 <th>Is In the File?</th>
                 <th>Not Applicable?</th>
             </tr>
-            <tr>
+
             {% for item in getChecklist %}
+            <tr>
                 <td>
                     <a href="/activitydb/checklist_update/{{ item.id }}/">{{ item.item }}</a>
                 </td>
@@ -157,8 +158,8 @@
                 <td>
                     {% if item.not_applicable == True%} <a href="/activitydb/checklist_update_link/{{ item.id }}/not_applicable/0"><span class="glyphicon glyphicon-check"></span></a>{% else %}<a href="/activitydb/checklist_update_link/{{ item.id }}/not_applicable/1"><span class="glyphicon glyphicon-unchecked"></span></a>{% endif %}
                 </td>
-            {% endfor %}
             </tr>
+            {% endfor %}
         </table>
         </a>
     </div>
