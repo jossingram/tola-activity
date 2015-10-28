@@ -1,6 +1,6 @@
 from django.forms import widgets
 from rest_framework import serializers
-from activitydb.models import Program, Sector, ProjectType, Office, Community, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
+from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, Level
 from django.contrib.auth.models import User
 
@@ -36,10 +36,10 @@ class OfficeSerializer(serializers.HyperlinkedModelSerializer):
         model = Office
 
 
-class CommunitySerializer(serializers.HyperlinkedModelSerializer):
+class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
-        model = Community
+        model = SiteProfile
 
 
 class CompleteSerializer(serializers.HyperlinkedModelSerializer):

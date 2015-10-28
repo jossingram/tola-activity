@@ -6,12 +6,13 @@ from functools import partial
 from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
-from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, Community, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province
+from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact
 from indicators.models import CollectedData, Indicator
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
+
 
 #Global for approvals
 APPROVALS=(
@@ -20,6 +21,7 @@ APPROVALS=(
         ('approved', 'approved'),
         ('rejected', 'rejected'),
     )
+
 
 #Global for Budget Variance
 BUDGET_VARIANCE=(
@@ -108,9 +110,6 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         model = ProjectAgreement
         fields = '__all__'
 
-    expected_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    expected_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-
     def __init__(self, *args, **kwargs):
 
         #get the user object from request to check permissions
@@ -125,48 +124,7 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = True
-        self.helper.layout = Layout(
-
-            HTML("""<p>Create a Summary first then add additional fields after saving</p><br/>"""),
-            TabHolder(
-                   Tab('Executive Summary',
-                        Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
-                                 'project_type','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
-                        ),
-
-                    ),
-                    Tab('Community Proposal',
-                        Fieldset(
-                            'Community',
-                            'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
-                            'community_proposal',PrependedText('has_rej_letter', ''), 'rejection_letter',
-                        ),
-                        Fieldset(
-                            'Partners',
-                            PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list',
-                        ),
-                    ),
-            ),
-            FormActions(
-                Submit('submit', 'Save', css_class='btn-default'),
-                Reset('reset', 'Reset', css_class='btn-warning')
-            ),
-
-            HTML("""<br/>"""),
-
-        )
         super(ProjectAgreementCreateForm, self).__init__(*args, **kwargs)
-
-        #override the program queryset to use request.user for country
-        countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
-
-        #override the office queryset to use request.user for country
-        self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
-
-        #override the community queryset to use request.user for country
-        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
-
 
 class ProjectAgreementForm(forms.ModelForm):
 
@@ -187,7 +145,6 @@ class ProjectAgreementForm(forms.ModelForm):
     estimated_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     finance_reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     exchange_rate_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
 
     documentation_government_approval = forms.FileField(required=False)
     documentation_community_approval = forms.FileField(required=False)
@@ -228,20 +185,9 @@ class ProjectAgreementForm(forms.ModelForm):
             TabHolder(
                 Tab('Executive Summary',
                     Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
-                             'project_type', 'project_type_other', 'mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
+                             'project_type', 'project_type_other', 'site','stakeholder','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
                     ),
 
-                ),
-                Tab('Community Proposal',
-                    Fieldset(
-                        'Community',
-                        'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact','community_project_description'
-                        'community_proposal',PrependedText('has_rej_letter', ''),
-                    ),
-                    Fieldset(
-                        'Partners',
-                        PrependedText('partners',''), 'name_of_partners', 'external_stakeholder_list',
-                    ),
                 ),
                 Tab('Budget',
                      Fieldset(
@@ -288,23 +234,17 @@ class ProjectAgreementForm(forms.ModelForm):
                 ),
 
                 Tab('Justification and Description',
-                    Fieldset(
-                        'Justification',
-                        Field('mc_objectives'),Field('program_objectives'),Field('effect_or_impact'),
-                        Field('justification_background', rows="3", css_class='input-xlarge'),
-                        Field('justification_description_community_selection', rows="3", css_class='input-xlarge'),
-                    ),
                      Fieldset(
                         'Description',
-                        Field('description_of_project_activities', rows="3", css_class='input-xlarge'),
-                        Field('description_of_government_involvement', rows="3", css_class='input-xlarge'),
-                        'documentation_government_approval',
-                        Field('description_of_community_involvement', rows="3", css_class='input-xlarge'),
-                        'documentation_community_approval',
+                        Field('description_of_project_activities', rows="4", css_class='input-xlarge'),
 
                     ),
+                    Fieldset(
+                        'Justification',
+                        Field('effect_or_impact',rows="4", css_class='input-xlarge', label="Anticipated Outcome and Goal"),
+                    ),
                 ),
-                Tab('Planning',
+                Tab('M&E',
                     Fieldset(
                         '',
                         MultiField(
@@ -366,19 +306,18 @@ class ProjectAgreementForm(forms.ModelForm):
                                         <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ pk }}">Add Benchmarks</a>
                                       </div>
                                     </div>
+
                                      """),
 
                             'capacity',
                         ),
                     ),
-                ),
-                 Tab('M&E',
                     Fieldset(
                         '',
                         MultiField(
                             '',
                             HTML("""
-
+                                    <br/>
                                     <div class='panel panel-default'>
                                       <!-- Default panel contents -->
                                       <div class='panel-heading'>Monitoring</div>
@@ -412,26 +351,6 @@ class ProjectAgreementForm(forms.ModelForm):
                     ),
                 ),
 
-
-                Tab('Project Impact',
-                     Fieldset(
-                        'Beneficiaries',
-                        'beneficiary_type','estimated_num_direct_beneficiaries', 'average_household_size', 'estimated_num_indirect_beneficiaries',
-                     ),
-                     Fieldset(
-                         'Training',
-                         'estimate_male_trained','estimate_female_trained','estimate_total_trained','estimate_trainings',
-                     ),
-                     Fieldset(
-                         'Distribution',
-                         'distribution_type','distribution_uom','distribution_estimate',
-                     ),
-                     Fieldset(
-                         'Cash For Work',
-                         'cfw_estimate_male','cfw_estimate_female','cfw_estimate_total','cfw_estimate_project_days','cfw_estimate_person_days',
-                         'cfw_estimate_cost_materials','cfw_estimate_wages_budgeted',
-                     ),
-                ),
                 Tab('Approval',
                     Fieldset('Approval',
                              'approval', 'estimated_by','estimated_by_date', 'reviewed_by','reviewed_by_date',
@@ -495,8 +414,11 @@ class ProjectAgreementForm(forms.ModelForm):
         #override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
-        #override the community queryset to use request.user for country
-        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
+        #override the site queryset to use request.user for country
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
+
+        #override the stakeholder queryset to use request.user for country
+        self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
@@ -539,7 +461,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','project_activity','community'
+                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','project_activity','site'
                     ),
                     Fieldset(
                         'Dates',
@@ -606,7 +528,7 @@ class ProjectCompleteForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'project_activity','community'
+                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'project_activity','site'
                     ),
                     Fieldset(
                         'Dates',
@@ -733,7 +655,7 @@ class ProjectCompleteForm(forms.ModelForm):
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
         #override the community queryset to use request.user for country
-        self.fields['community'].queryset = Community.objects.filter(country__in=countries)
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
@@ -743,10 +665,10 @@ class ProjectCompleteForm(forms.ModelForm):
             self.fields['approval'].help_text = "Approval level permissions required"
 
 
-class CommunityForm(forms.ModelForm):
+class SiteProfileForm(forms.ModelForm):
 
     class Meta:
-        model = Community
+        model = SiteProfile
         exclude = ['create_date', 'edit_date']
 
     map = forms.CharField(widget=GoogleMapsWidget(
@@ -780,22 +702,23 @@ class CommunityForm(forms.ModelForm):
                     Fieldset('Description',
                         'code', 'name', 'type', 'office', PrependedText('existing_village',''), 'existing_village_descr',
                     ),
-                    Fieldset('Community',
+                    Fieldset('Community Info',
                         'community_leader', 'head_of_institution', 'date_of_firstcontact', 'contact_number', 'num_members',
                     ),
                 ),
                 Tab('Location',
                     Fieldset('Places',
-                        'country','province','district','village', Field('latitude', step="any"), Field('longitude', step="any"),'altitude', 'precision',
+                        'country','province','district','village', Field('latitude', step="any"), Field('longitude', step="any"),
                     ),
                     Fieldset('Map',
                         'map',
                     ),
-                    Fieldset('Distances',
-                        'distance_district_capital','distance_site_camp','distance_field_office',
-                    ),
+                   # Removed Distances fieldset from location tab
+                   # Fieldset('Distances',
+                   #      'distance_district_capital','distance_site_camp','distance_field_office',
+                   #  ),
                 ),
-                Tab('For Geographic Communities',
+                Tab('Demographic Information',
                     Fieldset('Households',
                         'total_num_households','avg_household_size', 'male_0_14', 'female_0_14', 'male_15_24', 'female_15_24',
                         'male_25_59', 'female_25_59', 'male_over_60', 'female_over_60', 'total_population',
@@ -807,12 +730,17 @@ class CommunityForm(forms.ModelForm):
                     Fieldset('Literacy',
                         'total_num_literate','literate_males','literate_females','literacy_rate',
                     ),
-                ),
-                Tab('Approval',
-                    Fieldset('Approval',
-                        'approval', 'filled_by', 'location_verified_by', 'approved_by',
+                    Fieldset('Demographic Info Data Source',
+                             'info_source'
                     ),
                 ),
+
+                # Remove the Approval tab from Site Profile
+                # Tab('Approval',
+                #    Fieldset('Approval',
+                #        'approval', 'filled_by', 'location_verified_by', 'approved_by',
+                #    ),
+                #),
             ),
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
@@ -823,7 +751,7 @@ class CommunityForm(forms.ModelForm):
             <br/>
             <div class='panel panel-default'>
               <!-- Default panel contents -->
-              <div class='panel-heading'>Projects in this Community</div>
+              <div class='panel-heading'>Projects in this Site</div>
               {% if getProjects %}
                   <!-- Table -->
                   <table class="table">
@@ -847,18 +775,18 @@ class CommunityForm(forms.ModelForm):
              """),
         )
 
-        super(CommunityForm, self).__init__(*args, **kwargs)
+        super(SiteProfileForm, self).__init__(*args, **kwargs)
 
         #override the office queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
         self.fields['province'].queryset = Province.objects.filter(country__in=countries)
 
-
-        if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
-            self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
-            self.fields['approval'].help_text = "Approval level permissions required"
+        # Remove approval validation
+          # if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
+          #  self.fields['approval'].widget.attrs['disabled'] = "disabled"
+          #  self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
+          #  self.fields['approval'].help_text = "Approval level permissions required"
 
 
 class DocumentationForm(forms.ModelForm):
@@ -919,7 +847,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
 
-                'targeted','achieved','indicator', Field('description', rows="3", css_class='input-xlarge'),'date_collected', 'agreement','program'
+                'targeted','indicator','agreement','program'
 
         )
 
@@ -1030,6 +958,55 @@ class TrainingAttendanceForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
         super(TrainingAttendanceForm, self).__init__(*args, **kwargs)
+
+
+class ContactForm(forms.ModelForm):
+
+    class Meta:
+        model = Contact
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.add_input(Submit('submit', 'Save'))
+
+        super(ContactForm, self).__init__(*args, **kwargs)
+
+
+class StakeholderForm(forms.ModelForm):
+
+    class Meta:
+        model = Stakeholder
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.add_input(Submit('submit', 'Save'))
+        self.helper.layout = Layout(
+
+            HTML("""<br/>"""),
+
+                'name', 'type', 'contact',HTML("""<a href="/activitydb/contact_add/0/" target="_new">Add New Contact</a>"""), 'country', 'sector', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document',
+
+        )
+
+        super(StakeholderForm, self).__init__(*args, **kwargs)
 
 
 class BeneficiaryForm(forms.ModelForm):

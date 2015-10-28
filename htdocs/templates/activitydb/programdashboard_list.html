@@ -15,8 +15,7 @@
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
     {% endfor %}
   </ul>
-  <a href="/activitydb/projectagreement_add" class="btn btn-large btn-success">New Project</a>
-    <a href="/activitydb/projectagreement_import" class="btn btn-large btn-info" data-toggle="modal" data-target="#importModal">Import Project</a>
+  <a href="/activitydb/dashboard/project/0/" class="btn btn-sm btn-success">Create a Project</a>
 </div>
 <br/>
 <div>
@@ -24,7 +23,7 @@
     {% for program in getDashboard %}
         {% if program.agreement.all %}
             <div class='panel panel-default'>
-                <div class='panel-heading'><h4><a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ program.gaitid }}" target=_new">GAITID: {{ program.gaitid }}</a> - {{ program.name }}</h4></div>
+                <div class='panel-heading'><h4><a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ program.gaitid }}" target=_new">GAITID: {{ program.gaitid }}</a> - {{ program.name|truncatechars:80 }}</h4></div>
                 <!-- Table -->
                 <table class="table table-striped">
                     <tr>

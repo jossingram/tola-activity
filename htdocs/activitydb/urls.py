@@ -1,9 +1,9 @@
 from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, ProjectAgreementUpdate, ProjectAgreementDetail, ProjectAgreementDelete, ProjectAgreementImport, ProjectCompleteCreate, ProjectCompleteUpdate,\
-    ProjectCompleteList, ProjectCompleteDelete, ProjectCompleteImport, CommunityList, CommunityCreate, CommunityUpdate, CommunityDelete,\
+    ProjectCompleteList, ProjectCompleteDelete, ProjectCompleteImport, SiteProfileList, SiteProfileCreate, SiteProfileUpdate, SiteProfileDelete,\
     DocumentationList, DocumentationCreate, DocumentationAgreementCreate,DocumentationAgreementUpdate,DocumentationAgreementDelete, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
     BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
-    BeneficiaryDelete, ProjectCompleteDetail, CommunityReport, ChecklistCreate, ChecklistDelete, ChecklistUpdate, BudgetList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
-    ChecklistCreate, ChecklistDelete, ChecklistUpdate, ChecklistList, BudgetCreate, BudgetUpdate, BudgetDelete
+    BeneficiaryDelete, ProjectCompleteDetail, SiteProfileReport, ChecklistCreate, ChecklistDelete, ChecklistUpdate, BudgetList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
+    ChecklistCreate, ChecklistDelete, ChecklistUpdate, ChecklistList, BudgetCreate, BudgetUpdate, BudgetDelete, StakeholderList, StakeholderCreate, StakeholderDelete, StakeholderUpdate, ContactCreate, ContactList, ContactUpdate, ContactDelete
 
 from django.conf.urls import *
 
@@ -14,6 +14,8 @@ urlpatterns = patterns('',
                        ###activitydb
                        url(r'^dashboard/(?P<pk>\w+)/$', ProgramDash.as_view(), name='dashboard'),
                        url(r'^dashboard/project/(?P<pk>\w+)/$', ProjectDash.as_view(), name='project_dashboard'),
+                       url(r'^dashboard/project/(?P<pk>\w+)$', ProjectDash.as_view(), name='project_dashboard'),
+                       url(r'^dashboard/project', ProjectDash.as_view(), name='project_dashboard'),
 
                        url(r'^projectagreement_list/(?P<pk>\w+)/$', ProjectAgreementList.as_view(), name='projectagreement_list'),
                        url(r'^projectagreement_add/$', ProjectAgreementCreate.as_view(), name='projectagreement_add'),
@@ -29,11 +31,11 @@ urlpatterns = patterns('',
                        url(r'^projectcomplete_import', ProjectCompleteImport.as_view(), name='projectcomplete_import'),
                        url(r'^projectcomplete_detail/(?P<pk>\w+)/$', ProjectCompleteDetail.as_view(), name='projectcomplete_detail'),
 
-                       url(r'^community_list/(?P<program_id>\w+)/(?P<activity_id>\w+)/$', CommunityList.as_view(), name='community_list'),
-                       url(r'^community_report/(?P<pk>\w+)/$', CommunityReport.as_view(), name='community_report'),
-                       url(r'^community_add', CommunityCreate.as_view(), name='community_add'),
-                       url(r'^community_update/(?P<pk>\w+)/$', CommunityUpdate.as_view(), name='community_update'),
-                       url(r'^community_delete/(?P<pk>\w+)/$', CommunityDelete.as_view(), name='community_delete'),
+                       url(r'^siteprofile_list/(?P<program_id>\w+)/(?P<activity_id>\w+)/$', SiteProfileList.as_view(), name='siteprofile_list'),
+                       url(r'^siteprofile_report/(?P<pk>\w+)/$', SiteProfileReport.as_view(), name='siteprofile_report'),
+                       url(r'^siteprofile_add', SiteProfileCreate.as_view(), name='siteprofile_add'),
+                       url(r'^siteprofile_update/(?P<pk>\w+)/$', SiteProfileUpdate.as_view(), name='siteprofile_update'),
+                       url(r'^siteprofile_delete/(?P<pk>\w+)/$', SiteProfileDelete.as_view(), name='siteprofile_delete'),
 
                        url(r'^documentation_list/(?P<pk>\w+)/$', DocumentationList.as_view(), name='documentation_list'),
                        url(r'^documentation_add', DocumentationCreate.as_view(), name='documentation_add'),
@@ -61,9 +63,20 @@ urlpatterns = patterns('',
                        url(r'^training_update/(?P<pk>\w+)/$', TrainingUpdate.as_view(), name='training_update'),
                        url(r'^training_delete/(?P<pk>\w+)/$', TrainingDelete.as_view(), name='training_delete'),
 
+                       url(r'^stakeholder_list/(?P<pk>\w+)/$', StakeholderList.as_view(), name='stakeholder_list'),
+                       url(r'^stakeholder_add/(?P<id>\w+)/$', StakeholderCreate.as_view(), name='stakeholder_add'),
+                       url(r'^stakeholder_update/(?P<pk>\w+)/$', StakeholderUpdate.as_view(), name='stakeholder_update'),
+                       url(r'^stakeholder_delete/(?P<pk>\w+)/$', StakeholderDelete.as_view(), name='stakeholder_delete'),
+
+                       url(r'^contact_list/(?P<pk>\w+)/$', ContactList.as_view(), name='contact_list'),
+                       url(r'^contact_add/(?P<id>\w+)/$', ContactCreate.as_view(), name='contact_add'),
+                       url(r'^contact_update/(?P<pk>\w+)/$', ContactUpdate.as_view(), name='contact_update'),
+                       url(r'^contact_delete/(?P<pk>\w+)/$', ContactDelete.as_view(), name='contact_delete'),
+
                        url(r'^checklist_list/(?P<pk>\w+)/$', ChecklistList.as_view(), name='checklist_list'),
                        url(r'^checklist_add/(?P<id>\w+)/$', ChecklistCreate.as_view(), name='checklist_add'),
                        url(r'^checklist_update/(?P<pk>\w+)/$', ChecklistUpdate.as_view(), name='checklist_update'),
+                       url(r'^checklist_update_link/(?P<pk>\w+)/(?P<type>\w+)/(?P<value>\w+)/$', 'activitydb.views.checklist_update_link', name='checklist_update_link'),
                        url(r'^checklist_delete/(?P<pk>\w+)/$', ChecklistDelete.as_view(), name='checklistdelete'),
 
                        url(r'^beneficiary_list/(?P<pk>\w+)/$', BeneficiaryList.as_view(), name='beneficiary_list'),

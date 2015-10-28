@@ -127,7 +127,7 @@ $(function () {
                     <h4>Tola-Activity Dashboard</h4>
                 </div>
                 <div style="float:right; display: inline-block; vertical-align: middle;">
-                    <a href="/activitydb/projectagreement_add/" class="btn btn-sm btn-success">Create a Project</a>
+                    <a href="/activitydb/dashboard/project/0/" class="btn btn-sm btn-success">Create a Project</a>
                 </div>
             </div>
         </div>
@@ -169,13 +169,13 @@ $(function () {
         <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <p><b>Communities {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>
+                    <p><b>Sites {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>
                     <style>
                         #map { height: 350px; }
                     </style>
                     <div id="map"></div>
 
-                    {% include "small_community_map.html" %}
+                    {% include "small_site_profile_map.html" %}
 
                 </div>
             </div>

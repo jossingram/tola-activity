@@ -71,6 +71,40 @@ class SectorAdmin(admin.ModelAdmin):
     display = 'Sector'
 
 
+class Contact(models.Model):
+    name = models.CharField("Name", max_length=255, blank=True, null=True)
+    title = models.CharField("Title", max_length=255, blank=True, null=True)
+    city = models.CharField("City/Town", max_length=255, blank=True, null=True)
+    address = models.TextField("Address", max_length=255, blank=True, null=True)
+    email = models.CharField("Email", max_length=255, blank=True, null=True)
+    phone = models.CharField("Phone", max_length=255, blank=True, null=True)
+    country = models.ForeignKey(Country)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('country','name','title')
+        verbose_name_plural = "Contact"
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Contact, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.count + "-" + self.name
+
+
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country', 'create_date', 'edit_date')
+    display = 'Contact'
+    list_filter = ('create_date','country')
+    search_fields = ('name','country','title','city')
+
+
 class Program(models.Model):
     gaitid = models.CharField("GAITID", max_length=255, blank=True, unique=True)
     name = models.CharField("Program Name", max_length=255, blank=True)
@@ -298,20 +332,30 @@ class SectorAdmin(admin.ModelAdmin):
     display = 'ProfileType'
 
 
-class Community(models.Model):
-    name = models.CharField("Profile Name", max_length=255, blank=True, null=True)
+class SiteProfile(models.Model):
+    name = models.CharField("Site Name", max_length=255, blank=False)
     type = models.ForeignKey(ProfileType, blank=True, null=True)
     office = models.ForeignKey(Office, default="1")
-    existing_village = models.BooleanField("Is There an existing shura or CDC?", default="False")
-    existing_village_descr = models.CharField("If Yes please describe", max_length=255, blank=True, null=True)
+
+    # Removed Shura, CDC checkbox from profile description
+    # existing_village = models.BooleanField("Is There an existing shura or CDC?", default="False")
+    # existing_village_descr = models.CharField("If Yes please describe", max_length=255, blank=True, null=True)
+
     community_leader = models.CharField("Community Malik/Elder Name", max_length=255, blank=True, null=True)
     head_of_institution = models.CharField("Head of Shura/Institution", max_length=255, blank=True, null=True)
     date_of_firstcontact = models.DateTimeField(null=True, blank=True)
     contact_number = models.CharField("Contact Number", max_length=255, blank=True, null=True)
     num_members = models.CharField("Number of Members", max_length=255, blank=True, null=True)
-    distance_district_capital = models.IntegerField("Distance from District Capital", help_text="In KM", null=True, blank=True)
-    distance_site_camp = models.IntegerField("Distance from Site Camp", help_text="In KM", null=True, blank=True)
-    distance_field_office = models.IntegerField("Distance from MC Field Office", help_text="In KM", null=True, blank=True)
+
+    # Added a Data Source field, if any of the Demographic Information is added
+    info_source = models.CharField("Data Source",max_length=255, blank=True, null=True)
+
+    # Removed 'distance from' fields in location tab
+    # distance_district_capital = models.IntegerField("Distance from District Capital", help_text="In KM", null=True, blank=True)
+    # distance_site_camp = models.IntegerField("Distance from Site Camp", help_text="In KM", null=True, blank=True)
+    # distance_field_office = models.IntegerField("Distance from MC Field Office", help_text="In KM", null=True, blank=True)
+
+    # Retained all the fields in the 'For Geographical Sites' tab
     total_num_households = models.IntegerField("Total # Households", help_text="", null=True, blank=True)
     avg_household_size = models.DecimalField("Average Household Size", decimal_places=14,max_digits=25, null=True, blank=True)
     male_0_14 = models.IntegerField("Male age 0-14", null=True, blank=True)
@@ -337,24 +381,31 @@ class Community(models.Model):
     avg_landholding_size = models.IntegerField("Average Landholding Size", help_text="In hectares/jeribs", null=True, blank=True)
     population_owning_livestock = models.IntegerField("Population Owning Livestock", help_text="(%)", null=True, blank=True)
     animal_type = models.CharField("Animal Types", help_text="List Animal Types", max_length=255, null=True, blank=True)
+
     country = models.ForeignKey(Country)
     province = models.ForeignKey(Province, null=True, blank=True)
     district = models.ForeignKey(District, null=True, blank=True)
-    village = models.CharField("Village", help_text="", max_length=255, null=True, blank=True)
+    village = models.CharField("Administrative Level 3", help_text="Village", max_length=255, null=True, blank=True)
     latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
     longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
-    altitude = models.DecimalField("Altitude (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
-    precision = models.DecimalField("Precision (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
-    approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
+
+    # remove altitude and precision fields from location tab
+    # altitude = models.DecimalField("Altitude (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
+    # precision = models.DecimalField("Precision (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
+
+    # remove approval, approved_by and filled_by fields from Approval tab
+    # approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(TolaUser,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="comm_approving")
     filled_by = models.ForeignKey(TolaUser, help_text='This is the originator', blank=True, null=True, related_name="comm_estimate")
     location_verified_by = models.ForeignKey(TolaUser, help_text='This should be GIS Manager', blank=True, null=True, related_name="comm_gis")
+
+
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
-        verbose_name_plural = "Communities"
+        verbose_name_plural = "Site Profiles"
 
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
@@ -362,7 +413,7 @@ class Community(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         self.code = str(self.country.code) + "-" + str(self.office.code) + "-" + str(self.name)
-        super(Community, self).save()
+        super(SiteProfile, self).save()
 
     #displayed in admin templates
     def __unicode__(self):
@@ -372,7 +423,7 @@ class Community(models.Model):
 
 class CommunityAdmin(admin.ModelAdmin):
     list_display = ('name', 'code','office', 'country', 'district', 'province', 'village', 'cluster', 'longitude', 'latitude', 'create_date', 'edit_date')
-    display = 'Community'
+    display = 'SiteProfile'
 
 
 class Capacity(models.Model):
@@ -399,6 +450,34 @@ class Capacity(models.Model):
 class CapacityAdmin(admin.ModelAdmin):
     list_display = ('capacity', 'create_date', 'edit_date')
     display = 'Capacity'
+
+
+class StakeholderType(models.Model):
+    name = models.CharField("Stakeholder Type", max_length=255, blank=True, null=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name_plural = "Stakeholder Types"
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(StakeholderType, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
+class StakeholderTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Stakeholder Types'
+    list_filter = ('create_date')
+    search_fields = ('name')
 
 
 class Evaluate(models.Model):
@@ -450,31 +529,6 @@ class ProjectType(models.Model):
 class ProjectTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'create_date', 'edit_date')
     display = 'Project Type'
-
-
-class Stakeholder(models.Model):
-    name = models.CharField("Type of Activity", max_length=135)
-    description = models.CharField(max_length=255)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    #onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(ProjectType, self).save()
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ('name',)
-
-
-class StakeholderAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'create_date', 'edit_date')
-    display = 'Stakeholder'
 
 
 class ProjectTypeOther(models.Model):
@@ -529,6 +583,40 @@ class TemplateAdmin(admin.ModelAdmin):
     display = 'Template'
 
 
+class Stakeholder(models.Model):
+    name = models.CharField("Stakeholder/Organization Name", max_length=255, blank=True, null=True)
+    type = models.ForeignKey(StakeholderType)
+    contact = models.ManyToManyField(Contact, max_length=255, blank=True)
+    country = models.ForeignKey(Country)
+    sector = models.ForeignKey(Sector, blank=True, null=True)
+    stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?")
+    formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, related_name="relationship_document")
+    vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True, related_name="vetting_document")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('country','name','type')
+        verbose_name_plural = "Stakeholders"
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Stakeholder, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
+class StakeholderAdmin(admin.ModelAdmin):
+    list_display = ('name', 'type', 'country', 'create_date')
+    display = 'Stakeholders'
+    list_filter = ('create_date','country','type','sector')
+
+
 class ProjectAgreement(models.Model):
     program = models.ForeignKey(Program, related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
@@ -536,7 +624,7 @@ class ProjectAgreement(models.Model):
     project_type = models.ForeignKey(ProjectType, help_text='Please refer to Form 05 - Project Progress Summary', max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
     project_description = models.TextField("Project Description", help_text='Description must meet the Criteria.  Will translate description into three languages: English, Dari and Pashto)', blank=True, null=True)
-    community = models.ManyToManyField(Community, blank=True)
+    site = models.ManyToManyField(SiteProfile, blank=True)
     community_rep = models.CharField("Community Representative", max_length=255, blank=True, null=True)
     community_rep_contact = models.CharField("Community Representative Contact", help_text='Can have mulitple contact numbers', max_length=255, blank=True, null=True)
     community_mobilizer = models.CharField("Community Mobilizer", max_length=255, blank=True, null=True)
@@ -553,8 +641,7 @@ class ProjectAgreement(models.Model):
     staff_responsible = models.CharField("MC Staff Responsible", max_length=255, blank=True, null=True)
     partners = models.BooleanField("Are there partners involved?", default=0)
     name_of_partners = models.CharField("Name of Partners", max_length=255, blank=True, null=True)
-    program_objectives = models.TextField("What Program Objectives does this help fulfill?", blank=True, null=True)
-    mc_objectives = models.TextField("What strategic Objectives does this help fulfill?", blank=True, null=True)
+    stakeholder = models.ManyToManyField(Stakeholder, blank=True)
     effect_or_impact = models.TextField("What is the anticipated Outcome or Goal?", blank=True, null=True)
     expected_start_date = models.DateTimeField("Expected starting date", blank=True, null=True)
     expected_end_date = models.DateTimeField("Expected ending date",blank=True, null=True)
@@ -595,7 +682,7 @@ class ProjectAgreement(models.Model):
     finance_reviewed_by_date = models.DateTimeField("Date Reviewed by Finance", null=True, blank=True)
     me_reviewed_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="M&E Reviewed by", related_name="reviewing_me")
     me_reviewed_by_date = models.DateTimeField("Date Reviewed by M&E", null=True, blank=True)
-    capacity = models.ManyToManyField(Capacity, blank=True)
+    capacity = models.ManyToManyField(Capacity,verbose_name="Sustainability Plan", blank=True)
     evaluate = models.ManyToManyField(Evaluate, blank=True)
     approval = models.CharField("Status", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_agreement")
@@ -677,7 +764,7 @@ class ProjectComplete(models.Model):
     capacity_built = models.CharField("What capacity was built to ensure sustainability?", max_length=255, blank=True, null=True)
     issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)", blank=True, null=True)
     lessons_learned= models.TextField("Lessons learned", blank=True, null=True)
-    community = models.ManyToManyField(Community, blank=True)
+    site = models.ManyToManyField(SiteProfile, blank=True)
     estimated_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="estimating_complete")
     checked_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="checking_complete")
     reviewed_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="reviewing_complete")
@@ -921,7 +1008,7 @@ class Beneficiary(models.Model):
     father_name = models.CharField(max_length=255, null=True, blank=True)
     age = models.IntegerField(null=True, blank=True)
     gender = models.CharField(max_length=255, null=True, blank=True)
-    community = models.ForeignKey(Community, null=True, blank=True)
+    community = models.ForeignKey(SiteProfile, null=True, blank=True)
     signature = models.BooleanField(default=True)
     remarks = models.CharField(max_length=255, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -946,36 +1033,10 @@ class BeneficiaryAdmin(admin.ModelAdmin):
     list_display = ('beneficiary_name', 'father_name', 'age', 'gender', 'community', 'signature', 'remarks', 'initials')
 
 
-class ChecklistItem(models.Model):
-    item = models.CharField(max_length=255, null=True, blank=True)
-    country = models.ForeignKey(Country,null=True,blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('item',)
-
-    #onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(ChecklistItem, self).save()
-
-    #displayed in admin templates
-    def __unicode__(self):
-        return unicode(self.item)
-
-
-class ChecklistItemAdmin(admin.ModelAdmin):
-    list_display = ('agreement')
-
-
 class Checklist(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True,default="Checklist")
     agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
-    item = models.ForeignKey(ChecklistItem, null=True, blank=True)
-    in_file = models.BooleanField()
-    not_applicable = models.BooleanField()
+    country = models.ForeignKey(Country,null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -995,7 +1056,35 @@ class Checklist(models.Model):
 
 
 class ChecklistAdmin(admin.ModelAdmin):
-    list_display = ('agreement')
+    list_display = ('name','agreement','country')
+
+
+class ChecklistItem(models.Model):
+    item = models.CharField(max_length=255, null=True, blank=True)
+    checklist = models.ForeignKey(Checklist)
+    in_file = models.BooleanField(default=False)
+    not_applicable = models.BooleanField(default=False)
+    global_item = models.BooleanField(default=False)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('item',)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ChecklistItem, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.item)
+
+
+class ChecklistItemAdmin(admin.ModelAdmin):
+    list_display = ('item','checklist','in_file')
 
 
 # Documentation

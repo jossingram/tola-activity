@@ -9,7 +9,7 @@ import unicodedata
 from django.http import HttpResponseRedirect
 from django.db import models
 from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData
-from activitydb.models import Program, ProjectAgreement, Community
+from activitydb.models import Program, ProjectAgreement, SiteProfile
 from djangocosign.models import UserProfile
 from indicators.forms import IndicatorForm, CollectedDataForm
 from django.shortcuts import render_to_response
@@ -150,7 +150,7 @@ class IndicatorDelete(DeleteView):
     form_class = IndicatorForm
 
 
-def indicatorReport(request, program=0):
+def indicator_report(request, program=0):
     """
     Show LIST of indicators with a filtered search view using django-tables2
     and django-filter
@@ -219,7 +219,7 @@ def programIndicatorReport(request, program=0):
     return render(request, "indicators/grid_report.html", {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgram': getProgram, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
-def indicatorDataReport(request, id=0, program=0, agreement=0):
+def indicator_data_report(request, id=0, program=0, agreement=0):
     """
     Show LIST of indicator based quantitative outputs with a filtered search view using django-tables2
     and django-filter
@@ -231,18 +231,18 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
 
     if int(id) != 0:
         getQuantitativeData = CollectedData.objects.all().filter(indicator__id=id).select_related()
-        getCommunity = CollectedData.objects.all().filter(indicator__id=id).select_related()
+        getSiteProfile = CollectedData.objects.all().filter(indicator__id=id).select_related()
     else:
         getQuantitativeData = CollectedData.objects.all().select_related().filter(indicator__country__in=countries)
-        getCommunity = Community.objects.all().select_related()
+        getSiteProfile = SiteProfile.objects.all().select_related()
 
     if int(program) != 0:
         getQuantitativeData = CollectedData.objects.all().filter(agreement__program__id=program).select_related()
-        getCommunity = Community.objects.all().filter(projectagreement__program__id=program).select_related()
+        getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program).select_related()
 
     if int(agreement) != 0:
         getQuantitativeData = CollectedData.objects.all().filter(agreement__id=agreement).select_related()
-        getCommunity = Community.objects.all().filter(projectagreement__id=agreement).select_related()
+        getSiteProfile = SiteProfile.objects.all().filter(projectagreement__id=agreement).select_related()
 
     table = IndicatorDataTable(getQuantitativeData)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
@@ -265,7 +265,7 @@ def indicatorDataReport(request, id=0, program=0, agreement=0):
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/data_report.html", {'getQuantitativeData':getQuantitativeData,'countries':countries, 'getCommunity':getCommunity, 'table': table, 'getAgreements': getAgreements,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id,'program':program,'agreement':agreement})
+    return render(request, "indicators/data_report.html", {'getQuantitativeData':getQuantitativeData,'countries':countries, 'getSiteProfile':getSiteProfile, 'table': table, 'getAgreements': getAgreements,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id,'program':program,'agreement':agreement})
 
 
 class CollectedDataList(ListView):

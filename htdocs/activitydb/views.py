@@ -2,13 +2,13 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from django.views.generic import TemplateView
-from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, Community, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem
+from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact
 from indicators.models import CollectedData
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, CommunityForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistForm
+from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistForm, StakeholderForm, ContactForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -37,17 +37,11 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from tola.util import getCountry, emailGroup
 from mixins import AjaxableResponseMixin
-"""
-project_agreement_id is the key to link each related form
- ProjectAgreement, ProjectComplete, Community (Main Forms and Workflow)
-Monitor, Benchmark, TrainingAttendance and Beneficiary are related to Project Agreement via
-the project_agreement_id
-
-"""
 
 
 def date_handler(obj):
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+
 
 def group_required(*group_names, **url):
     #Requires user membership in at least one of the groups passed in.
@@ -67,23 +61,27 @@ class ProjectDash(ListView):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
         form = ProgramDashboardForm
+        project_id = int(self.kwargs['pk'])
 
-        if int(self.kwargs['pk']) == 0:
-            getAgreement = ProjectAgreement.objects.all()
-            getComplete = ProjectComplete.objects.all()
+        if project_id == 0:
+            getAgreement = None
+            getComplete = None
+            getChecklist = None
             getDocumentCount = 0
             getCommunityCount = 0
             getTrainingCount = 0
+            getChecklistCount = 0
         else:
-            getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
+            getAgreement = ProjectAgreement.objects.get(id=project_id)
             try:
                 getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['pk'])
             except ProjectComplete.DoesNotExist:
                 getComplete = None
             getDocumentCount = Documentation.objects.all().filter(project_id=self.kwargs['pk']).count()
-            getCommunityCount = Community.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
+            getCommunityCount = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
             getTrainingCount = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
             getChecklistCount = Checklist.objects.all().filter(agreement_id=self.kwargs['pk']).count()
+            getChecklist = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk'])
 
 
         if int(self.kwargs['pk']) == 0:
@@ -93,7 +91,7 @@ class ProjectDash(ListView):
 
         return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete,
                                                     'getPrograms':getPrograms, 'getDocumentCount':getDocumentCount,'getChecklistCount': getChecklistCount,
-                                                    'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount})
+                                                    'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount, 'project_id': project_id, 'getChecklist': getChecklist})
 
 
 class ProgramDash(ListView):
@@ -155,7 +153,6 @@ class ProjectAgreementImport(ListView):
 
         data = jsondata['results']
 
-
         return render(request, self.template_name, {'getAgreements': data})
 
 
@@ -163,6 +160,7 @@ class ProjectAgreementCreate(CreateView):
     """
     Project Agreement Form
     :param request:
+    :param id:
     """
     model = ProjectAgreement
     template_name = 'activitydb/projectagreement_form.html'
@@ -183,7 +181,6 @@ class ProjectAgreementCreate(CreateView):
             'reviewed_by': self.request.user,
             'approval_submitted_by': self.request.user,
             }
-
 
         return initial
 
@@ -213,8 +210,16 @@ class ProjectAgreementCreate(CreateView):
         create_dashboard_entry = ProgramDashboard(program=getProgram, project_agreement=getAgreement)
         create_dashboard_entry.save()
 
+        create_checklist = Checklist(agreement=getAgreement)
+        create_checklist.save()
+
+        get_checklist = Checklist.objects.get(id=create_checklist.id)
+        get_globals = ChecklistItem.objects.all().filter(global_item=True)
+        for item in get_globals:
+            ChecklistItem.objects.create(checklist=get_checklist,item=item.item)
+
         messages.success(self.request, 'Success, Agreement Created!')
-        redirect_url = '/activitydb/projectagreement_update/' + str(latest.id)
+        redirect_url = '/activitydb/dashboard/project/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
     form_class = ProjectAgreementCreateForm
@@ -271,7 +276,6 @@ class ProjectAgreementUpdate(UpdateView):
         kwargs['request'] = self.request
         return kwargs
 
-
     def form_invalid(self, form):
 
         messages.error(self.request, 'Invalid Form', fail_silently=False)
@@ -323,8 +327,6 @@ class ProjectAgreementUpdate(UpdateView):
         context = self.get_context_data()
         self.object = form.save()
 
-
-
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ProjectAgreementForm
@@ -335,7 +337,6 @@ class ProjectAgreementDetail(DetailView):
     model = ProjectAgreement
     context_object_name = 'agreement'
     queryset = ProjectAgreement.objects.all()
-
 
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementDetail, self).get_context_data(**kwargs)
@@ -429,6 +430,8 @@ class ProjectCompleteCreate(CreateView):
             'approved_by': self.request.user,
             'approval_submitted_by': self.request.user,
             'program': getProjectAgreement.program,
+            'office': getProjectAgreement.office,
+            'sector': getProjectAgreement.sector,
             'project_agreement': getProjectAgreement.id,
             'project_name': getProjectAgreement.project_name,
             'activity_code': getProjectAgreement.activity_code,
@@ -439,11 +442,11 @@ class ProjectCompleteCreate(CreateView):
         }
 
         try:
-            getCommunites = Community.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
-            communites = {'community': [o for o in getCommunites],}
+            getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
+            site = {'site': [o for o in getSites],}
             initial = pre_initial.copy()
-            initial.update(communites)
-        except Community.DoesNotExist:
+            initial.update(site)
+        except SiteProfile.DoesNotExist:
             getCommunites = None
 
         return initial
@@ -711,7 +714,6 @@ class DocumentationAgreementUpdate(AjaxableResponseMixin, UpdateView):
         context.update({'pk': self.kwargs['pk']})
         return context
 
-
     def form_invalid(self, form):
 
         messages.error(self.request, 'Invalid Form', fail_silently=False)
@@ -836,21 +838,20 @@ class DocumentationDelete(DeleteView):
     form_class = DocumentationForm
 
 
-class CommunityList(ListView):
+class SiteProfileList(ListView):
     """
-    Community list creates a map and list of communites by user country access and filters
+    SiteProfile list creates a map and list of sites by user country access and filters
     by either direct link from project or by program dropdown filter
     """
-    model = Community
-    template_name = 'activitydb/community_list.html'
+    model = SiteProfile
+    template_name = 'activitydb/site_profile_list.html'
 
     def dispatch(self, request, *args, **kwargs):
         if request.GET.has_key('report'):
-            template_name = 'activitydb/community_report.html'
+            template_name = 'activitydb/site_profile_report.html'
         else:
-            template_name = 'activitydb/community_list.html'
-        return super(CommunityList, self).dispatch(request, *args, **kwargs)
-
+            template_name = 'activitydb/site_profile_list.html'
+        return super(SiteProfileList, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         activity_id = int(self.kwargs['activity_id'])
@@ -858,61 +859,60 @@ class CommunityList(ListView):
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-        #Filter Community list and map by activity or program
+        #Filter SiteProfile list and map by activity or program
         if activity_id != 0:
-            getCommunity = Community.objects.all().filter(projectagreement__id=activity_id).distinct()
+            getCommunity = SiteProfile.objects.all().filter(projectagreement__id=activity_id).distinct()
         elif program_id != 0:
             print "program"
-            getCommunity = Community.objects.all().filter(Q(projectagreement__program__id=program_id)).distinct()
+            getCommunity = SiteProfile.objects.all().filter(Q(projectagreement__program__id=program_id)).distinct()
         else:
-            getCommunity = Community.objects.all().filter(country__in=countries).distinct()
+            getCommunity = SiteProfile.objects.all().filter(country__in=countries).distinct()
 
         if request.method == "GET" and "search" in request.GET:
             """
              fields = ('name', 'office')
             """
-            getCommunity = Community.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
+            getCommunity = SiteProfile.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
                                                             Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
                                                              Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related().distinct()
 
         return render(request, self.template_name, {'getCommunity':getCommunity,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
-class CommunityReport(ListView):
+class SiteProfileReport(ListView):
     """
-    Community Report filtered by project
+    SiteProfile Report filtered by project
     """
-    model = Community
-    template_name = 'activitydb/community_report.html'
-
+    model = SiteProfile
+    template_name = 'activitydb/site_profile_report.html'
 
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
         project_agreement_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
-            getCommunity = Community.objects.all()
+            getCommunity = SiteProfile.objects.all()
         else:
-            getCommunity = Community.objects.all().filter(projectagreement__id=self.kwargs['pk'])
+            getCommunity = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk'])
 
         id=self.kwargs['pk']
 
         return render(request, self.template_name, {'getCommunity':getCommunity,'project_agreement_id': project_agreement_id,'id':id,'country': countries})
 
 
-class CommunityCreate(CreateView):
+class SiteProfileCreate(CreateView):
     """
-    Community Form create a new community
+    Using SiteProfile Form, create a new site profile
     """
-    model = Community
+    model = SiteProfile
 
     @method_decorator(group_required('Editor',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
-        return super(CommunityCreate, self).dispatch(request, *args, **kwargs)
+        return super(SiteProfileCreate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(CommunityCreate, self).get_form_kwargs()
+        kwargs = super(SiteProfileCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
@@ -921,7 +921,6 @@ class CommunityCreate(CreateView):
         default_country = None
         if countries:
             default_country = countries[0]
-            print default_country
         initial = {
             'approved_by': self.request.user,
             'filled_by': self.request.user,
@@ -938,27 +937,27 @@ class CommunityCreate(CreateView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'Success, Community Created!')
+        messages.success(self.request, 'Success, Site Profile Created!')
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = CommunityForm
+    form_class = SiteProfileForm
 
 
-class CommunityUpdate(UpdateView):
+class SiteProfileUpdate(UpdateView):
     """
-    Community Form Update an existing community
+    SiteProfile Form Update an existing site profile
     """
-    model = Community
+    model = SiteProfile
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(CommunityUpdate, self).get_form_kwargs()
+        kwargs = super(SiteProfileUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
     def get_context_data(self, **kwargs):
-        context = super(CommunityUpdate, self).get_context_data(**kwargs)
-        getProjects = ProjectAgreement.objects.all().filter(community__id=self.kwargs['pk'])
+        context = super(SiteProfileUpdate, self).get_context_data(**kwargs)
+        getProjects = ProjectAgreement.objects.all().filter(site__id=self.kwargs['pk'])
         context.update({'getProjects': getProjects})
         return context
 
@@ -968,19 +967,19 @@ class CommunityUpdate(UpdateView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'Success, Community Updated!')
+        messages.success(self.request, 'Success, SiteProfile Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = CommunityForm
+    form_class = SiteProfileForm
 
 
-class CommunityDelete(DeleteView):
+class SiteProfileDelete(DeleteView):
     """
-    Community Form Delete an existing community
+    SiteProfile Form Delete an existing community
     """
-    model = Community
-    success_url = "/activitydb/community_list/0/0/"
+    model = SiteProfile
+    success_url = "/activitydb/siteprofile_list/0/0/"
 
     def form_invalid(self, form):
 
@@ -992,10 +991,10 @@ class CommunityDelete(DeleteView):
 
         form.save()
 
-        messages.success(self.request, 'Success, Community Deleted!')
+        messages.success(self.request, 'Success, SiteProfile Deleted!')
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = CommunityForm
+    form_class = SiteProfileForm
 
 
 class MonitorList(ListView):
@@ -1061,13 +1060,13 @@ class MonitorUpdate(AjaxableResponseMixin, UpdateView):
     """
     Monitor Form
     """
-
     model = Monitor
 
     def get_context_data(self, **kwargs):
         context = super(MonitorUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
         return context
+
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
@@ -1193,6 +1192,225 @@ class BenchmarkDelete(AjaxableResponseMixin, DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = BenchmarkForm
+
+
+class ContactList(ListView):
+    """
+    getStakeholders
+    """
+    model = Contact
+    template_name = 'activitydb/contact_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        project_agreement_id = self.kwargs['pk']
+
+        if int(self.kwargs['pk']) == 0:
+            countries=getCountry(request.user)
+            getContacts = Contact.objects.all().filter(country__in=countries)
+        else:
+            getContacts = Contact.objects.all().filter(projectagreement=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getContacts': getContacts})
+
+
+class ContactCreate(CreateView):
+    """
+    Contact Form
+    """
+    model = Contact
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(ContactCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        return context
+
+    def get_initial(self):
+        country = getCountry(self.request.user)[0]
+        initial = {
+            'agreement': self.kwargs['id'],
+            'country': country,
+            }
+
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Contact Created!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = ContactForm
+
+
+class ContactUpdate(UpdateView):
+    """
+    Contact Form
+    """
+    model = Contact
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Contact Updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = ContactForm
+
+
+class ContactDelete(DeleteView):
+    """
+    Benchmark Form
+    """
+    model = Contact
+    success_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactDelete, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Contact Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = ContactForm
+
+
+class StakeholderList(ListView):
+    """
+    getStakeholders
+    """
+    model = Stakeholder
+    template_name = 'activitydb/stakeholder_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        project_agreement_id = self.kwargs['pk']
+        countries = getCountry(request.user)
+        if int(self.kwargs['pk']) == 0:
+            getStakeholders = Stakeholder.objects.all().filter(country__in=countries)
+        else:
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getStakeholders': getStakeholders, 'project_agreement_id': project_agreement_id})
+
+
+class StakeholderCreate(CreateView):
+    """
+    Stakeholder Form
+    """
+    model = Stakeholder
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(StakeholderCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(StakeholderCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        return context
+
+    def get_initial(self):
+
+        country = getCountry(self.request.user)[0]
+
+        initial = {
+            'agreement': self.kwargs['id'],
+            'country': country,
+            }
+
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Stakeholder Created!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = StakeholderForm
+
+
+class StakeholderUpdate(UpdateView):
+    """
+    Stakeholder Form
+    """
+    model = Stakeholder
+
+    def get_context_data(self, **kwargs):
+        context = super(StakeholderUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Stakeholder Updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = StakeholderForm
+
+
+class StakeholderDelete(DeleteView):
+    """
+    Benchmark Form
+    """
+    model = Stakeholder
+    success_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(StakeholderDelete, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Stakeholder Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = StakeholderForm
 
 
 class TrainingList(ListView):
@@ -1425,6 +1643,14 @@ class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
     model = CollectedData
     template_name = 'activitydb/quantitativeoutputs_form.html'
 
+    def get_initial(self):
+        getProgram = Program.objects.get(indicator__program = self.kwargs['id'])
+        initial = {
+            'program': getProgram.id,
+            }
+
+        return initial
+
     def get_context_data(self, **kwargs):
         context = super(QuantitativeOutputsUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
@@ -1651,7 +1877,7 @@ class ChecklistUpdate(UpdateView):
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(ChecklistCreate, self).get_form_kwargs()
+        kwargs = super(ChecklistUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
@@ -1666,6 +1892,23 @@ class ChecklistUpdate(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ChecklistForm
+
+
+def checklist_update_link(request,pk,type,value):
+    """
+    Checklist Update from Link To Update if a Task is Done
+    """
+    if value == 1:
+        value=True
+    else:
+        value=False
+    if type == "in_file":
+        update = ChecklistItem.objects.filter(id=pk).update(in_file=value)
+    elif type == "not_applicable":
+        update = ChecklistItem.objects.filter(id=pk).update(not_applicable=value)
+
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 class ChecklistDelete(DeleteView):
@@ -1735,6 +1978,7 @@ def country_json(request, country):
     provinces_json = serializers.serialize("json", province)
     return HttpResponse(provinces_json, content_type="application/json")
 
+
 def province_json(request, province):
     """
     For populating the office district based  country province value
@@ -1744,6 +1988,7 @@ def province_json(request, province):
     districts_json = serializers.serialize("json", district)
     return HttpResponse(districts_json, content_type="application/json")
 
+
 def district_json(request, district):
     """
     For populating the office dropdown based  country dropdown value
@@ -1752,6 +1997,7 @@ def district_json(request, district):
     village = Village.objects.all().filter(district=selected_district)
     villages_json = serializers.serialize("json", village)
     return HttpResponse(villages_json, content_type="application/json")
+
 
 def ProgramDashboardCounts(request):
     """
