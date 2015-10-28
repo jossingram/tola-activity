@@ -117,8 +117,16 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved', 'description','indicator','date_collected','program','agreement','comment','method','tool','date_of_training','trainer_name','date_of_analysis','analysis_name','office','evidence'
+                'targeted', 'achieved', 'description','indicator','date_collected','program','agreement','comment','office','evidence'
+
             ),
+
+            HTML("""<br/>"""),
+
+            Fieldset('Evidence',
+                'agreement','method','tool','evidence'
+            ),
+
 
 
                 MultiField(
