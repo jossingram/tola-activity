@@ -374,12 +374,14 @@ class SiteProfile(models.Model):
     total_rainfed_land = models.IntegerField("Total Rain-fed Land", help_text="In hectares/jeribs", null=True, blank=True)
     total_horticultural_land = models.IntegerField("Total Horticultural Land", help_text="In hectares/jeribs", null=True, blank=True)
     total_literate_peoples = models.IntegerField("Total Literate People", help_text="", null=True, blank=True)
-    literate_males = models.IntegerField("Number of Literate Males", help_text="", null=True, blank=True)
-    literate_females = models.IntegerField("Number of Literate Females", help_text="", null=True, blank=True)
-    literacy_rate = models.IntegerField("Literacy Rate (%)", help_text="", null=True, blank=True)
-    population_owning_land = models.IntegerField("Population Owning Land", help_text="(%)", null=True, blank=True)
-    avg_landholding_size = models.IntegerField("Average Landholding Size", help_text="In hectares/jeribs", null=True, blank=True)
-    population_owning_livestock = models.IntegerField("Population Owning Livestock", help_text="(%)", null=True, blank=True)
+    literate_males = models.IntegerField("% of Literate Males", help_text="%", null=True, blank=True)
+    literate_females = models.IntegerField("% of Literate Females", help_text="%", null=True, blank=True)
+    literacy_rate = models.IntegerField("Literacy Rate (%)", help_text="%", null=True, blank=True)
+    households_owning_land = models.IntegerField("Households Owning Land", help_text="(%)", null=True, blank=True)
+
+    # Allow for decimal input to average landholding size
+    avg_landholding_size = models.DecimalField("Average Landholding Size", decimal_places=14,max_digits=25, help_text="In hectares/jeribs", null=True, blank=True)
+    households_owning_livestock = models.IntegerField("Households Owning Livestock", help_text="(%)", null=True, blank=True)
     animal_type = models.CharField("Animal Types", help_text="List Animal Types", max_length=255, null=True, blank=True)
 
     country = models.ForeignKey(Country)
