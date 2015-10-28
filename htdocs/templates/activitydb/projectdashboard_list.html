@@ -135,16 +135,35 @@
         </button>
         </div>
     </ul>
-    {% if getChecklistCount %}
-        <div class="list-group">
-          <a href="#" class="list-group-item active">
-              Project Checklist
-          </a>
-          {% for item in getChecklist %}
-            <a href="#" class="list-group-item"><a href="/activitydb/checklist_update/{{ item.id }}/">{{ item.item }}</a> {% if item.infile %} <span class="glyphicon glyphicon-check"></span>{% else %}<span class="glyphicon glyphicon-unchecked"></span>{% endif %}</a>
-          {% endfor %}
-        </div>
-    {% endif %}
+
+    <div class="jumbotron">
+        <h3>
+            Project Checklist
+        </h3>
+        <table class="table table-striped">
+            <tr>
+                <th>Checklist Item</th>
+                <th>Is In the File?</th>
+                <th>Not Applicable?</th>
+            </tr>
+
+            {% for item in getChecklist %}
+            <tr>
+                <td>
+                    {{ item.item }}
+                </td>
+                <td>
+                    {% if item.in_file == True%} <a href="/activitydb/checklist_update_link/{{ item.id }}/in_file/0"><span class="glyphicon glyphicon-check"></span></a>{% else %}<a href="/activitydb/checklist_update_link/{{ item.id }}/in_file/1"><span class="glyphicon glyphicon-unchecked"></span></a>{% endif %}
+                </td>
+                <td>
+                    {% if item.not_applicable == True%} <a href="/activitydb/checklist_update_link/{{ item.id }}/not_applicable/0"><span class="glyphicon glyphicon-check"></span></a>{% else %}<a href="/activitydb/checklist_update_link/{{ item.id }}/not_applicable/1"><span class="glyphicon glyphicon-unchecked"></span></a>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        </a>
+    </div>
+
 {% endif %}
 
 <!-- Modal -->

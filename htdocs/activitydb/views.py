@@ -81,7 +81,7 @@ class ProjectDash(ListView):
             getCommunityCount = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
             getTrainingCount = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
             getChecklistCount = Checklist.objects.all().filter(agreement_id=self.kwargs['pk']).count()
-            getChecklist = Checklist.objects.all().filter(agreement_id=self.kwargs['pk'])
+            getChecklist = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk'])
 
 
         if int(self.kwargs['pk']) == 0:
@@ -211,10 +211,15 @@ class ProjectAgreementCreate(CreateView):
         create_dashboard_entry.save()
 
         create_checklist = Checklist(agreement=getAgreement)
-        create_dashboard_entry.save()
+        create_checklist.save()
+
+        get_checklist = Checklist.objects.get(id=create_checklist.id)
+        get_globals = ChecklistItem.objects.all().filter(global_item=True)
+        for item in get_globals:
+            ChecklistItem.objects.create(checklist=get_checklist,item=item.item)
 
         messages.success(self.request, 'Success, Agreement Created!')
-        redirect_url = '/activitydb/projectagreement_update/' + str(latest.id)
+        redirect_url = '/activitydb/dashboard/project/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
     form_class = ProjectAgreementCreateForm
@@ -1200,7 +1205,8 @@ class ContactList(ListView):
         project_agreement_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
-            getContacts = Contact.objects.all()
+            countries=getCountry(request.user)
+            getContacts = Contact.objects.all().filter(country__in=countries)
         else:
             getContacts = Contact.objects.all().filter(projectagreement=self.kwargs['pk'])
 
@@ -1222,8 +1228,10 @@ class ContactCreate(CreateView):
         return context
 
     def get_initial(self):
+        country = getCountry(self.request.user)[0]
         initial = {
             'agreement': self.kwargs['id'],
+            'country': country,
             }
 
         return initial
@@ -1304,9 +1312,9 @@ class StakeholderList(ListView):
     def get(self, request, *args, **kwargs):
 
         project_agreement_id = self.kwargs['pk']
-
+        countries = getCountry(request.user)
         if int(self.kwargs['pk']) == 0:
-            getStakeholders = Stakeholder.objects.all()
+            getStakeholders = Stakeholder.objects.all().filter(country__in=countries)
         else:
             getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk'])
 
@@ -1328,8 +1336,12 @@ class StakeholderCreate(CreateView):
         return context
 
     def get_initial(self):
+
+        country = getCountry(self.request.user)[0]
+
         initial = {
             'agreement': self.kwargs['id'],
+            'country': country,
             }
 
         return initial
@@ -1856,7 +1868,7 @@ class ChecklistUpdate(UpdateView):
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(ChecklistCreate, self).get_form_kwargs()
+        kwargs = super(ChecklistUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
@@ -1871,6 +1883,23 @@ class ChecklistUpdate(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ChecklistForm
+
+
+def checklist_update_link(request,pk,type,value):
+    """
+    Checklist Update from Link To Update if a Task is Done
+    """
+    if value == 1:
+        value=True
+    else:
+        value=False
+    if type == "in_file":
+        update = ChecklistItem.objects.filter(id=pk).update(in_file=value)
+    elif type == "not_applicable":
+        update = ChecklistItem.objects.filter(id=pk).update(not_applicable=value)
+
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 class ChecklistDelete(DeleteView):
@@ -1940,6 +1969,7 @@ def country_json(request, country):
     provinces_json = serializers.serialize("json", province)
     return HttpResponse(provinces_json, content_type="application/json")
 
+
 def province_json(request, province):
     """
     For populating the office district based  country province value
@@ -1949,6 +1979,7 @@ def province_json(request, province):
     districts_json = serializers.serialize("json", district)
     return HttpResponse(districts_json, content_type="application/json")
 
+
 def district_json(request, district):
     """
     For populating the office dropdown based  country dropdown value
@@ -1957,6 +1988,7 @@ def district_json(request, district):
     village = Village.objects.all().filter(district=selected_district)
     villages_json = serializers.serialize("json", village)
     return HttpResponse(villages_json, content_type="application/json")
+
 
 def ProgramDashboardCounts(request):
     """

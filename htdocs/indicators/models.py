@@ -20,16 +20,40 @@ class IndicatorTypeAdmin(admin.ModelAdmin):
     display = 'Indicator Type'
 
 
-class Objective(models.Model):
+class StrategicObjective(models.Model):
     name = models.CharField(max_length=135, blank=True)
     country = models.ForeignKey(Country, null=True, blank=True)
+    description = models.CharField(max_length=765, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('country','name')
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(StrategicObjective, self).save()
+
+
+class StrategicObjectiveAdmin(admin.ModelAdmin):
+    list_display = ('country','name')
+    search_fields = ('country','name')
+    display = 'Strategic Objectives'
+
+
+class Objective(models.Model):
+    name = models.CharField(max_length=135, blank=True)
     program = models.ForeignKey(Program, null=True, blank=True)
     description = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('country','program','name')
+        ordering = ('program','name')
 
     def __unicode__(self):
         return self.name
@@ -41,10 +65,9 @@ class Objective(models.Model):
 
 
 class ObjectiveAdmin(admin.ModelAdmin):
-    list_display = ('country','program','name')
-    search_fields = ('country','program')
+    list_display = ('program','name')
+    search_fields = ('name','program')
     display = 'Objectives'
-
 
 class Level(models.Model):
     name = models.CharField(max_length=135, blank=True)
@@ -144,7 +167,8 @@ class Indicator(models.Model):
     country = models.ForeignKey(Country, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)
-    objectives = models.ManyToManyField(Objective, blank=True)
+    objectives = models.ManyToManyField(Objective, blank=True, related_name="obj_indicator")
+    strategic_objectives = models.ManyToManyField(StrategicObjective, blank=True, related_name="strat_indicator")
     name = models.CharField(max_length=255, null=True, blank=True)
     number = models.CharField(max_length=255, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)

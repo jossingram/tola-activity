@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from indicators.models import Indicator, CollectedData, Objective
+from indicators.models import Indicator, CollectedData, Objective, StrategicObjective
 from activitydb.models import Program, SiteProfile, Documentation
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
@@ -43,7 +43,7 @@ class IndicatorForm(forms.ModelForm):
             TabHolder(
                 Tab('Summary',
                      Fieldset('',
-                        'program','sector','objectives',
+                        'program','sector','objectives','strategic_objectives'
                         ),
                 ),
                 Tab('Performance',
@@ -85,7 +85,8 @@ class IndicatorForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
-        self.fields['objectives'].queryset = Objective.objects.filter(country__in=countries)
+        self.fields['objectives'].queryset = Objective.objects.all()
+        self.fields['strategic_objectives'].queryset = StrategicObjective.objects.filter(country__in=countries)
 
 
 class CollectedDataForm(forms.ModelForm):
@@ -116,7 +117,7 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved', 'description','indicator','date_collected','program','comment','method','tool','date_of_training','trainer_name','date_of_analysis','analysis_name','office','evidence'
+                'targeted', 'achieved', 'description','indicator','date_collected','program','agreement','comment','method','tool','date_of_training','trainer_name','date_of_analysis','analysis_name','office','evidence'
             ),
 
 

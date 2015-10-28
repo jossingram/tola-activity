@@ -110,9 +110,6 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         model = ProjectAgreement
         fields = '__all__'
 
-    expected_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    expected_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-
     def __init__(self, *args, **kwargs):
 
         #get the user object from request to check permissions
@@ -127,51 +124,7 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = True
-        self.helper.layout = Layout(
-
-            HTML("""<p>Create a Summary first then add additional fields after saving</p><br/>"""),
-            TabHolder(
-                   Tab('Executive Summary',
-                        Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
-                                 'project_type','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
-                        ),
-
-                    ),
-                    Tab('Community Proposal',
-                        Fieldset(
-                            'Community',
-                            'community','community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact'
-                            'community_proposal',
-                        ),
-                        Fieldset(
-                            'Stakeholders',
-                            'stakeholder'
-                        ),
-                    ),
-            ),
-            FormActions(
-                Submit('submit', 'Save', css_class='btn-default'),
-                Reset('reset', 'Reset', css_class='btn-warning')
-            ),
-
-            HTML("""<br/>"""),
-
-        )
         super(ProjectAgreementCreateForm, self).__init__(*args, **kwargs)
-
-        #override the program queryset to use request.user for country
-        countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
-
-        #override the office queryset to use request.user for country
-        self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
-
-        #override the community queryset to use request.user for country
-        self.fields['community'].queryset = SiteProfile.objects.filter(country__in=countries)
-
-        #override the stakeholder queryset to use request.user for country
-        self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
-
 
 class ProjectAgreementForm(forms.ModelForm):
 
@@ -192,7 +145,6 @@ class ProjectAgreementForm(forms.ModelForm):
     estimated_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     finance_reviewed_by_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     exchange_rate_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(country='1'), required=False)
 
     documentation_government_approval = forms.FileField(required=False)
     documentation_community_approval = forms.FileField(required=False)
@@ -233,20 +185,9 @@ class ProjectAgreementForm(forms.ModelForm):
             TabHolder(
                 Tab('Executive Summary',
                     Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
-                             'project_type', 'project_type_other', 'site','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
+                             'project_type', 'project_type_other', 'site','stakeholder','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
                     ),
 
-                ),
-                Tab('Community Proposal',
-                    Fieldset(
-                        'Community',
-                        'community_rep','community_rep_contact', 'community_mobilizer','community_mobilizer_contact','community_project_description'
-                        'community_proposal'
-                    ),
-                    Fieldset(
-                        'Stakeholders',
-                        'stakeholder'
-                    ),
                 ),
                 Tab('Budget',
                      Fieldset(
@@ -293,23 +234,17 @@ class ProjectAgreementForm(forms.ModelForm):
                 ),
 
                 Tab('Justification and Description',
-                    Fieldset(
-                        'Justification',
-                        Field('mc_objectives'),Field('program_objectives'),Field('effect_or_impact'),
-                        Field('justification_background', rows="3", css_class='input-xlarge'),
-                        Field('justification_description_community_selection', rows="3", css_class='input-xlarge'),
-                    ),
                      Fieldset(
                         'Description',
-                        Field('description_of_project_activities', rows="3", css_class='input-xlarge'),
-                        Field('description_of_government_involvement', rows="3", css_class='input-xlarge'),
-                        'documentation_government_approval',
-                        Field('description_of_community_involvement', rows="3", css_class='input-xlarge'),
-                        'documentation_community_approval',
+                        Field('description_of_project_activities', rows="4", css_class='input-xlarge'),
 
                     ),
+                    Fieldset(
+                        'Justification',
+                        Field('effect_or_impact',rows="4", css_class='input-xlarge', label="Anticipated Outcome and Goal"),
+                    ),
                 ),
-                Tab('Planning',
+                Tab('M&E',
                     Fieldset(
                         '',
                         MultiField(
@@ -376,8 +311,6 @@ class ProjectAgreementForm(forms.ModelForm):
                             'capacity',
                         ),
                     ),
-                ),
-                 Tab('M&E',
                     Fieldset(
                         '',
                         MultiField(
@@ -417,26 +350,6 @@ class ProjectAgreementForm(forms.ModelForm):
                     ),
                 ),
 
-
-                Tab('Project Impact',
-                     Fieldset(
-                        'Beneficiaries',
-                        'beneficiary_type','estimated_num_direct_beneficiaries', 'average_household_size', 'estimated_num_indirect_beneficiaries',
-                     ),
-                     Fieldset(
-                         'Training',
-                         'estimate_male_trained','estimate_female_trained','estimate_total_trained','estimate_trainings',
-                     ),
-                     Fieldset(
-                         'Distribution',
-                         'distribution_type','distribution_uom','distribution_estimate',
-                     ),
-                     Fieldset(
-                         'Cash For Work',
-                         'cfw_estimate_male','cfw_estimate_female','cfw_estimate_total','cfw_estimate_project_days','cfw_estimate_person_days',
-                         'cfw_estimate_cost_materials','cfw_estimate_wages_budgeted',
-                     ),
-                ),
                 Tab('Approval',
                     Fieldset('Approval',
                              'approval', 'estimated_by','estimated_by_date', 'reviewed_by','reviewed_by_date',
@@ -500,7 +413,7 @@ class ProjectAgreementForm(forms.ModelForm):
         #override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
-        #override the community queryset to use request.user for country
+        #override the site queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         #override the stakeholder queryset to use request.user for country
@@ -614,7 +527,7 @@ class ProjectCompleteForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'project_activity','community'
+                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'project_activity','site'
                     ),
                     Fieldset(
                         'Dates',
@@ -741,7 +654,7 @@ class ProjectCompleteForm(forms.ModelForm):
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
         #override the community queryset to use request.user for country
-        self.fields['community'].queryset = SiteProfile.objects.filter(country__in=countries)
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
