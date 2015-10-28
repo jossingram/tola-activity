@@ -687,7 +687,7 @@ class ProjectAgreement(models.Model):
     finance_reviewed_by_date = models.DateTimeField("Date Reviewed by Finance", null=True, blank=True)
     me_reviewed_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="M&E Reviewed by", related_name="reviewing_me")
     me_reviewed_by_date = models.DateTimeField("Date Reviewed by M&E", null=True, blank=True)
-    capacity = models.ManyToManyField(Capacity, blank=True)
+    capacity = models.ManyToManyField(Capacity,verbose_name="Sustainability Plan", blank=True)
     evaluate = models.ManyToManyField(Evaluate, blank=True)
     approval = models.CharField("Status", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_agreement")

@@ -430,6 +430,8 @@ class ProjectCompleteCreate(CreateView):
             'approved_by': self.request.user,
             'approval_submitted_by': self.request.user,
             'program': getProjectAgreement.program,
+            'office': getProjectAgreement.office,
+            'sector': getProjectAgreement.sector,
             'project_agreement': getProjectAgreement.id,
             'project_name': getProjectAgreement.project_name,
             'activity_code': getProjectAgreement.activity_code,
@@ -440,10 +442,10 @@ class ProjectCompleteCreate(CreateView):
         }
 
         try:
-            getCommunites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
-            communites = {'community': [o for o in getCommunites],}
+            getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
+            site = {'site': [o for o in getSites],}
             initial = pre_initial.copy()
-            initial.update(communites)
+            initial.update(site)
         except SiteProfile.DoesNotExist:
             getCommunites = None
 
@@ -877,7 +879,7 @@ class SiteProfileList(ListView):
         return render(request, self.template_name, {'getCommunity':getCommunity,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
-class CommunityReport(ListView):
+class SiteProfileReport(ListView):
     """
     SiteProfile Report filtered by project
     """
@@ -919,7 +921,6 @@ class SiteProfileCreate(CreateView):
         default_country = None
         if countries:
             default_country = countries[0]
-            print default_country
         initial = {
             'approved_by': self.request.user,
             'filled_by': self.request.user,
@@ -942,7 +943,7 @@ class SiteProfileCreate(CreateView):
     form_class = SiteProfileForm
 
 
-class CommunityUpdate(UpdateView):
+class SiteProfileUpdate(UpdateView):
     """
     SiteProfile Form Update an existing site profile
     """
@@ -950,13 +951,13 @@ class CommunityUpdate(UpdateView):
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(CommunityUpdate, self).get_form_kwargs()
+        kwargs = super(SiteProfileUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
     def get_context_data(self, **kwargs):
-        context = super(CommunityUpdate, self).get_context_data(**kwargs)
-        getProjects = ProjectAgreement.objects.all().filter(community__id=self.kwargs['pk'])
+        context = super(SiteProfileUpdate, self).get_context_data(**kwargs)
+        getProjects = ProjectAgreement.objects.all().filter(site__id=self.kwargs['pk'])
         context.update({'getProjects': getProjects})
         return context
 
@@ -1641,6 +1642,14 @@ class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
     """
     model = CollectedData
     template_name = 'activitydb/quantitativeoutputs_form.html'
+
+    def get_initial(self):
+        getProgram = Program.objects.get(indicator__program = self.kwargs['id'])
+        initial = {
+            'program': getProgram.id,
+            }
+
+        return initial
 
     def get_context_data(self, **kwargs):
         context = super(QuantitativeOutputsUpdate, self).get_context_data(**kwargs)
