@@ -306,6 +306,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                         <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ pk }}">Add Benchmarks</a>
                                       </div>
                                     </div>
+
                                      """),
 
                             'capacity',
@@ -316,7 +317,7 @@ class ProjectAgreementForm(forms.ModelForm):
                         MultiField(
                             '',
                             HTML("""
-
+                                    <br/>
                                     <div class='panel panel-default'>
                                       <!-- Default panel contents -->
                                       <div class='panel-heading'>Monitoring</div>
