@@ -409,10 +409,15 @@ class SiteProfile(models.Model):
 
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
+
+        # Check if a create date has been specified. If not, display today's date in create_date and edit_date
         if self.create_date == None:
             self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        self.code = str(self.country.code) + "-" + str(self.office.code) + "-" + str(self.name)
+            self.edit_date = datetime.now()
+
+        # Generate a site profile code by combining the country code, office code and the name of the site
+            self.code = str(self.country.code) + "-" + str(self.office.code) + "-" + str(self.name)
+
         super(SiteProfile, self).save()
 
     #displayed in admin templates
