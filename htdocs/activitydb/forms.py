@@ -794,16 +794,17 @@ class SiteProfileForm(forms.ModelForm):
                 ),
                 Tab('Location',
                     Fieldset('Places',
-                        'country','province','district','village', Field('latitude', step="any"), Field('longitude', step="any"),'altitude', 'precision',
+                        'country','province','district','village', Field('latitude', step="any"), Field('longitude', step="any"),
                     ),
                     Fieldset('Map',
                         'map',
                     ),
-                    Fieldset('Distances',
-                        'distance_district_capital','distance_site_camp','distance_field_office',
-                    ),
+                   # Removed Distances fieldset from location tab
+                   # Fieldset('Distances',
+                   #      'distance_district_capital','distance_site_camp','distance_field_office',
+                   #  ),
                 ),
-                Tab('For Geographic Sites',
+                Tab('Demographic Information',
                     Fieldset('Households',
                         'total_num_households','avg_household_size', 'male_0_14', 'female_0_14', 'male_15_24', 'female_15_24',
                         'male_25_59', 'female_25_59', 'male_over_60', 'female_over_60', 'total_population',
@@ -815,12 +816,17 @@ class SiteProfileForm(forms.ModelForm):
                     Fieldset('Literacy',
                         'total_num_literate','literate_males','literate_females','literacy_rate',
                     ),
-                ),
-                Tab('Approval',
-                    Fieldset('Approval',
-                        'approval', 'filled_by', 'location_verified_by', 'approved_by',
+                    Fieldset('Demographic Info Data Source',
+                             'info_source'
                     ),
                 ),
+
+                # Remove the Approval tab from Site Profile
+                # Tab('Approval',
+                #    Fieldset('Approval',
+                #        'approval', 'filled_by', 'location_verified_by', 'approved_by',
+                #    ),
+                #),
             ),
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
@@ -862,11 +868,11 @@ class SiteProfileForm(forms.ModelForm):
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
         self.fields['province'].queryset = Province.objects.filter(country__in=countries)
 
-
-        if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
-            self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
-            self.fields['approval'].help_text = "Approval level permissions required"
+        # Remove approval validation
+          # if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
+          #  self.fields['approval'].widget.attrs['disabled'] = "disabled"
+          #  self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
+          #  self.fields['approval'].help_text = "Approval level permissions required"
 
 
 class DocumentationForm(forms.ModelForm):

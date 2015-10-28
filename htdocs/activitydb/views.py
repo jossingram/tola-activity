@@ -833,7 +833,7 @@ class DocumentationDelete(DeleteView):
 
 class SiteProfileList(ListView):
     """
-    SiteProfile list creates a map and list of communites by user country access and filters
+    SiteProfile list creates a map and list of sites by user country access and filters
     by either direct link from project or by program dropdown filter
     """
     model = SiteProfile
