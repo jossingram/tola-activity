@@ -673,7 +673,7 @@ class ProjectAgreement(models.Model):
     cfw_estimate_wages_budgeted= models.CharField("Estimated Wages Budgeted",max_length="255",blank=True,null=True)
     estimation_date = models.DateTimeField(blank=True, null=True)
     estimated_by = models.ForeignKey(TolaUser, blank=True, null=True,verbose_name="Originated By", related_name="estimating")
-    estimated_by_date = models.DateTimeField("Date Estimated", null=True, verbose_name="Originated By Date", blank=True)
+    estimated_by_date = models.DateTimeField("Date Originated", null=True, blank=True)
     checked_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="checking")
     checked_by_date = models.DateTimeField("Date Checked", null=True, blank=True)
     reviewed_by = models.ForeignKey(TolaUser, verbose_name="Field Verification By" ,blank=True, null=True, related_name="reviewing")

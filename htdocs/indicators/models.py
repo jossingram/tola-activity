@@ -245,7 +245,7 @@ class CollectedData(models.Model):
     trainer_name = models.CharField("Name of Trainer", max_length=255, blank=True, null=True)
     analysis_name = models.CharField("Analysis Done By", max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, blank=True, null=True, related_name="q_office")
-    evidence = models.ForeignKey(Documentation, null=True, blank=True)
+    evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

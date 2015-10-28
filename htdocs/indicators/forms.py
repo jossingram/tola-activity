@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from indicators.models import Indicator, CollectedData, Objective, StrategicObjective
-from activitydb.models import Program, SiteProfile, Documentation
+from activitydb.models import Program, SiteProfile, Documentation, ProjectAgreement
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
@@ -117,14 +117,14 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved', 'description','indicator','date_collected','program','agreement','comment','office','evidence'
+                'targeted', 'achieved','indicator', 'program','description','date_collected','office',
 
             ),
 
             HTML("""<br/>"""),
 
             Fieldset('Evidence',
-                'agreement','method','tool','evidence'
+                'agreement','method','evidence',
             ),
 
 
@@ -190,5 +190,8 @@ class CollectedDataForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         self.fields['evidence'].queryset = Documentation.objects.filter(program=self.program)
+
+        #override the program queryset to use request.user for country
+        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program=self.program)
 
 
