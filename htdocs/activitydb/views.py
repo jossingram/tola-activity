@@ -879,7 +879,7 @@ class SiteProfileList(ListView):
         return render(request, self.template_name, {'getCommunity':getCommunity,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
-class CommunityReport(ListView):
+class SiteProfileReport(ListView):
     """
     SiteProfile Report filtered by project
     """
@@ -921,7 +921,6 @@ class SiteProfileCreate(CreateView):
         default_country = None
         if countries:
             default_country = countries[0]
-            print default_country
         initial = {
             'approved_by': self.request.user,
             'filled_by': self.request.user,
@@ -944,7 +943,7 @@ class SiteProfileCreate(CreateView):
     form_class = SiteProfileForm
 
 
-class CommunityUpdate(UpdateView):
+class SiteProfileUpdate(UpdateView):
     """
     SiteProfile Form Update an existing site profile
     """
@@ -952,13 +951,13 @@ class CommunityUpdate(UpdateView):
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(CommunityUpdate, self).get_form_kwargs()
+        kwargs = super(SiteProfileUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
     def get_context_data(self, **kwargs):
-        context = super(CommunityUpdate, self).get_context_data(**kwargs)
-        getProjects = ProjectAgreement.objects.all().filter(community__id=self.kwargs['pk'])
+        context = super(SiteProfileUpdate, self).get_context_data(**kwargs)
+        getProjects = ProjectAgreement.objects.all().filter(site__id=self.kwargs['pk'])
         context.update({'getProjects': getProjects})
         return context
 
