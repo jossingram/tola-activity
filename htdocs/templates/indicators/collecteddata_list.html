@@ -47,6 +47,7 @@
                     <th>Date Created</th>
                     <th>Date Collected</th>
                     <th>Program</th>
+                    <th>Evidence</th>
                     <th>Target</th>
                     <th>Actual</th>
                     <th>&nbsp;</th>
@@ -57,9 +58,10 @@
                     <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.create_date}}</a></td>
                     <td>{{ item.date_collected }}</td>
                     <td>{{ item.program }}</td>
+                    <td>{{ item.evidence }} </td>
                     <td>{{ item.targeted }}</td>
                     <td>{{ item.achieved }}</td>
-                    <td><a href="/indicators/collecteddata_add/{% if item.agreement.id %}{{ item.agreement.id }}{% else %}0{% endif %}/{% if item.indicator.id %}{{ item.indicator.id }}{% else %}0{% endif %}/" class="btn-xs btn-success">New</a><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
+                    <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
                 </tr>
                 {% endfor %}
                 <tr>

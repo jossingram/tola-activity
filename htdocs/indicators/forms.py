@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from indicators.models import Indicator, CollectedData, Objective, StrategicObjective
-from activitydb.models import Program, SiteProfile, Documentation
+from activitydb.models import Program, SiteProfile, Documentation, ProjectAgreement
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
@@ -117,8 +117,16 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved', 'description','indicator','date_collected','program','agreement','comment','method','tool','date_of_training','trainer_name','date_of_analysis','analysis_name','office','evidence'
+                'targeted', 'achieved','indicator', 'program','description','date_collected','office',
+
             ),
+
+            HTML("""<br/>"""),
+
+            Fieldset('Evidence',
+                'agreement','method','evidence',
+            ),
+
 
 
                 MultiField(
@@ -181,9 +189,9 @@ class CollectedDataForm(forms.ModelForm):
         super(CollectedDataForm, self).__init__(*args, **kwargs)
 
         #override the program queryset to use request.user for country
-        if self.program != None:
-            self.fields['evidence'].queryset = Documentation.objects.filter(program=self.program)
-        else:
-            countries = getCountry(self.request.user)
-            self.fields['evidence'].queryset = Documentation.objects
+        self.fields['evidence'].queryset = Documentation.objects.filter(program=self.program)
+
+        #override the program queryset to use request.user for country
+        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program=self.program)
+
 
