@@ -683,8 +683,10 @@ class SiteProfileForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        #get the user object from request to check permissions
+
+        # get the user object from request to check user permissions
         self.request = kwargs.pop('request')
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -694,13 +696,15 @@ class SiteProfileForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
+
+        # Organize the fields in the site profile form using a layout class
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Profile',
                     Fieldset('Description',
-                        'code', 'name', 'type', 'office', PrependedText('existing_village',''), 'existing_village_descr',
+                        'code', 'name', 'type', 'office',
                     ),
                     Fieldset('Community Info',
                         'community_leader', 'head_of_institution', 'date_of_firstcontact', 'contact_number', 'num_members',
@@ -713,10 +717,6 @@ class SiteProfileForm(forms.ModelForm):
                     Fieldset('Map',
                         'map',
                     ),
-                   # Removed Distances fieldset from location tab
-                   # Fieldset('Distances',
-                   #      'distance_district_capital','distance_site_camp','distance_field_office',
-                   #  ),
                 ),
                 Tab('Demographic Information',
                     Fieldset('Households',
@@ -728,19 +728,13 @@ class SiteProfileForm(forms.ModelForm):
                         'population_owning_land', 'avg_landholding_size', 'population_owning_livestock','animal_type'
                     ),
                     Fieldset('Literacy',
-                        'total_num_literate','literate_males','literate_females','literacy_rate',
+                        'literate_males','literate_females','literacy_rate',
                     ),
                     Fieldset('Demographic Info Data Source',
                              'info_source'
                     ),
                 ),
 
-                # Remove the Approval tab from Site Profile
-                # Tab('Approval',
-                #    Fieldset('Approval',
-                #        'approval', 'filled_by', 'location_verified_by', 'approved_by',
-                #    ),
-                #),
             ),
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
@@ -748,30 +742,32 @@ class SiteProfileForm(forms.ModelForm):
             ),
 
              HTML("""
-            <br/>
-            <div class='panel panel-default'>
-              <!-- Default panel contents -->
-              <div class='panel-heading'>Projects in this Site</div>
-              {% if getProjects %}
-                  <!-- Table -->
-                  <table class="table">
-                    <tr>
-                    <th>Project Name</th>
-                    <th>Program</th>
-                    <th>Activity Code</th>
-                    <th>View</th>
-                    </tr>
+                  <br/>
+                  <div class='panel panel-default'>
+
+                  <!-- Default panel contents -->
+                  <div class='panel-heading'>Projects in this Site</div>
+                    {% if getProjects %}
+                      <!-- Table -->
+                      <table class="table">
+                       <tr>
+                         <th>Project Name</th>
+                         <th>Program</th>
+                         <th>Activity Code</th>
+                         <th>View</th>
+                       </tr>
+
                     {% for item in getProjects %}
-                    <tr>
+                       <tr>
                         <td>{{ item.project_name }}</td>
                         <td>{{ item.program.name }}</td>
                         <td>{{ item.activity_code }}</td>
                         <td><a target="_new" href='/activitydb/projectagreement_detail/{{ item.id }}/'>View</a>
-                    </tr>
+                       </tr>
                     {% endfor %}
-                  </table>
-              {% endif %}
-            </div>
+                     </table>
+                    {% endif %}
+                  </div>
              """),
         )
 
@@ -781,13 +777,6 @@ class SiteProfileForm(forms.ModelForm):
         countries = getCountry(self.request.user)
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
         self.fields['province'].queryset = Province.objects.filter(country__in=countries)
-
-        # Remove approval validation
-          # if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-          #  self.fields['approval'].widget.attrs['disabled'] = "disabled"
-          #  self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
-          #  self.fields['approval'].help_text = "Approval level permissions required"
-
 
 class DocumentationForm(forms.ModelForm):
 
