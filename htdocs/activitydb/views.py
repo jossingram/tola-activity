@@ -1642,6 +1642,14 @@ class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
     model = CollectedData
     template_name = 'activitydb/quantitativeoutputs_form.html'
 
+    def get_initial(self):
+        getProgram = Program.objects.get(indicator__program = self.kwargs['id'])
+        initial = {
+            'program': getProgram.id,
+            }
+
+        return initial
+
     def get_context_data(self, **kwargs):
         context = super(QuantitativeOutputsUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
