@@ -430,6 +430,8 @@ class ProjectCompleteCreate(CreateView):
             'approved_by': self.request.user,
             'approval_submitted_by': self.request.user,
             'program': getProjectAgreement.program,
+            'office': getProjectAgreement.office,
+            'sector': getProjectAgreement.sector,
             'project_agreement': getProjectAgreement.id,
             'project_name': getProjectAgreement.project_name,
             'activity_code': getProjectAgreement.activity_code,
@@ -440,10 +442,10 @@ class ProjectCompleteCreate(CreateView):
         }
 
         try:
-            getCommunites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
-            communites = {'community': [o for o in getCommunites],}
+            getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
+            site = {'site': [o for o in getSites],}
             initial = pre_initial.copy()
-            initial.update(communites)
+            initial.update(site)
         except SiteProfile.DoesNotExist:
             getCommunites = None
 
