@@ -389,9 +389,9 @@ class SiteProfile(models.Model):
     animal_type = models.CharField("Animal Types", help_text="List Animal Types", max_length=255, null=True, blank=True)
 
     country = models.ForeignKey(Country)
-    province = models.ForeignKey(Province, null=True, blank=True)
-    district = models.ForeignKey(District, null=True, blank=True)
-    village = models.CharField("Administrative Level 3", help_text="Village", max_length=255, null=True, blank=True)
+    province = models.ForeignKey(Province, verbose_name="Administrative Level 1", null=True, blank=True)
+    district = models.ForeignKey(District, verbose_name="Administrative Level 2", null=True, blank=True)
+    village = models.CharField("Administrative Level 3", help_text="", max_length=255, null=True, blank=True)
     latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
     longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
 
