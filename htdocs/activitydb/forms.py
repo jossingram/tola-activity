@@ -706,8 +706,8 @@ class SiteProfileForm(forms.ModelForm):
                     Fieldset('Description',
                         'code', 'name', 'type', 'office',
                     ),
-                    Fieldset('Community Info',
-                        'community_leader', 'head_of_institution', 'date_of_firstcontact', 'contact_number', 'num_members',
+                    Fieldset('Contact Info',
+                        'contact_leader', 'date_of_firstcontact', 'contact_number', 'num_members',
                     ),
                 ),
                 Tab('Location',
@@ -725,7 +725,7 @@ class SiteProfileForm(forms.ModelForm):
                     ),
                     Fieldset('Land',
                         'total_land','total_agricultural_land','total_rainfed_land','total_horticultural_land',
-                        'population_owning_land', 'avg_landholding_size', 'population_owning_livestock','animal_type'
+                        'populations_owning_land', 'avg_landholding_size', 'households_owning_livestock','animal_type'
                     ),
                     Fieldset('Literacy',
                         'literate_males','literate_females','literacy_rate',
