@@ -21,9 +21,4 @@ class Migration(migrations.Migration):
             name='estimated_by_date',
             field=models.DateTimeField(null=True, verbose_name='Date Originated', blank=True),
         ),
-        migrations.AlterField(
-            model_name='siteprofile',
-            name='households_owning_livestock',
-            field=models.IntegerField(help_text='(%)', null=True, verbose_name='Households Owning Livestock', blank=True),
-        ),
     ]
