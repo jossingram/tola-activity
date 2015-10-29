@@ -219,53 +219,59 @@ def programIndicatorReport(request, program=0):
     return render(request, "indicators/grid_report.html", {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgram': getProgram, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
-def indicator_data_report(request, id=0, program=0, agreement=0):
+def indicator_data_report(request, id=0, program=0):
     """
     Show LIST of indicator based quantitative outputs with a filtered search view using django-tables2
     and django-filter
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    getAgreements = ProjectAgreement.objects.all().filter(program__country__in=countries)
     getIndicators = Indicator.objects.select_related().filter(country__in=countries)
+    indicator_name = None
+    program_name = None
+    q = None
 
+    #Build query based on filters and search
     if int(id) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(indicator__id=id).select_related()
-        getSiteProfile = CollectedData.objects.all().filter(indicator__id=id).select_related()
+        getSiteProfile = Indicator.objects.all().filter(id=id).select_related()
+        q = {
+            'indicator__id': id
+        }
+        indicator_name = Indicator.objects.get(id=id).name
     else:
-        getQuantitativeData = CollectedData.objects.all().select_related().filter(indicator__country__in=countries)
         getSiteProfile = SiteProfile.objects.all().select_related()
+        q = {
+            'indicator__country__in': countries,
+        }
 
     if int(program) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(agreement__program__id=program).select_related()
         getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program).select_related()
-
-    if int(agreement) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(agreement__id=agreement).select_related()
-        getSiteProfile = SiteProfile.objects.all().filter(projectagreement__id=agreement).select_related()
-
-    table = IndicatorDataTable(getQuantitativeData)
-    table.paginate(page=request.GET.get('page', 1), per_page=20)
+        program_name = Program.objects.get(id=program).name
+        q = {
+            'program__id':program,
+            'agreement__program__id': program,
+        }
 
     if request.method == "GET" and "search" in request.GET:
-        print "search"
-        #list1 = list()
-        #for obj in filtered:
-        #    list1.append(obj)
         """
          fields = ('targeted', 'achieved', 'description', 'indicator', 'agreement', 'complete')
         """
-        queryset = CollectedData.objects.filter(
+        queryset = CollectedData.objects.filter(**q).filter(
                                            Q(agreement__project_name__contains=request.GET["search"]) |
                                            Q(description__icontains=request.GET["search"]) |
                                            Q(indicator__name__contains=request.GET["search"])
                                           ).select_related()
-        table = IndicatorDataTable(queryset)
+    else:
+        queryset = CollectedData.objects.all().filter(**q).select_related()
+
+    #pass query to table and configure
+    table = IndicatorDataTable(queryset)
+    table.paginate(page=request.GET.get('page', 1), per_page=20)
 
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/data_report.html", {'getQuantitativeData':getQuantitativeData,'countries':countries, 'getSiteProfile':getSiteProfile, 'table': table, 'getAgreements': getAgreements,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id,'program':program,'agreement':agreement})
+    return render(request, "indicators/data_report.html", {'getQuantitativeData':queryset,'countries':countries, 'getSiteProfile':getSiteProfile, 'table': table,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id,'program':program,'indicator_name':indicator_name, 'program_name': program_name})
 
 
 class CollectedDataList(ListView):
