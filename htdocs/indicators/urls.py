@@ -32,10 +32,9 @@ urlpatterns = patterns('',
 
     #Indicator Data Report
     url(r'^data/(?P<id>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
-    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/map/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
-    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/graph/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
-    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/table/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
+    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/map/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
+    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/graph/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
+    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/table/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
-    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
-    
+
 )
