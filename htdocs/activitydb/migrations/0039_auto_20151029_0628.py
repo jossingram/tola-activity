@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('activitydb', '0040_auto_20151028_1900'),
+        ('activitydb', '0038_auto_20151029_0616'),
     ]
 
     operations = [
-         migrations.AlterField(
+        migrations.RenameField(
             model_name='siteprofile',
-            name='contact_leader',
-            field=models.CharField(max_length=255, null=True, verbose_name='Contact Name', blank=True),
+            old_name='community_leader',
+            new_name='contact_leader',
         ),
     ]

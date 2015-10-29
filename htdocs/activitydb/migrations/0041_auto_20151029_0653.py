@@ -7,11 +7,15 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('activitydb', '0045_remove_siteprofile_head_of_institution'),
+        ('activitydb', '0040_auto_20151029_0643'),
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='siteprofile',
+            name='populations_owning_livestock',
+        ),
+        migrations.AddField(
             model_name='siteprofile',
             name='households_owning_livestock',
             field=models.IntegerField(help_text='(%)', null=True, verbose_name='Households Owning Livestock', blank=True),

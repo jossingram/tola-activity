@@ -22,8 +22,8 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(null=True, verbose_name='Date Originated', blank=True),
         ),
         migrations.AlterField(
-            model_name='projectagreement',
-            name='expected_duration',
-            field=models.CharField(default='000000', editable=False, max_length=255, blank=True, help_text='[MONTHS]/[DAYS]', null=True, verbose_name='Expected duration'),
+            model_name='siteprofile',
+            name='households_owning_livestock',
+            field=models.IntegerField(help_text='(%)', null=True, verbose_name='Households Owning Livestock', blank=True),
         ),
     ]
