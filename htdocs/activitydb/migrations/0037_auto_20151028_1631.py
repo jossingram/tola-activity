@@ -18,14 +18,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='siteprofile',
-            name='households_owning_land',
+            name='populations_owning_land',
             field=models.IntegerField(help_text='(%)', null=True, verbose_name='Households Owning Land', blank=True),
         ),
-        migrations.AlterField(
-            model_name='siteprofile',
-            name='households_owning_livestock',
-            field=models.IntegerField(help_text='(%)', null=True, verbose_name='Households Owning Livestock', blank=True),
-        ),
+
         migrations.AlterField(
             model_name='siteprofile',
             name='literacy_rate',
