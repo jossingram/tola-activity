@@ -21,20 +21,32 @@ def run():
 
 
 def getAllData():
-
+    #get all the projects and loop over them
     getProjects = ProjectAgreement.objects.all()
     for item in getProjects:
+            #if the project doesn't have a checklist create one
             try:
-                Checklist.objects.get(agreement=item)
+                get_checklist = Checklist.objects.get(agreement=item)
             except Checklist.DoesNotExist:
                 new_checklist = Checklist(agreement=item)
                 new_checklist.save()
 
-                get_checklist = Checklist.objects.get(id=new_checklist.id)
-                get_globals = ChecklistItem.objects.all().filter(global_item=True)
-                for item in get_globals:
-                    ChecklistItem.objects.create(checklist=get_checklist,item=item.item)
+                updateItems(new_checklist)
+            #if it does update the items in the checklist to include all the new globals
+            updateItems(get_checklist)
             print item
 
+def updateItems(checklist):
+
+    get_checklist = Checklist.objects.get(id=checklist.id)
+    get_globals = ChecklistItem.objects.all().filter(global_item=True)
+    for item in get_globals:
+        look_for_existing = ChecklistItem.objects.all().filter(checklist=get_checklist, item=item)
+        print item
+        if look_for_existing:
+            print "dupe do nothing"
+        else:
+            ChecklistItem.objects.create(checklist=get_checklist,item=item.item)
+            print item
 
 getAllData()

@@ -80,7 +80,7 @@ class ProjectDash(ListView):
             getDocumentCount = Documentation.objects.all().filter(project_id=self.kwargs['pk']).count()
             getCommunityCount = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
             getTrainingCount = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
-            getChecklistCount = Checklist.objects.all().filter(agreement_id=self.kwargs['pk']).count()
+            getChecklistCount = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk']).count()
             getChecklist = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk'])
 
 
@@ -1898,10 +1898,8 @@ def checklist_update_link(request,pk,type,value):
     """
     Checklist Update from Link To Update if a Task is Done
     """
-    if value == 1:
-        value=True
-    else:
-        value=False
+    value = int(value)
+    
     if type == "in_file":
         update = ChecklistItem.objects.filter(id=pk).update(in_file=value)
     elif type == "not_applicable":
