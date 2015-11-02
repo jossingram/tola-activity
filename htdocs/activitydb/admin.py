@@ -3,7 +3,7 @@ from .models import Country, Province, Office, Village, Program, Documentation, 
      ProgramDashboard, ProjectAgreement, ProjectComplete, SiteProfile, Capacity, Monitor, \
     Benchmarks, Evaluate, ProjectType, ProjectTypeOther, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
-    Contact, StakeholderAdmin, ContactAdmin
+    Contact, StakeholderAdmin, ContactAdmin, FormLibrary, FormLibraryAdmin, FormEnabled, FormEnabledAdmin
 
 
 admin.site.register(Country)
@@ -38,6 +38,9 @@ admin.site.register(DocumentationApp)
 admin.site.register(Stakeholder, StakeholderAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(StakeholderType)
+admin.site.register(FormLibrary,FormLibraryAdmin)
+admin.site.register(FormEnabled,FormEnabledAdmin)
+
 
 
 

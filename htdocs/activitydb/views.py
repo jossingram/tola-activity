@@ -2,7 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from django.views.generic import TemplateView
-from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact
+from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact, FormLibrary, FormEnabled
 from indicators.models import CollectedData
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
@@ -284,6 +284,7 @@ class ProjectAgreementUpdate(UpdateView):
 
     def form_valid(self, form):
 
+        #get the approval status of the form before it was submitted
         check_agreement_status = ProjectAgreement.objects.get(id=str(self.kwargs['pk']))
         is_approved = str(form.instance.approval)
         print check_agreement_status.approval
@@ -1899,7 +1900,7 @@ def checklist_update_link(request,pk,type,value):
     Checklist Update from Link To Update if a Task is Done
     """
     value = int(value)
-    
+
     if type == "in_file":
         update = ChecklistItem.objects.filter(id=pk).update(in_file=value)
     elif type == "not_applicable":
@@ -1936,6 +1937,28 @@ class ChecklistDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ChecklistForm
+
+
+class FormLibraryList(ListView):
+    """
+    List of all available forms and what forms are enabled for a project
+    """
+    model = FormLibrary
+    template_name = 'activitydb/formlibrary_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        project_agreement_id = self.kwargs['pk']
+
+        if int(self.kwargs['pk']) == 0:
+            getForms = FormLibrary.objects.all()
+            getAgreementForms = None
+        else:
+            getForms = FormLibrary.objects.all()
+            getAgreementForms = FormEnabled.objects.all().filter(agreement_id=self.kwargs['pk'])
+
+
+        return render(request, self.template_name, {'getForms': getForms,'getAgreementForms': getAgreementForms,'project_agreement_id': project_agreement_id})
 
 
 def report(request):

@@ -19,11 +19,11 @@ from activitydb.models import Country, Province, District, AdminLevelThree
 def run():
     print "Uploading Country Admin data"
 
-getCountry = Country.objects.get(id=6)
+getCountry = Country.objects.get(id=4)
 
 def getAllData():
 
-    with open('fixtures/timor-boundaries.csv', 'rb') as csvfile:
+    with open('fixtures/lebanon-admin-districts.csv', 'rb') as csvfile:
         country = csv.reader(csvfile, delimiter=',', quotechar='"')
         #check for province and add new ones
         for row in country:
@@ -40,7 +40,7 @@ def getAllData():
                     print column
                 column_num = column_num + 1
 
-    with open('fixtures/timor-boundaries.csv', 'rb') as csvfile2:
+    with open('fixtures/lebanon-admin-districts.csv', 'rb') as csvfile2:
         country2 = csv.reader(csvfile2, delimiter=',', quotechar='"')
         #check for distrcit and add new one
         for row in country2:
@@ -63,7 +63,7 @@ def getAllData():
 
                 column_num = column_num + 1
 
-    with open('fixtures/timor-boundaries.csv', 'rb') as csvfile2:
+    with open('fixtures/lebanon-admin-districts.csv', 'rb') as csvfile2:
         country2 = csv.reader(csvfile2, delimiter=',', quotechar='"')
         #check for distrcit and add new one
         for row in country2:

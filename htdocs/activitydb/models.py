@@ -1044,6 +1044,57 @@ class BeneficiaryAdmin(admin.ModelAdmin):
     list_display = ('beneficiary_name', 'father_name', 'age', 'gender', 'community', 'signature', 'remarks', 'initials')
 
 
+class FormLibrary(models.Model):
+    name = models.CharField("Form Name", max_length=255, null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name','create_date')
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(FormLibrary, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.name)
+
+
+class FormLibraryAdmin(admin.ModelAdmin):
+    list_display = ('name','create_date')
+
+
+class FormEnabled(models.Model):
+    form = models.ForeignKey(FormLibrary)
+    agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
+    country = models.ForeignKey(Country,null=True,blank=True)
+    enabled = models.BooleanField(default=False)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('country','agreement')
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(FormEnabled, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.form)
+
+
+class FormEnabledAdmin(admin.ModelAdmin):
+    list_display = ('form','agreement','country')
+
+
 class Checklist(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True,default="Checklist")
     agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
