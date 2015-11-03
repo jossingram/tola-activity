@@ -596,13 +596,13 @@ class TemplateAdmin(admin.ModelAdmin):
 
 class Stakeholder(models.Model):
     name = models.CharField("Stakeholder/Organization Name", max_length=255, blank=True, null=True)
-    type = models.ForeignKey(StakeholderType)
+    type = models.ForeignKey(StakeholderType, blank=True, null=True)
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
     country = models.ForeignKey(Country)
     sector = models.ForeignKey(Sector, blank=True, null=True)
     stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?")
-    formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, related_name="relationship_document")
-    vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True, related_name="vetting_document")
+    formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True, related_name="relationship_document")
+    vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True, blank=True, related_name="vetting_document")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
