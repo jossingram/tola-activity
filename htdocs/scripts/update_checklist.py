@@ -28,8 +28,8 @@ def getAllData():
             try:
                 get_checklist = Checklist.objects.get(agreement=item)
             except Checklist.DoesNotExist:
-                new_checklist = Checklist(agreement=item)
-                new_checklist.save()
+                get_checklist = Checklist(agreement=item)
+                get_checklist.save()
 
                 updateItems(new_checklist)
             #if it does update the items in the checklist to include all the new globals
