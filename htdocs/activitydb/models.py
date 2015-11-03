@@ -327,7 +327,7 @@ class ProfileType(models.Model):
         return self.profile
 
 
-class SectorAdmin(admin.ModelAdmin):
+class ProfileTypeAdmin(admin.ModelAdmin):
     list_display = ('profile', 'create_date', 'edit_date')
     display = 'ProfileType'
 
@@ -729,7 +729,8 @@ class ProjectAgreement(models.Model):
 
 
 class ProjectAgreementAdmin(admin.ModelAdmin):
-    list_display = ('project_name')
+    list_display = ('program','project_name')
+    list_filter = ('program','office')
     display = 'project_name'
 
 
@@ -805,6 +806,7 @@ class ProjectComplete(models.Model):
 
 class ProjectCompleteAdmin(admin.ModelAdmin):
     list_display = ('program', 'project_name', 'activity_code')
+    list_filter = ('program','office')
     display = 'project_name'
 
 
@@ -1118,7 +1120,8 @@ class Checklist(models.Model):
 
 
 class ChecklistAdmin(admin.ModelAdmin):
-    list_display = ('name','agreement','country')
+    list_display = ('name','country')
+    list_filter = ('country','agreement')
 
 
 class ChecklistItem(models.Model):
@@ -1147,6 +1150,7 @@ class ChecklistItem(models.Model):
 
 class ChecklistItemAdmin(admin.ModelAdmin):
     list_display = ('item','checklist','in_file')
+    list_filter = ('checklist','global_item')
 
 
 # Documentation

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Country, Province, Office, Village, Program, Documentation, Template,District, Sector, \
-     ProgramDashboard, ProjectAgreement, ProjectComplete, SiteProfile, Capacity, Monitor, \
+     ProgramDashboard, ProjectAgreement, ProjectAgreementAdmin,ProjectComplete, SiteProfile, Capacity, Monitor, \
     Benchmarks, Evaluate, ProjectType, ProjectTypeOther, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
     Contact, StakeholderAdmin, ContactAdmin, FormLibrary, FormLibraryAdmin, FormEnabled, FormEnabledAdmin
@@ -15,7 +15,7 @@ admin.site.register(Village)
 admin.site.register(Program)
 admin.site.register(Sector)
 admin.site.register(ProgramDashboard)
-admin.site.register(ProjectAgreement)
+admin.site.register(ProjectAgreement, ProjectAgreementAdmin)
 admin.site.register(ProjectComplete)
 admin.site.register(Documentation)
 admin.site.register(Template)
