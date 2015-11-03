@@ -31,7 +31,7 @@ def getAllData():
                 get_checklist = Checklist(agreement=item)
                 get_checklist.save()
 
-                updateItems(new_checklist)
+                updateItems(get_checklist)
             #if it does update the items in the checklist to include all the new globals
             updateItems(get_checklist)
             print item
