@@ -95,7 +95,7 @@ class Contact(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.count + "-" + self.name
+        return self.name
 
 
 class ContactAdmin(admin.ModelAdmin):
