@@ -183,7 +183,7 @@ class ProjectAgreementForm(forms.ModelForm):
             TabHolder(
                 Tab('Executive Summary',
                     Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
-                             'project_type', 'project_type_other', 'site','stakeholder','mc_staff_responsible','expected_start_date','expected_end_date','expected_duration',
+                             'project_type', 'project_type_other', 'site','stakeholder','mc_staff_responsible','expected_start_date','expected_end_date',
                     ),
 
                 ),
