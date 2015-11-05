@@ -8,7 +8,7 @@ import json
 import unicodedata
 from django.http import HttpResponseRedirect
 from django.db import models
-from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData
+from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType
 from activitydb.models import Program, ProjectAgreement, SiteProfile
 from djangocosign.models import UserProfile
 from indicators.forms import IndicatorForm, CollectedDataForm
@@ -46,6 +46,19 @@ class IndicatorList(ListView):
             getIndicators = Indicator.objects.all().filter(program__id=self.kwargs['pk']).select_related()
 
         return render(request, self.template_name, {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
+
+
+def import_create(request):
+    """
+    CREATE AN INDICATOR BASED ON TYPE FIRST
+    """
+
+    getImportedIndicators = import_indicator()
+    getIndicatorTypes = IndicatorType.Objects.all()
+
+    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+    return render(request, "indicators/create.html", {'getImportedIndicators':getImportedIndicators,'getIndicatorTypes':getIndicatorTypes})
+
 
 
 class IndicatorCreate(CreateView):
@@ -495,6 +508,24 @@ class CollectedDataDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = CollectedDataForm
+
+
+def import_indicator(request):
+    """
+    Import a indicators from a web service (the dig)
+    """
+
+    def get(self, request, *args, **kwargs):
+
+        # set url for json feed here
+        response = requests.get("https://thedig-dev.mercycorps.org/indicator-feed")
+        jsondata = json.loads(response.content)
+
+        data = jsondata['results']
+
+        print data
+
+        return data
 
 
 def tool(request):

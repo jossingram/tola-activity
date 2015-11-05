@@ -638,7 +638,8 @@ class DocumentationList(ListView):
         project_agreement_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
-            getDocumentation = Documentation.objects.all()
+            countries = getCountry(request.user)
+            getDocumentation = Documentation.objects.all().filter(program__country__in=countries)
         else:
             getDocumentation = Documentation.objects.all().filter(project__id=self.kwargs['pk'])
 

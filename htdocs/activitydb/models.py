@@ -134,7 +134,9 @@ class Program(models.Model):
 
 
 class ProgramAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'create_date', 'edit_date')
+    list_display = ('name','country', 'description', 'create_date', 'edit_date')
+    search_fields = ('name','country')
+    list_filter = ('funding_status','country')
     display = 'Program'
 
 
