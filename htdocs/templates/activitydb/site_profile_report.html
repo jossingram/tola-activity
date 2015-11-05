@@ -15,7 +15,7 @@
 <ul class="nav nav-tabs">
   <li role="presentation"><a href="/activitydb/projectagreement_detail/{{ id }}/">Agreement</a></li>
   <li role="presentation"><a href="/activitydb/projectcomplete_detail/{{ id }}/">Complete</a></li>
-  <li role="presentation" class="active"><a href="/activitydb/community_report/{{ id }}/">Communities</a></li>
+  <li role="presentation" class="active"><a href="/activitydb/siteprofile_report/{{ id }}/">Sites</a></li>
 </ul>
 <h3>{{ proposal.project_name }}</h3>
 <style>
@@ -25,13 +25,13 @@
 <p><b>{{ country.country }} Sites</b></p>
 <div id="map"></div>
 
-{% include "activitydb/community_map.html" %}
+{% include "activitydb/site_profile_map.html" %}
 
 <ul class="list-group">
 {% for item in getCommunity %}
     <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.name }}</b>
     <div class="btn-group align-right" role="group" aria-label="...">
-        <a href="/activitydb/community_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Communitya>
+        <a href="/activitydb/site_profile_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Sites</a>>
     </div>
     </li>
 {% empty %}
