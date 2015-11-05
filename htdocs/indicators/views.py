@@ -281,7 +281,7 @@ class CollectedDataList(ListView):
     model = CollectedData
     template_name = 'indicators/collecteddata_list.html'
 
-        # add the request to the kwargs
+    # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(ProjectAgreementUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
@@ -307,7 +307,7 @@ class CollectedDataList(ListView):
             collected_sum = CollectedData.objects.filter(program=self.kwargs['program'],indicator__id=self.kwargs['indicator']).aggregate(Sum('targeted'),Sum('achieved'))
         elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) == 0:
             getCollectedData = CollectedData.objects.all().filter(indicator__country__in=countries)
-            collected_sum = CollectedData.objects.aggregate(Sum('targeted'),Sum('achieved'))
+            collected_sum = CollectedData.objects.filter(indicator__country__in=countries).aggregate(Sum('targeted'),Sum('achieved'))
 
 
         #get details about the filtered indicator or program
