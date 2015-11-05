@@ -48,7 +48,7 @@ class IndicatorList(ListView):
         return render(request, self.template_name, {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
 
 
-def import_create(request):
+def indicator_create(request):
     """
     CREATE AN INDICATOR BASED ON TYPE FIRST
     """
