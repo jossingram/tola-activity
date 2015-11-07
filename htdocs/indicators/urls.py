@@ -16,7 +16,7 @@ urlpatterns = patterns('',
 
     #Indicator Form
     url(r'^indicator_list/(?P<pk>\w+)/$', IndicatorList.as_view(), name='indicator_list'),
-    url(r'^indicator_create/$', 'indicators.views.indicator_create', name='indicator_create'),
+    url(r'^indicator_create/(?P<id>\w+)/$', 'indicators.views.indicator_create', name='indicator_create'),
     url(r'^indicator_add/(?P<id>\w+)/$', IndicatorCreate.as_view(), name='indicator_add'),
     url(r'^indicator_update/(?P<pk>\w+)/$', IndicatorUpdate.as_view(), name='indicator_update'),
     url(r'^indicator_delete/(?P<pk>\w+)/$', IndicatorDelete.as_view(), name='indicator_delete'),

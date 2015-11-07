@@ -172,7 +172,7 @@ class Indicator(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     number = models.CharField(max_length=255, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
-    definition = models.CharField(max_length=255, null=True, blank=True)
+    definition = models.TextField(null=True, blank=True)
     disaggregation = models.ManyToManyField(DisaggregationType, blank=True)
     baseline = models.CharField(max_length=255, null=True, blank=True)
     lop_target = models.CharField("LOP Target",max_length=255, null=True, blank=True)

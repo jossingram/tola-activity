@@ -126,6 +126,7 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         self.helper.form_tag = True
         super(ProjectAgreementCreateForm, self).__init__(*args, **kwargs)
 
+
 class ProjectAgreementForm(forms.ModelForm):
 
     class Meta:

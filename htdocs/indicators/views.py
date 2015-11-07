@@ -8,8 +8,8 @@ import json
 import unicodedata
 from django.http import HttpResponseRedirect
 from django.db import models
-from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType
-from activitydb.models import Program, ProjectAgreement, SiteProfile
+from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level
+from activitydb.models import Program, ProjectAgreement, SiteProfile, Country, Sector
 from djangocosign.models import UserProfile
 from indicators.forms import IndicatorForm, CollectedDataForm
 from django.shortcuts import render_to_response
@@ -48,17 +48,78 @@ class IndicatorList(ListView):
         return render(request, self.template_name, {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
 
 
-def indicator_create(request):
+def import_indicator():
+    """
+    Import a indicators from a web service (the dig)
+    """
+    # set url for json feed here
+    #response = requests.get("https://thedig-dev.mercycorps.org/indicator-feed")
+    #jsondata = json.loads(response.content)
+    #data = jsondata['results']
+
+    #hard code the path to the file for now
+    json_data = open('/Users/glind/Dropbox/PythonApps/tola-activity/htdocs/fixtures/dig-indicator-feed.json')
+    data1 = json.load(json_data) # deserialises it
+    #data2 = json.dumps(json_data) # json formatted string
+
+    return data1
+
+
+def indicator_create(request, id=0):
     """
     CREATE AN INDICATOR BASED ON TYPE FIRST
     """
-
+    service_name='DIG Indicator'
+    countries = getCountry(request.user)
     getImportedIndicators = import_indicator()
-    getIndicatorTypes = IndicatorType.Objects.all()
+    getIndicatorTypes = IndicatorType.objects.all()
+    getCountries = Country.objects.all()
+    getPrograms = Program.objects.all().filter(country__in=countries)
+
+    program_id=id
+
+    if request.method == 'POST':
+        #set vars from form and get values from user
+
+        type = request.POST['indicator_type']
+        country = Country.objects.get(id=request.POST['country'])
+        program = Program.objects.get(id=request.POST['program'])
+        node_id = request.POST['service_indicator']
+        owner = request.user
+        sector = None
+        level = None
+        name = None
+        source = None
+        defenition = None
+
+        #checkfor service indicator and update based on values
+        if node_id != None:
+            for item in getImportedIndicators:
+                if item['nid'] == node_id:
+                    getSector, created = Sector.objects.get_or_create(sector=item['sector'])
+                    sector=(getSector)
+                    getLevel, created = Level.objects.get_or_create(name=item['level'].title())
+                    level=(getLevel)
+                    name=item['title']
+                    source=item['source']
+                    definition=item['definition']
+
+        #save form
+        new_indicator = Indicator(country=country, owner=owner,sector=sector,name=name,source=source,definition=definition)
+        new_indicator.save()
+        new_indicator.program.add(program)
+        new_indicator.indicator_type.add(type)
+        new_indicator.level.add(level)
+
+        latest = new_indicator.id
+
+        #redirect to update page
+        messages.success(request, 'Success, Basic Indicator Created!')
+        redirect_url = '/indicators/indicator_update/' + str(latest)+ '/'
+        return HttpResponseRedirect(redirect_url)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/create.html", {'getImportedIndicators':getImportedIndicators,'getIndicatorTypes':getIndicatorTypes})
-
+    return render(request, "indicators/indicator_create.html", {'program_id':program_id,'getCountries':getCountries, 'getPrograms': getPrograms, 'getImportedIndicators':getImportedIndicators,'getIndicatorTypes':getIndicatorTypes, 'service_name': service_name})
 
 
 class IndicatorCreate(CreateView):
@@ -74,6 +135,7 @@ class IndicatorCreate(CreateView):
         initial = {
             'country': user_profile.country,
             'program': self.kwargs['id'],
+            'owner': self.request.user,
             }
 
         return initial
@@ -509,23 +571,6 @@ class CollectedDataDelete(DeleteView):
 
     form_class = CollectedDataForm
 
-
-def import_indicator(request):
-    """
-    Import a indicators from a web service (the dig)
-    """
-
-    def get(self, request, *args, **kwargs):
-
-        # set url for json feed here
-        response = requests.get("https://thedig-dev.mercycorps.org/indicator-feed")
-        jsondata = json.loads(response.content)
-
-        data = jsondata['results']
-
-        print data
-
-        return data
 
 
 def tool(request):
