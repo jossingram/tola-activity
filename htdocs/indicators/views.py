@@ -24,6 +24,8 @@ from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
+from django.conf import settings
+import requests
 
 
 class IndicatorList(ListView):
@@ -54,11 +56,11 @@ def import_indicator():
     """
     # set url for json feed here
     #response = requests.get("https://thedig-dev.mercycorps.org/indicator-feed")
-    #jsondata = json.loads(response.content)
+    #json_data = json.loads(response.content)
     #data = jsondata['results']
 
     #hard code the path to the file for now
-    json_data = open('/Users/glind/Dropbox/PythonApps/tola-activity/htdocs/fixtures/dig-indicator-feed.json')
+    json_data = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
     data1 = json.load(json_data) # deserialises it
     #data2 = json.dumps(json_data) # json formatted string
 
