@@ -724,6 +724,22 @@ class ProjectAgreement(models.Model):
         self.edit_date = datetime.now()
         super(ProjectAgreement, self).save()
 
+    @property
+    def sites(self):
+        return ', '.join([x.name for x in self.site.all()])
+
+    @property
+    def stakeholders(self):
+        return ', '.join([x.name for x in self.stakeholder.all()])
+
+    @property
+    def capacities(self):
+        return ', '.join([x.name for x in self.capacity.all()])
+
+    @property
+    def evaluations(self):
+        return ', '.join([x.name for x in self.evaluate.all()])
+
     #displayed in admin templates
     def __unicode__(self):
         new_name = unicode(self.office) + unicode(" - ") + unicode(self.project_name)
