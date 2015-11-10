@@ -26,13 +26,13 @@
     <table class="table" border="1">
         <tr>
             <th>Activity Code</th>
-            <th>Sector</th>
             <th>Office</th>
+            <th>Sector</th>
         </tr>
         <tr>
             <td>{{ agreement.activity_code }}</td>
-            <td>{{ agreement.sector }}</td>
             <td>{{ agreement.office }}</td>
+            <td>{{ agreement.sector }}</td>
         </tr>
     </table>
     <br/>
@@ -40,12 +40,35 @@
         <tr>
             <th>Program</th>
             <th>Project Name</th>
-            <th>Project Type</th>
+            <th>Project Activity</th>
         </tr>
         <tr>
             <td>{{ agreement.program }}</td>
             <td>{{ agreement.project_name }}</td>
+            <td>{{ agreement.project_activity }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Project Type</th>
+            <th>Project Type Other</th>
+        </tr>
+        <tr>
             <td>{{ agreement.project_type }}</td>
+            <td>{{ agreement.project_type_other }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+
+            <th>Site</th>
+            <th>Stakeholder</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.sites }}</td>
+            <td>{{ agreement.stakeholders }}</td>
         </tr>
     </table>
     <br/>
@@ -53,146 +76,17 @@
         <tr>
             <th>Expected Start Date</th>
             <th>Expected End Date</th>
-            <th>Duration</th>
         </tr>
         <tr>
             <td>{{ agreement.expected_start_date }}</td>
             <td>{{ agreement.expected_end_date }}</td>
-            <td>{{ agreement.expected_duration }}</td>
         </tr>
     </table>
     <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>Project Activity</th>
-            <th>Site</th>
-            <th>Stakeholder</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.project_activity }}</td>
-            <td>{{ agreement.site }}</td>
-            <td>{{ agreement.stakeholder }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>Community Representative</th>
-            <th>Community Representative Contact Number</th>
-            <th>If Rejected, rejection letter sent to community?</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.community_rep }}</td>
-            <td>{{ agreement.community_rep_contact }}</td>
-            <td>{{ agreement.has_rej_letter }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>MC Community Mobilizer</th>
-            <th>MC Community Mobilize Contact Number</th>
-            <th>Project COD #</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.community_mobilizer }}</td>
-            <td>{{ agreement.community_mobilizer_contact }}</td>
-            <td>{{ agreement.cod_num }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>MC Staff responsible</th>
-            <th>Activity design for</th>
-            <th>Are there partners involved?</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.staff_responsible }}</td>
-            <td>{{ agreement.project_design }}</td>
-            <td>{{ agreement.partners }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>Name of Partners</th>
-            <th>External Stakeholder lists(s) attached?</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.name_of_partners }}</td>
-            <td>{{ agreement.external_stakeholder_list }}</td>
-        </tr>
-    </table>
-
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>Type of direct beneficiaries</th>
-            <th>Estimated # of Direct Beneficiaries</th>
-            <th>Average Household Size</th>
-            <th>Estimated # of Indirect Beneficiaries</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.beneficiary_type }}</td>
-            <td>{{ agreement.estimated_num_direct_beneficiaries }}</td>
-            <td>{{ agreement.average_household_size }}</td>
-            <td>{{ agreement.estimated_num_indirect_beneficiaries }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>Estimated # of Male trained</th>
-            <th>Estimated # of Female trained</th>
-            <th>Estimated Total # trained</th>
-            <th>Estimated # of trainings</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.estimate_male_trained }}</td>
-            <td>{{ agreement.estimate_female_trained }}</td>
-            <td>{{ agreement.estimate_total_trained }}</td>
-            <td>{{ agreement.estimate_trainings }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>Type of Items Distributed</th>
-            <th>Unit of Measure</th>
-            <th>Estimated # of Items Distributed</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.distribution_type }}</td>
-            <td>{{ agreement.distribution_uom }}</td>
-            <td>{{ agreement.distribution_estimate }}</td>
-        </tr>
-    </table>
-     <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>Estimated # of Male Laborers</th>
-            <th>Estimated # of Female Laborers</th>
-            <th>Estimated Total # of Laborers</th>
-            <th>Estimated # of Project Days</th>
-            <th>Estimated # of Person Days</th>
-            <th>Estimated Total Cost of Materials</th>
-            <th>Estimated Wages Budgeted</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.cfw_estimate_male }}</td>
-            <td>{{ agreement.cfw_estimate_female }}</td>
-            <td>{{ agreement.cfw_estimate_total }}</td>
-            <td>{{ agreement.cfw_estimate_project_days }}</td>
-            <td>{{ agreement.cfw_estimate_person_days }}</td>
-            <td>{{ agreement.cfw_estimate_cost_materials }}</td>
-            <td>{{ agreement.cfw_estimate_wages_budgeted }}</td>
-        </tr>
-    </table>
 </div>
 <div class="panel panel-info">
     <!-- Default panel contents -->
-    <div class="panel-heading">Part I: Executive Summary (Budget)</div>
+    <div class="panel-heading">Part II: Budget</div>
     <!-- Table -->
     <table class="table" border="1">
         <tr>
@@ -236,19 +130,10 @@
         {% endfor %}
     </table>
     <br/>
-     <table class="table" border="1">
-        <tr>
-            <th>Project Type Other</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.project_type_other }}</td>
-        </tr>
-    </table>
-    <br/>
 </div>
 <div class="panel panel-info">
     <!-- Default panel contents -->
-    <div class="panel-heading">Part II: Justification and Description</div>
+    <div class="panel-heading">Part III: Justification and Description</div>
     <!-- Table -->
     <h4> I. Description</h4>
     <table class="table" border="1">
@@ -276,6 +161,19 @@
     <!-- Default panel contents -->
     <div class="panel-heading">Part III: Project Monitoring and Evaluation</div>
     <!-- Table -->
+    <h4>Indicator Evidence</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>Targeted</th>
+            <th>Indicator</th>
+        </tr>
+        {% for output in getQuantitativeOutpus %}
+        <tr>
+            <td>{{ output.targeted }}</td>
+            <td>{{ output.indicator }}</td>
+        </tr>
+        {% endfor %}
+    </table>
     <h4>Benchmarks</h4>
     <table class="table" border="1">
         <tr>
@@ -290,6 +188,15 @@
             <td>{{ benchmark.percent_cumulative }}</td>
         </tr>
         {% endfor %}
+    </table>
+    <h4>Sustainability Plan</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>Capacity</th>
+        </tr>
+        <tr>
+            <td>{{ agreement.capacities }}</td>
+        </tr>
     </table>
     <h4>Monitoring</h4>
     <table class="table" border="1">
@@ -312,22 +219,13 @@
             <th>How will you evaluate the outcome or impact of the project?</th>
         </tr>
         <tr>
-            <td>{{ agreement.evaluate }}</td>
-        </tr>
-    </table>
-    <h4>Sustainability Plan</h4>
-    <table class="table" border="1">
-        <tr>
-            <th>Capacity</th>
-        </tr>
-        <tr>
-            <td>{{ agreement.capacity }}</td>
+            <td>{{ agreement.evaluations }}</td>
         </tr>
     </table>
 </div>
 <div class="panel panel-warning">
     <!-- Default panel contents -->
-    <div class="panel-heading">Part V: Project Approval</div>
+    <div class="panel-heading">Part IV: Project Approval</div>
     <!-- Table -->
     <table class="table" border="1">
         <tr>

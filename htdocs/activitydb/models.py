@@ -425,8 +425,7 @@ class SiteProfile(models.Model):
     # altitude = models.DecimalField("Altitude (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
     # precision = models.DecimalField("Precision (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
 
-    # remove approval, approved_by and filled_by fields from Approval tab
-    # approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
+    approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(TolaUser,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="comm_approving")
     filled_by = models.ForeignKey(TolaUser, help_text='This is the originator', blank=True, null=True, related_name="comm_estimate")
     location_verified_by = models.ForeignKey(TolaUser, help_text='This should be GIS Manager', blank=True, null=True, related_name="comm_gis")
@@ -748,6 +747,22 @@ class ProjectAgreement(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(ProjectAgreement, self).save()
+
+    @property
+    def sites(self):
+        return ', '.join([x.name for x in self.site.all()])
+
+    @property
+    def stakeholders(self):
+        return ', '.join([x.name for x in self.stakeholder.all()])
+
+    @property
+    def capacities(self):
+        return ', '.join([x.name for x in self.capacity.all()])
+
+    @property
+    def evaluations(self):
+        return ', '.join([x.name for x in self.evaluate.all()])
 
     #displayed in admin templates
     def __unicode__(self):
