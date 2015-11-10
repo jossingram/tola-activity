@@ -93,7 +93,7 @@ def indicator_create(request, id=0):
         level = None
         name = None
         source = None
-        defenition = None
+        definition = None
 
         #import recursive library for substitution
         import re
