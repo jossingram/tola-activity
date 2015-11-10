@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script src="{{ STATIC_URL }}js/highcharts/js/highcharts.js"></script>
+<script src="{{ STATIC_URL }}js/highcharts/js/modules/exporting.js"></script>
+
+<script>
+
+$(function () {
+    $('#container').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: 'Program Projects by Status {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>'
+        },
+        xAxis: {
+            categories: ['Agreements', 'Status']
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Number of Projects Approved, Rejected, Waiting, or Archived'
+            }
+        },
+        legend: {
+            reversed: true
+        },
+        plotOptions: {
+            series: {
+                stacking: 'normal',
+                point: {
+                    events: {
+                        click: function () {
+                            location.href = this.options.ownURL;
+                        }
+                    }
+                }
+            }
+        },
+
+        series: [
+        {
+            name: 'Approved',
+            data: [{ y:{{ agreement_approved_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_approved_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
+        },
+        {
+            name: 'Rejected',
+            data: [{ y:{{ agreement_rejected_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_rejected_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
+        },
+        {
+            name: 'Waiting',
+            data: [{ y:{{ agreement_waiting_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_waiting_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
+        },
+        {
+            name: 'Archived',
+            data: [{ y:{{ agreement_archived_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_archived_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
+        },
+
+        ]
+
+    });
+});
+
+
+$(function () {
+
+    $('#indicator').highcharts({
+
+        chart: {
+            polar: true,
+            type: 'line'
+        },
+
+        title: {
+            text: 'Targets vs Actuals',
+            x: -80
+        },
+
+        pane: {
+            size: '80%'
+        },
+
+        xAxis: {
+            categories: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  '{{ indicator.indicator__number }}', {% endfor %} ],
+            tickmarkPlacement: 'on',
+            lineWidth: 0
+        },
+
+        yAxis: {
+            gridLineInterpolation: 'polygon',
+            lineWidth: 0,
+            min: 0
+        },
+
+        tooltip: {
+            shared: true,
+            pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>'
+        },
+
+        legend: {
+            align: 'right',
+            verticalAlign: 'top',
+            y: 70,
+            layout: 'vertical'
+        },
+
+        series: [{
+            name: 'Targets',
+            data: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  {{ indicator.targets }}, {% endfor %}  ],
+            pointPlacement: 'on'
+        }, {
+            name: 'Actuals',
+            data: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  {{ indicator.actuals }}, {% endfor %}   ],
+            pointPlacement: 'on'
+        }]
+
+    });
+});
+
+
+
+
+</script>
+
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div style="float:left;">
+                    <h4>Custom Project Dashboard</h4>
+                </div>
+
+                   <div class="btn-group" style="float:right; display: inline-block; vertical-align: middle;">
+                      <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        View Custom Dashboard <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu">
+                          <li role="presentation">
+                              <a role="menuitem" tabindex="-1" href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- Default --</a></li>
+                         {%for customdashboard in getCustomDashboard%}
+                          <li class="list-group-item">
+                                <a href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ customdashboard.id }}/">{{ customdashboard.dashboard_name }}</a>
+                            </li>
+                        {%endfor%}
+                      </ul>
+                    </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <!-- Extra small button group -->
+                    <div class="btn-group">
+                      <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        Filter Project by Status <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu">
+                          <li role="presentation">
+                              <a role="menuitem" tabindex="-1" href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All --</a></li>
+                         {%for projectstatus in getProjectStatus%}
+                            <li class="list-group-item">
+                                <a href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ projectstatus.id }}/">{{ projectstatus.project_status }}</a>
+                            </li>
+                        {%endfor%}
+                      </ul>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                    {%for program in programs%}
+                        <li class="list-group-item">
+                            <a href="/activitydb/dashboard/{{ program.id }}/">{{ program.name }}</a>&nbsp;
+                            <button type="button" class="btn btn-xs btn-success" style="float:right;" onclick="location.href='/customdashboard/{{ program.id }}/{% if status %}{{ status }}{% else %}0{% endif %}/'"><span class="glyphicon glyphicon-arrow-right"></span></button>
+                        </li>
+                    {%endfor%}
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <div id="indicator" style=" width: 100%; height: 400px; margin: 0 auto; float:right"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <p><b>Sites {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>
+                    <style>
+                        #map { height: 350px; }
+                    </style>
+                    <div id="map"></div>
+
+                    {% include "/activitydb/small_site_profile_map.html" %}
+
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="container" style=" width: 100%; height: 400px; margin: 0 auto; float:right"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-20">
+            <div class="panel panel-info">
+                <div class="panel-heading">Project Activity Budget {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</div>
+                <div class="panel-body">
+                TO DO - Write code for Project Activity Budget here
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}

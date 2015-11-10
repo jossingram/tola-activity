@@ -11,13 +11,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='siteprofile',
-            name='households_owning_land',
-        ),
-        migrations.AddField(
-            model_name='siteprofile',
-            name='populations_owning_land',
-            field=models.IntegerField(help_text='(%)', null=True, verbose_name='Households Owning Land', blank=True),
-        ),
+
     ]

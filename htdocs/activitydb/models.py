@@ -104,6 +104,29 @@ class ContactAdmin(admin.ModelAdmin):
     list_filter = ('create_date','country')
     search_fields = ('name','country','title','city')
 
+# For programs that have custom dashboards. The default dashboard for all other programs is 'Program Dashboard'
+class CustomDashboard(models.Model):
+    dashboard_name = models.CharField("Custom Dashboard Name", max_length=255, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('dashboard_name',)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(CustomDashboard, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.dashboard_name
+
+class CustomDashboardAdmin(admin.ModelAdmin):
+    list_display = ('dashboard_name', 'create_date', 'edit_date')
+    display = 'Custom Dashboard'
 
 class Program(models.Model):
     gaitid = models.CharField("GAITID", max_length=255, blank=True, unique=True)
@@ -112,6 +135,7 @@ class Program(models.Model):
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
     description = models.CharField("Program Description", max_length=765, null=True, blank=True)
     sector = models.ForeignKey(Sector, null=True,blank=True)
+    dashboard_name = models.ForeignKey(CustomDashboard, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     country = models.ManyToManyField(Country)
@@ -648,6 +672,7 @@ class ProjectAgreement(models.Model):
     office = models.ForeignKey(Office, null=True, blank=True)
     cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
     sector = models.ForeignKey("Sector", blank=True, null=True)
+    dashboard_name = models.ForeignKey(CustomDashboard, blank=True, null=True)
     project_design = models.CharField("Activity design for", max_length=255, blank=True, null=True)
     account_code = models.CharField("Account Code", help_text='', max_length=255, blank=True, null=True)
     lin_code = models.CharField("LIN Sub Code", help_text='', max_length=255, blank=True, null=True)
@@ -745,6 +770,7 @@ class ProjectComplete(models.Model):
     project_type = models.ForeignKey(ProjectType, max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     sector = models.ForeignKey("Sector", blank=True, null=True)
+    dashboard_name = models.ForeignKey(CustomDashboard, blank=True, null=True)
     expected_start_date = models.DateTimeField(help_text="Comes from Form-04 Project Agreement", blank=True, null=True)
     expected_end_date = models.DateTimeField(help_text="Comes from Form-04 Project Agreement", blank=True, null=True)
     expected_duration = models.CharField("Expected Duration", max_length=255, help_text="Comes from Form-04 Project Agreement", blank=True, null=True)
@@ -942,7 +968,7 @@ class MergeMapAdmin(admin.ModelAdmin):
     list_display = ('project_agreement', 'project_completion', 'from_column', 'to_column')
     display = 'project_agreement'
 
-
+# Default dashboard when no custom dashboard is specified on a program
 class ProgramDashboard(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True)
     project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)

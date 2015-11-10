@@ -73,6 +73,9 @@ urlpatterns = patterns('',
                         #app include of activitydb urls
                         url(r'^indicators/', include('indicators.urls')),
 
+                       #app include of customdashboard urls
+                       #url(r'^customdashboard/', include('customdashboard.urls')),
+
                         #local login
                         (r'^accounts/login/',  login),
                         url(r'^accounts/logout/$', 'tola.views.logout_view', name='logout'),
