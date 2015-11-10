@@ -113,7 +113,7 @@ def indicator_create(request, id=0):
                     definition = re.sub("<.*?>", "", definition)
 
         #save form
-        new_indicator = Indicator(country=country, owner=owner,sector=sector,name=name,source=source,definition=definition)
+        new_indicator = Indicator(country=country, owner=owner,sector=sector,name=name,source=source,definition=definition,level=level)
         new_indicator.save()
         new_indicator.program.add(program)
         new_indicator.indicator_type.add(type)
