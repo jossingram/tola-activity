@@ -201,6 +201,14 @@ class Indicator(models.Model):
         super(Indicator, self).save(*args, **kwargs)
 
     @property
+    def objectives_list(self):
+        return ', '.join([x.name for x in self.objectives.all()])
+
+    @property
+    def strategicobjectives_list(self):
+        return ', '.join([x.name for x in self.strategic_objectives.all()])
+
+    @property
     def programs(self):
         return ', '.join([x.name for x in self.program.all()])
 
