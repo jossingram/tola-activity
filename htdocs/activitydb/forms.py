@@ -6,7 +6,8 @@ from functools import partial
 from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
-from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact
+from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact, TolaUser
+from djangocosign.models import UserProfile
 from indicators.models import CollectedData, Indicator
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
@@ -731,6 +732,11 @@ class SiteProfileForm(forms.ModelForm):
                     ),
                     Fieldset('Demographic Info Data Source',
                              'info_source'
+                    ),
+                ),
+                 Tab('Approvals',
+                    Fieldset('',
+                        'approval','approved_by','filled_by',
                     ),
                 ),
 

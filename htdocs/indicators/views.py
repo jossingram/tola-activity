@@ -78,7 +78,8 @@ def indicator_create(request, id=0):
     getCountries = Country.objects.all()
     getPrograms = Program.objects.all().filter(country__in=countries)
 
-    program_id=id
+    program_id = id
+    country_id = countries[0]
 
     if request.method == 'POST':
         #set vars from form and get values from user
@@ -94,6 +95,9 @@ def indicator_create(request, id=0):
         source = None
         defenition = None
 
+        #import recursive library for substitution
+        import re
+
         #checkfor service indicator and update based on values
         if node_id != None:
             for item in getImportedIndicators:
@@ -105,6 +109,8 @@ def indicator_create(request, id=0):
                     name=item['title']
                     source=item['source']
                     definition=item['definition']
+                    #replace HTML tags if they are in the string
+                    definition = re.sub("<.*?>", "", definition)
 
         #save form
         new_indicator = Indicator(country=country, owner=owner,sector=sector,name=name,source=source,definition=definition)
@@ -121,7 +127,7 @@ def indicator_create(request, id=0):
         return HttpResponseRedirect(redirect_url)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/indicator_create.html", {'program_id':program_id,'getCountries':getCountries, 'getPrograms': getPrograms, 'getImportedIndicators':getImportedIndicators,'getIndicatorTypes':getIndicatorTypes, 'service_name': service_name})
+    return render(request, "indicators/indicator_create.html", {'coutnry_id': country_id, 'program_id':program_id,'getCountries':getCountries, 'getPrograms': getPrograms, 'getImportedIndicators':getImportedIndicators,'getIndicatorTypes':getIndicatorTypes, 'service_name': service_name})
 
 
 class IndicatorCreate(CreateView):
