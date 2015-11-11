@@ -13,10 +13,10 @@ $(function () {
             type: 'bar'
         },
         title: {
-            text: 'Program Projects by Status {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>'
+            text: 'Projects by Status {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>'
         },
         xAxis: {
-            categories: ['Agreements', 'Status']
+            categories: ['Agreements', 'Approved', 'Rejected', 'Waiting', 'Archived', 'Completions']
         },
         yAxis: {
             min: 0,
@@ -128,7 +128,7 @@ $(function () {
         <div class="panel panel-default">
             <div class="panel-body">
                 <div style="float:left;">
-                    <h4>Custom Project Dashboard</h4>
+                    <h4>Visualization Dashboard</h4>
                 </div>
 
                    <div class="btn-group" style="float:right; display: inline-block; vertical-align: middle;">
@@ -193,7 +193,7 @@ $(function () {
                     </style>
                     <div id="map"></div>
 
-                    {% include "/activitydb/small_site_profile_map.html" %}
+                    {% include "small_site_profile_map.html" %}
 
                 </div>
             </div>
