@@ -87,13 +87,13 @@ def indicator_create(request, id=0):
         type = request.POST['indicator_type']
         country = Country.objects.get(id=request.POST['country'])
         program = Program.objects.get(id=request.POST['program'])
+        level = Level.objects.all()[0]
         node_id = request.POST['service_indicator']
         owner = request.user
         sector = None
-        level = None
         name = None
         source = None
-        defenition = None
+        definition = None
 
         #import recursive library for substitution
         import re
