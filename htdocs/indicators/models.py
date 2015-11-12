@@ -162,6 +162,37 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
     display = 'Reporting Frequency'
 
 
+class ExternalService(models.Model):
+    name = models.CharField(max_length=255, blank=True)
+    url = models.CharField(max_length=765, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class ExternalServiceAdmin(admin.ModelAdmin):
+    list_display = ('name','url','create_date','edit_date')
+    display = 'Exeternal Indicator Data Service'
+
+
+class ExternalServiceRecord(models.Model):
+    external_service = models.ForeignKey(ExternalService, blank=True, null=True)
+    full_url = models.CharField(max_length=765, blank=True)
+    record_id = models.CharField("Unique ID",max_length=765, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.full_url
+
+
+class ExternalServiceRecordAdmin(admin.ModelAdmin):
+    list_display = ('external_service','full_url','record_id','create_date','edit_date')
+    display = 'Exeternal Indicator Data Service'
+
+
 class Indicator(models.Model):
     owner = models.ForeignKey('auth.User')
     country = models.ForeignKey(Country, blank=True)
@@ -187,6 +218,7 @@ class Indicator(models.Model):
     sector = models.ForeignKey(Sector, null=True, blank=True)
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_indicator")
     approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="indicator_submitted_by")
+    external_service_record = models.ForeignKey(ExternalServiceRecord, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

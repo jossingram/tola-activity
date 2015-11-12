@@ -6,5 +6,7 @@ from django.conf.urls import *
 
 urlpatterns = patterns('',
                        #display default custom dashboard
-                        url(r'^$', 'customdashboard.views.DefaultCustomDashboard', name='default_custom_dashboard'),
+                       url(r'^$', 'customdashboard.views.DefaultCustomDashboard', name='default_custom_dashboard'),
+                       url(r'(?P<id>\w+)/$', 'customdashboard.views.DefaultCustomDashboard', name='default_custom_dashboard'),
+
                        )
