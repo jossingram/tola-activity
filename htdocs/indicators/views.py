@@ -75,20 +75,20 @@ def import_indicator(service_id=1,deserialize=True):
 
 def indicator_create(request, id=0):
     """
-    CREATE AN INDICATOR BASED ON TYPE FIRST
+    CREATE AN INDICATOR USING A TEMPLATE FIRST
     """
     getIndicatorTypes = IndicatorType.objects.all()
     getCountries = Country.objects.all()
     countries = getCountry(request.user)
     country_id = Country.objects.get(country=countries[0]).id
-    getPrograms = Program.objects.all().filter(country__in=countries)
+    getPrograms = Program.objects.all().filter(funding_status="Funded",country__in=countries)
     getServices = ExternalService.objects.all()
     program_id = id
 
     if request.method == 'POST':
         #set vars from form and get values from user
 
-        type = request.POST['indicator_type']
+        type = IndicatorType.objects.get(indicator_type="custom")
         country = Country.objects.get(id=request.POST['country'])
         program = Program.objects.get(id=request.POST['program'])
         service = request.POST['services']
@@ -110,9 +110,9 @@ def indicator_create(request, id=0):
             for item in getImportedIndicators:
                 if item['nid'] == node_id:
                     getSector, created = Sector.objects.get_or_create(sector=item['sector'])
-                    sector=(getSector)
+                    sector=getSector
                     getLevel, created = Level.objects.get_or_create(name=item['level'].title())
-                    level=(getLevel)
+                    level=getLevel
                     name=item['title']
                     source=item['source']
                     definition=item['definition']
@@ -122,6 +122,10 @@ def indicator_create(request, id=0):
                     full_url = getService.url + "/" + item['nid']
                     external_service_record = ExternalServiceRecord(record_id=item['nid'],external_service=getService,full_url=full_url)
                     external_service_record.save()
+                    getType, created = IndicatorType.objects.get_or_create(indicator_type=item['type'].title())
+                    type=getType
+
+
 
         #save form
         new_indicator = Indicator(country=country, owner=owner,sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)
@@ -138,12 +142,12 @@ def indicator_create(request, id=0):
         return HttpResponseRedirect(redirect_url)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/indicator_create.html", {'country_id': country_id, 'program_id':program_id,'getCountries':getCountries, 'getPrograms': getPrograms,'getIndicatorTypes':getIndicatorTypes, 'getServices': getServices})
+    return render(request, "indicators/indicator_create.html", {'country_id': country_id, 'program_id':int(program_id),'getCountries':getCountries, 'getPrograms': getPrograms,'getIndicatorTypes':getIndicatorTypes, 'getServices': getServices})
 
 
 class IndicatorCreate(CreateView):
     """
-    indicator Form
+    indicator Form for indicators not using a template or service indicator first
     """
     model = Indicator
     template_name = 'indicators/indicator_form.html'
