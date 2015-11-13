@@ -8,7 +8,7 @@ import json
 import unicodedata
 from django.http import HttpResponseRedirect
 from django.db import models
-from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level
+from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService
 from activitydb.models import Program, ProjectAgreement, SiteProfile, Country, Sector
 from djangocosign.models import UserProfile
 from indicators.forms import IndicatorForm, CollectedDataForm
@@ -25,6 +25,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from django.conf import settings
+from django.core import serializers
 import requests
 
 
@@ -50,36 +51,39 @@ class IndicatorList(ListView):
         return render(request, self.template_name, {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
 
 
-def import_indicator():
+def import_indicator(service_id=1,deserialize=True):
     """
-    Import a indicators from a web service (the dig)
+    Import a indicators from a web service (the dig only for now)
     """
-    # set url for json feed here
-    #response = requests.get("https://thedig-dev.mercycorps.org/indicator-feed")
-    #json_data = json.loads(response.content)
-    #data = jsondata['results']
+    service = ExternalService.objects.all().filter(id=service_id)
 
     #hard code the path to the file for now
-    json_data = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
-    data1 = json.load(json_data) # deserialises it
+    get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
+    #response = requests.get(services.url)
+    #get_json = json.loads(response.content)
+    if deserialize == True:
+        data = json.load(get_json) # deserialises it
+    else:
+        #send json data back not deserialized data
+        data = get_json
+    #debug the json data string uncomment dump and print
     #data2 = json.dumps(json_data) # json formatted string
+    #print data2
 
-    return data1
+    return data
 
 
 def indicator_create(request, id=0):
     """
     CREATE AN INDICATOR BASED ON TYPE FIRST
     """
-    service_name='DIG Indicator'
-    countries = getCountry(request.user)
-    getImportedIndicators = import_indicator()
     getIndicatorTypes = IndicatorType.objects.all()
     getCountries = Country.objects.all()
+    countries = getCountry(request.user)
+    country_id = Country.objects.get(country=countries[0]).id
     getPrograms = Program.objects.all().filter(country__in=countries)
-
+    getServices = ExternalService.objects.all()
     program_id = id
-    country_id = countries[0]
 
     if request.method == 'POST':
         #set vars from form and get values from user
@@ -87,6 +91,7 @@ def indicator_create(request, id=0):
         type = request.POST['indicator_type']
         country = Country.objects.get(id=request.POST['country'])
         program = Program.objects.get(id=request.POST['program'])
+        service = request.POST['services']
         level = Level.objects.all()[0]
         node_id = request.POST['service_indicator']
         owner = request.user
@@ -94,12 +99,14 @@ def indicator_create(request, id=0):
         name = None
         source = None
         definition = None
+        external_service_record = None
 
         #import recursive library for substitution
         import re
 
         #checkfor service indicator and update based on values
         if node_id != None:
+            getImportedIndicators = import_indicator(service)
             for item in getImportedIndicators:
                 if item['nid'] == node_id:
                     getSector, created = Sector.objects.get_or_create(sector=item['sector'])
@@ -111,9 +118,13 @@ def indicator_create(request, id=0):
                     definition=item['definition']
                     #replace HTML tags if they are in the string
                     definition = re.sub("<.*?>", "", definition)
+                    getService = ExternalService.objects.get(id=service)
+                    full_url = getService.url + "/" + item['nid']
+                    external_service_record = ExternalServiceRecord(record_id=item['nid'],external_service=getService,full_url=full_url)
+                    external_service_record.save()
 
         #save form
-        new_indicator = Indicator(country=country, owner=owner,sector=sector,name=name,source=source,definition=definition)
+        new_indicator = Indicator(country=country, owner=owner,sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)
         new_indicator.save()
         new_indicator.program.add(program)
         new_indicator.indicator_type.add(type)
@@ -127,7 +138,7 @@ def indicator_create(request, id=0):
         return HttpResponseRedirect(redirect_url)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/indicator_create.html", {'coutnry_id': country_id, 'program_id':program_id,'getCountries':getCountries, 'getPrograms': getPrograms, 'getImportedIndicators':getImportedIndicators,'getIndicatorTypes':getIndicatorTypes, 'service_name': service_name})
+    return render(request, "indicators/indicator_create.html", {'country_id': country_id, 'program_id':program_id,'getCountries':getCountries, 'getPrograms': getPrograms,'getIndicatorTypes':getIndicatorTypes, 'getServices': getServices})
 
 
 class IndicatorCreate(CreateView):
@@ -189,6 +200,14 @@ class IndicatorUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(IndicatorUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
+
+        #get external service data if any
+        try:
+            getExternalServiceRecord = ExternalServiceRecord.objects.all().filter(indicator__id=self.kwargs['pk'])
+        except ExternalServiceRecord.DoesNotExist:
+            getExternalServiceRecord = None
+        context.update({'getExternalServiceRecord': getExternalServiceRecord})
+
         return context
 
     # add the request to the kwargs
@@ -578,6 +597,14 @@ class CollectedDataDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = CollectedDataForm
+
+
+def service_json(request, service):
+    """
+    For populating service indicators in dropdown
+    """
+    service_indicators = import_indicator(service,deserialize=False)
+    return HttpResponse(service_indicators, content_type="application/json")
 
 
 

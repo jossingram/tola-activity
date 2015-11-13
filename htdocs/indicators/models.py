@@ -218,7 +218,7 @@ class Indicator(models.Model):
     sector = models.ForeignKey(Sector, null=True, blank=True)
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_indicator")
     approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="indicator_submitted_by")
-    external_service_record = models.ForeignKey(ExternalServiceRecord, blank=True, null=True)
+    external_service_record = models.ForeignKey(ExternalServiceRecord, verbose_name="External Service ID", blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

@@ -24,10 +24,12 @@
         {% if program.agreement.all %}
             <div class='panel panel-default'>
                 <div class='panel-heading'>
-                    <h4><a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ program.gaitid }}" target=_new">GAITID: {{ program.gaitid }}</a> - {{ program.name|truncatechars:80 }}</h4>
-                   <span class="float: right">
-                        <a href="/customdashboard/{{program.id }}/" class="btn btn-xs btn-info">Visualization</a>
-                   </span>
+                    <h4>
+                       <a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ program.gaitid }}" target=_new">GAITID: {{ program.gaitid }}</a> - {{ program.name|truncatechars:80 }}
+                       <span class="float: right">
+                            <a href="/customdashboard/{{program.id }}/" class="btn btn-xs btn-info">Visualization</a>
+                       </span>
+                   </h4>
                 </div>
                 <!-- Table -->
                 <table class="table table-striped">
