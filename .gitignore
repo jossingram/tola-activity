@@ -43,3 +43,4 @@ ssl.tola-activity.conf
 *.crt
 *.key
 error.log
+conf/

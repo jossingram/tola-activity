@@ -51,6 +51,28 @@ class IndicatorList(ListView):
         return render(request, self.template_name, {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
 
 
+def import_tola_table(tag=None,deserialize=True):
+    """
+    Import a indicators from a web service (the dig only for now)
+    """
+    service = ExternalService.objects.all().filter(id=service_id)
+
+    #hard code the path to the file for now
+    get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
+    #response = requests.get(services.feed_url)
+    #get_json = json.loads(response.content)
+    if deserialize == True:
+        data = json.load(get_json) # deserialises it
+    else:
+        #send json data back not deserialized data
+        data = get_json
+    #debug the json data string uncomment dump and print
+    #data2 = json.dumps(json_data) # json formatted string
+    #print data2
+
+    return data
+
+
 def import_indicator(service_id=1,deserialize=True):
     """
     Import a indicators from a web service (the dig only for now)
@@ -59,7 +81,7 @@ def import_indicator(service_id=1,deserialize=True):
 
     #hard code the path to the file for now
     get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
-    #response = requests.get(services.url)
+    #response = requests.get(services.feed_url)
     #get_json = json.loads(response.content)
     if deserialize == True:
         data = json.load(get_json) # deserialises it

@@ -165,6 +165,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 class ExternalService(models.Model):
     name = models.CharField(max_length=255, blank=True)
     url = models.CharField(max_length=765, blank=True)
+    feed_url = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -173,8 +174,8 @@ class ExternalService(models.Model):
 
 
 class ExternalServiceAdmin(admin.ModelAdmin):
-    list_display = ('name','url','create_date','edit_date')
-    display = 'Exeternal Indicator Data Service'
+    list_display = ('name','url','feed_url','create_date','edit_date')
+    display = 'External Indicator Data Service'
 
 
 class ExternalServiceRecord(models.Model):
