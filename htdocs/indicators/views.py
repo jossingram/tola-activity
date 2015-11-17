@@ -459,11 +459,9 @@ class CollectedDataList(ListView):
                         set_program = program_from_agreement.program
                     except ProjectAgreement.DoesNotExist:
                         set_program = None
-                    print set_program
                     if set_program:
                         update=CollectedData.objects.filter(id=data.pk).update(program=set_program)
-                        print "yes"
-                        print data.pk
+
         #END TEMP CODE
 
         return render(request, self.template_name, {'getCollectedData': getCollectedData, 'getPrograms': getPrograms, 'getIndicators':getIndicators,'filter_program':filter_program,'filter_indicator': filter_indicator, 'collected_sum': collected_sum})
@@ -479,7 +477,7 @@ class CollectedDataCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataCreate, self).get_context_data(**kwargs)
-        print self.kwargs['indicator']
+
         try:
             getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
         except DisaggregationLabel.DoesNotExist:

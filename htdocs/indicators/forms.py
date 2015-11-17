@@ -117,9 +117,7 @@ class CollectedDataForm(forms.ModelForm):
         model = CollectedData
         exclude = ['create_date', 'edit_date']
 
-    date_collected = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    date_of_training = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    date_of_analysis = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    date_collected = forms.DateField(widget=DatePicker.DateInput(), required=True)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -139,7 +137,7 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved','indicator', 'program','description','date_collected','office',
+                'targeted', 'achieved','indicator', 'program','description','date_collected',
 
             ),
 
@@ -215,5 +213,7 @@ class CollectedDataForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program=self.program)
+
+        self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False)
 
 

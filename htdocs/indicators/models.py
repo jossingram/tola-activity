@@ -279,13 +279,6 @@ class CollectedData(models.Model):
     program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
     date_collected = models.DateTimeField(null=True, blank=True)
     comment = models.CharField("Comment/Explanation", max_length=255, blank=True, null=True)
-    method = models.CharField("Method of Data Collection", max_length=255, blank=True, null=True)
-    tool = models.CharField("Tool/Source Developed By", max_length=255, blank=True, null=True)
-    date_of_training = models.DateTimeField("Date of Staff Training", null=True, blank=True)
-    date_of_analysis = models.DateTimeField("Date of Analysis", null=True, blank=True)
-    trainer_name = models.CharField("Name of Trainer", max_length=255, blank=True, null=True)
-    analysis_name = models.CharField("Analysis Done By", max_length=255, blank=True, null=True)
-    office = models.ForeignKey(Office, blank=True, null=True, related_name="q_office")
     evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -303,7 +296,7 @@ class CollectedData(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.description
+        return self.indicator
 
     def targeted_sum(self):
         targets=CollectedData.targeted.filter(indicator__id=self).sum('targeted')
@@ -315,5 +308,5 @@ class CollectedData(models.Model):
 
 
 class CollectedDataAdmin(admin.ModelAdmin):
-    list_display = ('description', 'targeted', 'achieved', 'indicator','disaggregation_value','community','sector','date_collected', 'create_date', 'edit_date')
+    list_display = ('description', 'targeted', 'achieved', 'indicator','disaggregation_value','date_collected', 'create_date', 'edit_date')
     display = 'Indicator Output/Outcome Collected Data'
