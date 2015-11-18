@@ -907,10 +907,10 @@ class MonitorForm(forms.ModelForm):
         super(MonitorForm, self).__init__(*args, **kwargs)
 
 
-class ChecklistForm(forms.ModelForm):
+class ChecklistItemForm(forms.ModelForm):
 
     class Meta:
-        model = Checklist
+        model = ChecklistItem
         exclude = ['create_date', 'edit_date']
 
     def __init__(self, *args, **kwargs):
@@ -926,11 +926,11 @@ class ChecklistForm(forms.ModelForm):
         self.helper.html5_required = True
         self.helper.add_input(Submit('submit', 'Save'))
 
-        super(ChecklistForm, self).__init__(*args, **kwargs)
+        super(ChecklistItemForm, self).__init__(*args, **kwargs)
 
-        countries = getCountry(self.request.user)
+        #countries = getCountry(self.request.user)
         #override the community queryset to use request.user for country
-        self.fields['item'].queryset = ChecklistItem.objects.filter(country__in=countries)
+        #self.fields['item'].queryset = ChecklistItem.objects.filter(checklist__country__in=countries)
 
 
 class TrainingAttendanceForm(forms.ModelForm):

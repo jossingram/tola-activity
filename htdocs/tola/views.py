@@ -15,9 +15,8 @@ from .tables import IndicatorDataTable
 from util import getCountry
 from datetime import datetime
 from django.shortcuts import get_object_or_404
-from django.db.models import Sum
-from django.db.models import Q
-
+from django.db.models import Sum, Q, Count
+import collections
 from tola.util import getCountry
 
 from django.contrib.auth.decorators import login_required
@@ -55,6 +54,7 @@ def index(request,id=0,sector=0):
         else:
             getSiteProfile = SiteProfile.objects.all().filter(country__in=countries)
         getQuantitativeDataSums = CollectedData.objects.all().filter(Q(Q(agreement__sector__in=sectors)|Q(agreement__sector__isnull=True)),achieved__isnull=False, indicator__country__in=countries).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+        count_evidence = CollectedData.objects.all().filter(indicator__isnull=False).values("indicator__country__country").annotate(evidence_count=Count('evidence', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
 
     else:
         getFilteredName=Program.objects.get(id=program_id)
@@ -80,7 +80,8 @@ def index(request,id=0,sector=0):
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,\
                                           'complete_wait_count':complete_wait_count,\
                                           'programs':getPrograms,'getSiteProfile':getSiteProfile,'country': countries,'getFilteredName':getFilteredName,'getSectors':getSectors,\
-                                          'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums
+                                          'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums,\
+                                          'count_evidence':count_evidence
                                           })
 
 def contact(request):

@@ -2,8 +2,8 @@ from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, Pr
     ProjectCompleteList, ProjectCompleteDelete, ProjectCompleteImport, SiteProfileList, SiteProfileCreate, SiteProfileUpdate, SiteProfileDelete,\
     DocumentationList, DocumentationCreate, DocumentationAgreementCreate,DocumentationAgreementUpdate,DocumentationAgreementDelete, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
     BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
-    BeneficiaryDelete, ProjectCompleteDetail, SiteProfileReport, ChecklistCreate, ChecklistDelete, ChecklistUpdate, BudgetList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
-    ChecklistCreate, ChecklistDelete, ChecklistUpdate, ChecklistList, BudgetCreate, BudgetUpdate, BudgetDelete, StakeholderList, StakeholderCreate, StakeholderDelete, StakeholderUpdate, ContactCreate, ContactList, ContactUpdate, ContactDelete,\
+    BeneficiaryDelete, ProjectCompleteDetail, SiteProfileReport, ChecklistItemCreate, ChecklistItemDelete, ChecklistItemUpdate, BudgetList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
+    ChecklistItemList, BudgetCreate, BudgetUpdate, BudgetDelete, StakeholderList, StakeholderCreate, StakeholderDelete, StakeholderUpdate, ContactCreate, ContactList, ContactUpdate, ContactDelete,\
     FormLibraryList
 
 from django.conf.urls import *
@@ -74,11 +74,11 @@ urlpatterns = patterns('',
                        url(r'^contact_update/(?P<pk>\w+)/$', ContactUpdate.as_view(), name='contact_update'),
                        url(r'^contact_delete/(?P<pk>\w+)/$', ContactDelete.as_view(), name='contact_delete'),
 
-                       url(r'^checklist_list/(?P<pk>\w+)/$', ChecklistList.as_view(), name='checklist_list'),
-                       url(r'^checklist_add/(?P<id>\w+)/$', ChecklistCreate.as_view(), name='checklist_add'),
-                       url(r'^checklist_update/(?P<pk>\w+)/$', ChecklistUpdate.as_view(), name='checklist_update'),
+                       url(r'^checklistitem_list/(?P<pk>\w+)/$', ChecklistItemList.as_view(), name='checklistitem_list'),
+                       url(r'^checklistitem_add/(?P<id>\w+)/$', ChecklistItemCreate.as_view(), name='checklistitem_add'),
+                       url(r'^checklistitem_update/(?P<pk>\w+)/$', ChecklistItemUpdate.as_view(), name='checklistitem_update'),
                        url(r'^checklist_update_link/(?P<pk>\w+)/(?P<type>\w+)/(?P<value>\w+)/$', 'activitydb.views.checklist_update_link', name='checklist_update_link'),
-                       url(r'^checklist_delete/(?P<pk>\w+)/$', ChecklistDelete.as_view(), name='checklistdelete'),
+                       url(r'^checklistitem_delete/(?P<pk>\w+)/$', ChecklistItemDelete.as_view(), name='checklistitem_delete'),
 
                        url(r'^beneficiary_list/(?P<pk>\w+)/$', BeneficiaryList.as_view(), name='beneficiary_list'),
                        url(r'^beneficiary_add/(?P<id>\w+)/$', BeneficiaryCreate.as_view(), name='beneficiary_add'),

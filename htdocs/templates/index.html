@@ -134,6 +134,27 @@ $(function () {
     </div>
     <div class="row">
         <div class="col-md-4">
+             <div class="panel panel-info">
+                <div class="panel-heading">
+                    Indicator Evidence Leaderboard
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <th>Country</th>
+                            <th>Indicator</th>
+                            <th>W/Evidence</th>
+                        </tr>
+                    {%for value in count_evidence  %}
+                        <tr>
+                           <td>{{value.indicator__country__country}}</td>
+                           <td>{{value.indicator_count}}</td>
+                           <td>{{value.evidence_count}}</td>
+                        </tr>
+                    {%endfor%}
+                    </table>
+                </div>
+             </div>
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <!-- Extra small button group -->

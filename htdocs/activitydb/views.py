@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistForm, StakeholderForm, ContactForm
+from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -1804,11 +1804,11 @@ class BudgetDelete(AjaxableResponseMixin, DeleteView):
     form_class = BudgetForm
 
 
-class ChecklistList(ListView):
+class ChecklistItemList(ListView):
     """
     Checklist List
     """
-    model = Checklist
+    model = ChecklistItem
     template_name = 'activitydb/checklist_list.html'
 
     def get(self, request, *args, **kwargs):
@@ -1816,36 +1816,37 @@ class ChecklistList(ListView):
         project_agreement_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
-            getChecklist = Checklist.objects.all()
+            getChecklist = ChecklistItem.objects.all()
         else:
-            getChecklist = Checklist.objects.all().filter(agreement_id=self.kwargs['pk'])
+            getChecklist = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk'])
 
         return render(request, self.template_name, {'getChecklist': getChecklist, 'project_agreement_id': self.kwargs['pk']})
 
 
-class ChecklistCreate(CreateView):
+class ChecklistItemCreate(CreateView):
     """
     Checklist Form
     """
-    model = Checklist
+    model = ChecklistItem
 
     def get_context_data(self, **kwargs):
-        context = super(ChecklistCreate, self).get_context_data(**kwargs)
+        context = super(ChecklistItemCreate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['id']})
         return context
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(ChecklistCreate, self).get_form_kwargs()
+        kwargs = super(ChecklistItemCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
     def dispatch(self, request, *args, **kwargs):
-        return super(ChecklistCreate, self).dispatch(request, *args, **kwargs)
+        return super(ChecklistItemCreate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
+        checklist = Checklist.objects.get(agreement=self.kwargs['id'])
         initial = {
-            'agreement': self.kwargs['id'],
+            'checklist': checklist,
             }
 
         return initial
@@ -1858,28 +1859,28 @@ class ChecklistCreate(CreateView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'Success, Checklist Created!')
+        messages.success(self.request, 'Success, Checklist Item Created!')
         form = ""
         return self.render_to_response(self.get_context_data(form=form))
 
 
-    form_class = ChecklistForm
+    form_class = ChecklistItemForm
 
 
-class ChecklistUpdate(UpdateView):
+class ChecklistItemUpdate(UpdateView):
     """
     Checklist Form
     """
-    model = Checklist
+    model = ChecklistItem
 
     def get_context_data(self, **kwargs):
-        context = super(ChecklistUpdate, self).get_context_data(**kwargs)
+        context = super(ChecklistItemUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
         return context
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(ChecklistUpdate, self).get_form_kwargs()
+        kwargs = super(ChecklistItemUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
@@ -1889,11 +1890,11 @@ class ChecklistUpdate(UpdateView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'Success, Checklist Output Updated!')
+        messages.success(self.request, 'Success, Checklist Item Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = ChecklistForm
+    form_class = ChecklistItemForm
 
 
 def checklist_update_link(request,pk,type,value):
@@ -1911,16 +1912,16 @@ def checklist_update_link(request,pk,type,value):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class ChecklistDelete(DeleteView):
+class ChecklistItemDelete(DeleteView):
     """
     Checklist Delete
     """
-    model = Checklist
+    model = ChecklistItem
     success_url = '/'
 
 
     def get_context_data(self, **kwargs):
-        context = super(ChecklistDelete, self).get_context_data(**kwargs)
+        context = super(ChecklistItemDelete, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
         return context
 
@@ -1934,10 +1935,10 @@ class ChecklistDelete(DeleteView):
 
         form.save()
 
-        messages.success(self.request, 'Success, Checklist Deleted!')
+        messages.success(self.request, 'Success, Checklist Item Deleted!')
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = ChecklistForm
+    form_class = ChecklistItemForm
 
 
 class FormLibraryList(ListView):
