@@ -911,7 +911,7 @@ class ChecklistItemForm(forms.ModelForm):
 
     class Meta:
         model = ChecklistItem
-        exclude = ['create_date', 'edit_date']
+        exclude = ['create_date', 'edit_date','global_item']
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')

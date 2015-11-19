@@ -197,6 +197,8 @@ class IndicatorCreate(CreateView):
     def get_form_kwargs(self):
         kwargs = super(IndicatorCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
+        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values("program__id")
+        kwargs['program'] = program
         return kwargs
 
     def form_invalid(self, form):
@@ -226,7 +228,6 @@ class IndicatorUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(IndicatorUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
-
         #get external service data if any
         try:
             getExternalServiceRecord = ExternalServiceRecord.objects.all().filter(indicator__id=self.kwargs['pk'])
@@ -240,6 +241,8 @@ class IndicatorUpdate(UpdateView):
     def get_form_kwargs(self):
         kwargs = super(IndicatorUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
+        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values("program__id")
+        kwargs['program'] = program
         return kwargs
 
     def form_invalid(self, form):
@@ -379,6 +382,8 @@ def indicator_data_report(request, id=0, program=0):
             'program__id':program,
             'agreement__program__id': program,
         }
+        #redress the indicator list based on program
+        getIndicators = Indicator.objects.select_related().filter(program=program)
 
     if request.method == "GET" and "search" in request.GET:
         """
@@ -430,9 +435,13 @@ class CollectedDataList(ListView):
         elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) != 0:
             getCollectedData = CollectedData.objects.all().filter(program=self.kwargs['program'])
             collected_sum = CollectedData.objects.filter(program=self.kwargs['program']).aggregate(Sum('targeted'),Sum('achieved'))
+            #redress indicator query based on submitted program
+            getIndicators = Indicator.objects.select_related().filter(program=self.kwargs['program']).exclude(collecteddata__isnull=True)
         elif int(self.kwargs['indicator']) != 0 and int(self.kwargs['program']) != 0:
             getCollectedData = CollectedData.objects.all().filter(program=self.kwargs['program'],indicator__id=self.kwargs['indicator'])
             collected_sum = CollectedData.objects.filter(program=self.kwargs['program'],indicator__id=self.kwargs['indicator']).aggregate(Sum('targeted'),Sum('achieved'))
+            #redress indicator query based on submitted program
+            getIndicators = Indicator.objects.select_related().filter(program=self.kwargs['program']).exclude(collecteddata__isnull=True)
         elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) == 0:
             getCollectedData = CollectedData.objects.all().filter(indicator__country__in=countries)
             collected_sum = CollectedData.objects.filter(indicator__country__in=countries).aggregate(Sum('targeted'),Sum('achieved'))

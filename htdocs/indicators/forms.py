@@ -28,6 +28,7 @@ class IndicatorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         #get the user object to check permissions with
         self.request = kwargs.pop('request')
+        self.program = kwargs.pop('program')
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -107,7 +108,7 @@ class IndicatorForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
-        self.fields['objectives'].queryset = Objective.objects.all()
+        self.fields['objectives'].queryset = Objective.objects.all().filter(id=self.program)
         self.fields['strategic_objectives'].queryset = StrategicObjective.objects.filter(country__in=countries)
 
 

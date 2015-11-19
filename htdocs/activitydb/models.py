@@ -1168,7 +1168,7 @@ class ChecklistAdmin(admin.ModelAdmin):
 
 
 class ChecklistItem(models.Model):
-    item = models.CharField(max_length=255, null=True, blank=True)
+    item = models.CharField(max_length=255)
     checklist = models.ForeignKey(Checklist)
     in_file = models.BooleanField(default=False)
     not_applicable = models.BooleanField(default=False)
