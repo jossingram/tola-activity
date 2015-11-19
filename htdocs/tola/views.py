@@ -66,7 +66,10 @@ def index(request,id=0,sector=0):
         complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="")), program__id=program_id, program__country__in=countries).count()
         agreement_wait_count = ProjectAgreement.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
         complete_wait_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
-        getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id, projectagreement__sector__id=sector)
+        if int(sector) > 0:
+            getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id, projectagreement__sector__id=sector)
+        else:
+            getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
         getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
         count_evidence = CollectedData.objects.all().filter(indicator__isnull=False).values("indicator__country__country").annotate(evidence_count=Count('evidence', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
 
