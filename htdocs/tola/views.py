@@ -68,6 +68,8 @@ def index(request,id=0,sector=0):
         complete_wait_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
         getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id, projectagreement__sector__id=sector)
         getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+        count_evidence = CollectedData.objects.all().filter(indicator__isnull=False).values("indicator__country__country").annotate(evidence_count=Count('evidence', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
+
 
     table = IndicatorDataTable(getQuantitativeDataSums)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
