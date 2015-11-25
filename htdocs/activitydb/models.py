@@ -758,11 +758,11 @@ class ProjectAgreement(models.Model):
 
     @property
     def capacities(self):
-        return ', '.join([x.name for x in self.capacity.all()])
+        return ', '.join([x.capacity for x in self.capacity.all()])
 
     @property
     def evaluations(self):
-        return ', '.join([x.name for x in self.evaluate.all()])
+        return ', '.join([x.evaluate for x in self.evaluate.all()])
 
     #displayed in admin templates
     def __unicode__(self):

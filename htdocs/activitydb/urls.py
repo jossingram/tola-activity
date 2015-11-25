@@ -99,7 +99,8 @@ urlpatterns = patterns('',
                        url(r'^province/(?P<province>[-\w]+)/province_json/', 'activitydb.views.province_json', name='province_json'),
                        url(r'^country/(?P<country>[-\w]+)/country_json/', 'activitydb.views.country_json', name='country_json'),
 
-                       url(r'^count/$', 'activitydb.views.ProgramDashboardCounts', name='ProgramDashboardCounts'),
+                       #ajax calls
+                       url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),
 
 
                        )
