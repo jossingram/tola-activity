@@ -614,22 +614,7 @@ class CollectedDataDelete(DeleteView):
     CollectedData Delete
     """
     model = CollectedData
-    success_url = '/'
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-
-        form.save()
-
-        messages.success(self.request, 'Success, Data Deleted!')
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = CollectedDataForm
+    success_url = '/indicators/collecteddata/0/0/'
 
 
 def service_json(request, service):
