@@ -1650,7 +1650,11 @@ class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
     template_name = 'activitydb/quantitativeoutputs_form.html'
 
     def get_initial(self):
-        getProgram = Program.objects.get(indicator__program = self.kwargs['id'])
+        """
+        get the program to filter the list and indicators by.. the FK to colelcteddata is i_program
+        we should change that name at somepoint as it is very confusing
+        """
+        getProgram = Program.objects.get(i_program__pk=self.kwargs['pk'])
         initial = {
             'program': getProgram.id,
             }
