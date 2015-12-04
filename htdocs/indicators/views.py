@@ -42,7 +42,7 @@ class IndicatorList(ListView):
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
 
         if int(self.kwargs['pk']) == 0:
-            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name')
             getIndicators = Indicator.objects.select_related().all()
         else:
             getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk'])

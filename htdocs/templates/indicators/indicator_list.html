@@ -41,7 +41,7 @@
                             <th>Sector</th>
                             <th>&nbsp;</th>
                         </tr>
-                        {% for indicator in program.indicator_set.all %}
+                        {% for indicator in program.indicator_set.all|dictsort:"levels" %}
                         <tr>
                             <td><a href="/indicators/indicator_update/{{ indicator.id }}">{{ indicator.create_date}}</a></td>
                             <td>{{ indicator.indicator_types}}</td>
