@@ -1474,6 +1474,12 @@ class TrainingUpdate(UpdateView):
     """
     model = TrainingAttendance
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(TrainingUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))

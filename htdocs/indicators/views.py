@@ -327,7 +327,7 @@ def programIndicatorReport(request, program=0):
     program = int(program)
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('indicator_type', 'number')
+    getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('level', 'number')
     getProgram = Program.objects.get(id=program)
 
     if request.method == "GET" and "search" in request.GET:
@@ -343,7 +343,7 @@ def programIndicatorReport(request, program=0):
                                            Q(name__icontains=request.GET["search"]) |
                                            Q(number__icontains=request.GET["search"]) |
                                            Q(definition__startswith=request.GET["search"])
-                                          ).filter(program__id=program).select_related().order_by('indicator_type','number')
+                                          ).filter(program__id=program).select_related().order_by('level','number')
 
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form

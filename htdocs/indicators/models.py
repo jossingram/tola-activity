@@ -7,7 +7,7 @@ from datetime import datetime
 
 class IndicatorType(models.Model):
     indicator_type = models.CharField(max_length=135, blank=True)
-    description = models.CharField(max_length=765, blank=True)
+    description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -23,7 +23,7 @@ class IndicatorTypeAdmin(admin.ModelAdmin):
 class StrategicObjective(models.Model):
     name = models.CharField(max_length=135, blank=True)
     country = models.ForeignKey(Country, null=True, blank=True)
-    description = models.CharField(max_length=765, blank=True)
+    description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -48,7 +48,7 @@ class StrategicObjectiveAdmin(admin.ModelAdmin):
 class Objective(models.Model):
     name = models.CharField(max_length=135, blank=True)
     program = models.ForeignKey(Program, null=True, blank=True)
-    description = models.CharField(max_length=765, blank=True)
+    description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -71,7 +71,7 @@ class ObjectiveAdmin(admin.ModelAdmin):
 
 class Level(models.Model):
     name = models.CharField(max_length=135, blank=True)
-    description = models.CharField(max_length=765, blank=True)
+    description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -214,7 +214,7 @@ class Indicator(models.Model):
     method_of_analysis = models.CharField(max_length=255, null=True, blank=True)
     information_use = models.CharField(max_length=255, null=True, blank=True)
     reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True)
-    comments = models.CharField(max_length=255, null=True, blank=True)
+    comments = models.TextField(max_length=255, null=True, blank=True)
     program = models.ManyToManyField(Program)
     sector = models.ForeignKey(Sector, null=True, blank=True)
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_indicator")
@@ -272,17 +272,17 @@ class CollectedData(models.Model):
     targeted = models.IntegerField("Targeted", blank=True, null=True)
     achieved = models.IntegerField("Achieved", blank=True, null=True)
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
-    description = models.CharField("Remarks/comments", max_length=255, blank=True, null=True)
+    description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2")
     program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
     date_collected = models.DateTimeField(null=True, blank=True)
-    comment = models.CharField("Comment/Explanation", max_length=255, blank=True, null=True)
+    comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
     evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
+    approved_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="Originated By", related_name="approving_data")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-
     class Meta:
         ordering = ('agreement','indicator','date_collected','create_date')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"
