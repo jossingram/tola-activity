@@ -263,8 +263,8 @@ class Indicator(models.Model):
 
 class IndicatorAdmin(admin.ModelAdmin):
     list_display = ('owner','indicator_types','name','sector')
-    search_fields = ('sector','program')
-    list_filter = ('sector','program')
+    search_fields = ('name','number','program__name')
+    list_filter = ('sector','country')
     display = 'Indicators'
 
 
@@ -308,5 +308,6 @@ class CollectedData(models.Model):
 
 
 class CollectedDataAdmin(admin.ModelAdmin):
-    list_display = ('description', 'targeted', 'achieved', 'indicator','disaggregation_value','date_collected', 'create_date', 'edit_date')
+    list_display = ('indicator','date_collected', 'create_date', 'edit_date')
+    list_filter = ['program__country__country']
     display = 'Indicator Output/Outcome Collected Data'
