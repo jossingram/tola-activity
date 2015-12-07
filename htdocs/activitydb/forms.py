@@ -353,8 +353,8 @@ class ProjectAgreementForm(forms.ModelForm):
 
                 Tab('Approval',
                     Fieldset('Approval',
-                             'approval', 'estimated_by','estimated_by_date', 'reviewed_by','reviewed_by_date',
-                             'finance_reviewed_by','finance_reviewed_by_date','me_reviewed_by','me_reviewed_by_date','approved_by', 'approved_by_date', 'approval_submitted_by',
+                             'approval', 'estimated_by', 'reviewed_by',
+                             'finance_reviewed_by','finance_reviewed_by_date','me_reviewed_by','me_reviewed_by_date','approved_by', 'approved_by_date',
                              Field('approval_remarks', rows="3", css_class='input-xlarge')
                     ),
                 ),
@@ -423,7 +423,6 @@ class ProjectAgreementForm(forms.ModelForm):
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
             self.fields['approval'].widget.attrs['disabled'] = "disabled"
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
-            self.fields['approval_submitted_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
 
@@ -583,12 +582,6 @@ class ProjectCompleteForm(forms.ModelForm):
                     ),
 
                 ),
-                Tab('Justifications',
-                    Fieldset(
-                        'Involvement','government_involvement', 'community_involvement',
-                    ),
-
-                ),
                 Tab('Impact',
                     Fieldset(
                         '',
@@ -638,7 +631,7 @@ class ProjectCompleteForm(forms.ModelForm):
                 ),
                 Tab('Approval',
                     Fieldset('Approval',
-                             'approval', 'approved_by', 'approval_submitted_by',
+                             'approval', 'approved_by',
                              Field('approval_remarks', rows="3", css_class='input-xlarge')
                     ),
                 ),
