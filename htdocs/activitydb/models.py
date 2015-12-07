@@ -358,6 +358,29 @@ class ProfileTypeAdmin(admin.ModelAdmin):
     list_display = ('profile', 'create_date', 'edit_date')
     display = 'ProfileType'
 
+# Add land classification - 'Rural', 'Urban', 'Peri-Urban', tola-help issue #162
+class LandType(models.Model):
+    classify_land = models.CharField("Land Classification", help_text="Rural, Urban, Peri-Urban", max_length=100, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('classify_land',)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(LandType, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.classify_land
+
+class LandTypeAdmin(admin.ModelAdmin):
+    list_display = ('classify_land', 'create_date', 'edit_date')
+    display = 'Land Type'
 
 class SiteProfile(models.Model):
     name = models.CharField("Site Name", max_length=255, blank=False)
@@ -400,6 +423,7 @@ class SiteProfile(models.Model):
     total_population = models.IntegerField(null=True, blank=True)
     total_male = models.IntegerField(null=True, blank=True)
     total_female = models.IntegerField(null=True, blank=True)
+    classify_land = models.ForeignKey(LandType, blank=True, null=True)
     total_land = models.IntegerField("Total Land", help_text="In hectares/jeribs", null=True, blank=True)
     total_agricultural_land = models.IntegerField("Total Agricultural Land", help_text="In hectares/jeribs", null=True, blank=True)
     total_rainfed_land = models.IntegerField("Total Rain-fed Land", help_text="In hectares/jeribs", null=True, blank=True)

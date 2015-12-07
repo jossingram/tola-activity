@@ -717,7 +717,7 @@ class SiteProfileForm(forms.ModelForm):
                         'male_25_59', 'female_25_59', 'male_over_60', 'female_over_60', 'total_population',
                     ),
                     Fieldset('Land',
-                        'total_land','total_agricultural_land','total_rainfed_land','total_horticultural_land',
+                        'classify_land','total_land','total_agricultural_land','total_rainfed_land','total_horticultural_land',
                         'populations_owning_land', 'avg_landholding_size', 'households_owning_livestock','animal_type'
                     ),
                     Fieldset('Literacy',
