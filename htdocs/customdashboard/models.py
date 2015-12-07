@@ -19,6 +19,3 @@ class ProjectStatusAdmin(admin.ModelAdmin):
     list_display = ('project_status','description','create_date','edit_date')
     display = 'Project Status'
 
-
-
-

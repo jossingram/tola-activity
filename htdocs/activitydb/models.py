@@ -107,6 +107,7 @@ class ContactAdmin(admin.ModelAdmin):
 # For programs that have custom dashboards. The default dashboard for all other programs is 'Program Dashboard'
 class CustomDashboard(models.Model):
     dashboard_name = models.CharField("Custom Dashboard Name", max_length=255, blank=True)
+    dashboard_description = models.TextField("Brief Description", null=True, blank=True, help_text="What does this custom dashboard displays to the user?")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -125,7 +126,7 @@ class CustomDashboard(models.Model):
         return self.dashboard_name
 
 class CustomDashboardAdmin(admin.ModelAdmin):
-    list_display = ('dashboard_name', 'create_date', 'edit_date')
+    list_display = ('dashboard_name', 'dashboard_description', 'create_date', 'edit_date')
     display = 'Custom Dashboard'
 
 class Program(models.Model):
