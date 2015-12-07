@@ -42,7 +42,7 @@ class IndicatorList(ListView):
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
 
         if int(self.kwargs['pk']) == 0:
-            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name')
             getIndicators = Indicator.objects.select_related().all()
         else:
             getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk'])
@@ -327,7 +327,7 @@ def programIndicatorReport(request, program=0):
     program = int(program)
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('indicator_type', 'number')
+    getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('level', 'number')
     getProgram = Program.objects.get(id=program)
 
     if request.method == "GET" and "search" in request.GET:
@@ -343,7 +343,7 @@ def programIndicatorReport(request, program=0):
                                            Q(name__icontains=request.GET["search"]) |
                                            Q(number__icontains=request.GET["search"]) |
                                            Q(definition__startswith=request.GET["search"])
-                                          ).filter(program__id=program).select_related().order_by('indicator_type','number')
+                                          ).filter(program__id=program).select_related().order_by('level','number')
 
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
@@ -614,22 +614,7 @@ class CollectedDataDelete(DeleteView):
     CollectedData Delete
     """
     model = CollectedData
-    success_url = '/'
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-
-        form.save()
-
-        messages.success(self.request, 'Success, Data Deleted!')
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = CollectedDataForm
+    success_url = '/indicators/collecteddata/0/0/'
 
 
 def service_json(request, service):

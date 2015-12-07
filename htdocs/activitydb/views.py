@@ -3,7 +3,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from django.views.generic import TemplateView
 from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact, FormLibrary, FormEnabled
-from indicators.models import CollectedData
+from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -140,20 +140,18 @@ class ProjectAgreementList(ListView):
 
 class ProjectAgreementImport(ListView):
     """
-    Import a project agreement from TolaData
+    Import a project agreement from TolaData or other third party service
     """
 
     template_name = 'activitydb/projectagreement_import.html'
 
     def get(self, request, *args, **kwargs):
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+        getServices = ExternalService.objects.all()
+        getCountries = Country.objects.all().filter(country__in=countries)
 
-        # set url for json feed here
-        response = requests.get("https://tola-data-dev.mercycorps.org/api/read/?format=json")
-        jsondata = json.loads(response.content)
-
-        data = jsondata['results']
-
-        return render(request, self.template_name, {'getAgreements': data})
+        return render(request, self.template_name, {'getPrograms': getPrograms, 'getServices': getServices , 'getCountries': getCountries})
 
 
 class ProjectAgreementCreate(CreateView):
@@ -1443,6 +1441,12 @@ class TrainingCreate(CreateView):
     def dispatch(self, request, *args, **kwargs):
         return super(TrainingCreate, self).dispatch(request, *args, **kwargs)
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(TrainingCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def get_initial(self):
         initial = {
             'agreement': self.kwargs['id'],
@@ -1469,6 +1473,12 @@ class TrainingUpdate(UpdateView):
     Training Form
     """
     model = TrainingAttendance
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(TrainingUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
@@ -1646,7 +1656,11 @@ class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
     template_name = 'activitydb/quantitativeoutputs_form.html'
 
     def get_initial(self):
-        getProgram = Program.objects.get(indicator__program = self.kwargs['id'])
+        """
+        get the program to filter the list and indicators by.. the FK to colelcteddata is i_program
+        we should change that name at somepoint as it is very confusing
+        """
+        getProgram = Program.objects.get(i_program__pk=self.kwargs['pk'])
         initial = {
             'program': getProgram.id,
             }
@@ -2022,25 +2036,31 @@ def district_json(request, district):
     return HttpResponse(villages_json, content_type="application/json")
 
 
-def ProgramDashboardCounts(request):
+def import_service(service_id=1, deserialize=True):
     """
-    Loop over each program and increment that count for completes and
-    regular program, agreements and completes
-    :param request:
-    :return:
+    Import a indicators from a web service (the dig only for now)
     """
-    getDashboard = ProgramDashboard.objects.all()
+    service = ExternalService.objects.all().filter(id=service_id)
 
-    for program in getDashboard:
-        getAgreementOpen = ProjectAgreement.objects.all().filter(id=program.id).count()
-        getAgreementApproved = ProjectAgreement.objects.all().filter(id=program.id,approval='approved').count()
-        getCompleteOpen = ProjectComplete.objects.all().filter(id=program.id).count()
-        getCompleteApproved = ProjectComplete.objects.all().filter(id=program.id,approval='approved').count()
+    response = requests.get(services.feed_url)
+    get_json = json.loads(response.content)
 
-        ProgramDashboard.objects.filter(id=program.id).update(
-                                                              project_agreement_count=getAgreementOpen,
-                                                              project_agreement_count_approved=getAgreementApproved,
-                                                              project_completion_count=getCompleteOpen,
-                                                              project_completion_count_approved=getCompleteApproved,
-                                                              )
-    return HttpResponseRedirect('/')
+    if deserialize == True:
+        data = json.load(get_json) # deserialises it
+    else:
+        #send json data back not deserialized data
+        data = get_json
+    #debug the json data string uncomment dump and print
+    data2 = json.dumps(data) # json formatted string
+    print data2
+    print "HELP!"
+
+    return data
+
+
+def service_json(request, service):
+    """
+    For populating service indicators in dropdown
+    """
+    service_indicators = import_service(service,deserialize=False)
+    return HttpResponse(service_indicators, content_type="application/json")

@@ -18,7 +18,7 @@ class TolaUser(User):
 class Country(models.Model):
     country = models.CharField("Country Name", max_length=255, blank=True)
     code = models.CharField("2 Letter Country Code", max_length=4, blank=True)
-    description = models.CharField("Description/Notes", max_length=255, blank=True)
+    description = models.TextField("Description/Notes", max_length=765,blank=True)
     latitude = models.CharField("Latitude", max_length=255, null=True, blank=True)
     longitude = models.CharField("Longitude", max_length=255, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -134,7 +134,7 @@ class Program(models.Model):
     name = models.CharField("Program Name", max_length=255, blank=True)
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
-    description = models.CharField("Program Description", max_length=765, null=True, blank=True)
+    description = models.TextField("Program Description", max_length=765, null=True, blank=True)
     sector = models.ForeignKey(Sector, null=True,blank=True)
     dashboard_name = models.ForeignKey(CustomDashboard, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -545,7 +545,7 @@ class EvaluateAdmin(admin.ModelAdmin):
 
 class ProjectType(models.Model):
     name = models.CharField("Type of Activity", max_length=135)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=765)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -570,7 +570,7 @@ class ProjectTypeAdmin(admin.ModelAdmin):
 
 class ProjectTypeOther(models.Model):
     name = models.CharField("Type of Activity", max_length=135)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=765)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -596,7 +596,7 @@ class ProjectTypeOtherAdmin(admin.ModelAdmin):
 class Template(models.Model):
     name = models.CharField("Name of Document", max_length=135)
     documentation_type = models.CharField("Type (File or URL)", max_length=135)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=765)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -759,11 +759,11 @@ class ProjectAgreement(models.Model):
 
     @property
     def capacities(self):
-        return ', '.join([x.name for x in self.capacity.all()])
+        return ', '.join([x.capacity for x in self.capacity.all()])
 
     @property
     def evaluations(self):
-        return ', '.join([x.name for x in self.evaluate.all()])
+        return ', '.join([x.evaluate for x in self.evaluate.all()])
 
     #displayed in admin templates
     def __unicode__(self):
@@ -1065,7 +1065,7 @@ class Beneficiary(models.Model):
     father_name = models.CharField(max_length=255, null=True, blank=True)
     age = models.IntegerField(null=True, blank=True)
     gender = models.CharField(max_length=255, null=True, blank=True)
-    community = models.ForeignKey(SiteProfile, null=True, blank=True)
+    site = models.ForeignKey(SiteProfile, null=True, blank=True)
     signature = models.BooleanField(default=True)
     remarks = models.CharField(max_length=255, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
