@@ -531,17 +531,17 @@ class ProjectCompleteForm(forms.ModelForm):
                     ),
                     Fieldset(
                         'Dates',
-                        'expected_start_date','expected_end_date', 'expected_duration', 'actual_start_date', 'actual_end_date', 'actual_duration',
+                        'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
                         PrependedText('on_time', ''), 'no_explanation',
 
                     ),
                 ),
                 Tab('Budget',
                     Fieldset(
-                        '','account_code','lin_code',
-                        PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00'), 'budget_variance', 'explanation_of_variance',
+                        '',
+                        PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00'),'actual_cost_date', 'budget_variance', 'explanation_of_variance',
                         PrependedAppendedText('total_cost','$', '.00'), PrependedAppendedText('agency_cost','$', '.00'),
-                        AppendedText('local_total_cost', '.00'), AppendedText('local_agency_cost', '.00'),'exchange_rate','exchange_rate_date',
+                        AppendedText('local_total_cost', '.00'), AppendedText('local_agency_cost', '.00'),'account_code','lin_code','exchange_rate','exchange_rate_date',
                     ),
 
                 ),
@@ -620,15 +620,10 @@ class ProjectCompleteForm(forms.ModelForm):
                         ),
                     ),
                     Fieldset(
-                        '','actual_contribution','beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','community_handover'
+                        '','actual_contribution','beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','quality_assured','issues_and_challenges', 'lessons_learned',
                     ),
                 ),
-                Tab('Lessons Learned',
-                    Fieldset(
-                        '', 'issues_and_challenges', 'lessons_learned',
-                    ),
 
-                ),
                 Tab('Approval',
                     Fieldset('Approval',
                              'approval', 'approved_by',

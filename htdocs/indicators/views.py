@@ -542,8 +542,8 @@ class CollectedDataCreate(CreateView):
         form.save()
         messages.success(self.request, 'Success, Data Created!')
 
-        form = ""
-        return self.render_to_response(self.get_context_data(form=form))
+        redirect_url = 'indicators/home/0/'
+        return HttpResponseRedirect(redirect_url)
 
 
 class CollectedDataUpdate(UpdateView):
