@@ -797,7 +797,7 @@ class ProjectAgreement(models.Model):
 
 class ProjectAgreementAdmin(admin.ModelAdmin):
     list_display = ('program','project_name')
-    list_filter = ('program','office')
+    list_filter = ('program__country','office')
     display = 'project_name'
 
 
@@ -859,7 +859,7 @@ class ProjectComplete(models.Model):
 
     class Meta:
         ordering = ('create_date',)
-        verbose_name_plural = "Activity Completions"
+        verbose_name_plural = "Project Completions"
 
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
@@ -876,7 +876,7 @@ class ProjectComplete(models.Model):
 
 class ProjectCompleteAdmin(admin.ModelAdmin):
     list_display = ('program', 'project_name', 'activity_code')
-    list_filter = ('program','office')
+    list_filter = ('program__country','office')
     display = 'project_name'
 
 
@@ -976,7 +976,7 @@ class Budget(models.Model):
     description_of_contribution = models.CharField(max_length=255, blank=True, null=True)
     proposed_value = models.IntegerField(default=0, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True)
-    complete = models.ForeignKey(ProjectComplete, blank=True, null=True)
+    complete = models.ForeignKey(ProjectComplete, blank=True, null=True, on_delete=models.SET_NULL)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -1027,10 +1027,6 @@ class ProgramDashboard(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(ProgramDashboard, self).save()
-
-    #displayed in admin templates
-    def __unicode__(self):
-        return unicode("Program: %s " % (self.program, self.project_agreement))
 
 
 class ProgramDashboardAdmin(admin.ModelAdmin):

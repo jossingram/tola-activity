@@ -275,7 +275,7 @@ class CollectedData(models.Model):
     description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
-    complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2")
+    complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
     program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
     date_collected = models.DateTimeField(null=True, blank=True)
     comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
@@ -296,7 +296,7 @@ class CollectedData(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.indicator
+        return self.description
 
     def targeted_sum(self):
         targets=CollectedData.targeted.filter(indicator__id=self).sum('targeted')

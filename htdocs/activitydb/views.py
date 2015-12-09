@@ -446,7 +446,7 @@ class ProjectCompleteCreate(CreateView):
             initial = pre_initial.copy()
             initial.update(site)
         except SiteProfile.DoesNotExist:
-            getCommunites = None
+            getSites = None
 
         return initial
 
@@ -473,17 +473,22 @@ class ProjectCompleteCreate(CreateView):
         getComplete = ProjectComplete.objects.get(id=latest.id)
         getAgreement = ProjectAgreement.objects.get(id=self.request.POST['project_agreement'])
 
+        print latest
+        print getComplete.id
+        print getComplete.project_agreement_id
+        print getAgreement.account_code
+        print getAgreement.lin_code
+
         ProgramDashboard.objects.filter(project_agreement__id=self.request.POST['project_agreement']).update(project_completion=getComplete)
 
         #update the quantitative data fields to include the newly created complete
-        CollectedData.objects.all().filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
+        CollectedData.objects.filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
 
         #update the other budget items
-        Budget.objects.all().filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
+        Budget.objects.filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
 
         #update main compelte fields
-        getComplete.update(account_code=getAgreement.account_code, lin_code=getAgreement.lin_code)
-        getComplete.save()
+        ProjectComplete.objects.filter(id=getComplete.id).update(account_code=getAgreement.account_code, lin_code=getAgreement.lin_code)
 
 
         messages.success(self.request, 'Success, Completion Form Created!')
@@ -510,14 +515,14 @@ class ProjectCompleteUpdate(UpdateView):
 
         #get budget data
         try:
-            getBudget = Budget.objects.all().filter(agreement__id=self.kwargs['pk'])
+            getBudget = Budget.objects.all().filter(complete__id=self.kwargs['pk'])
         except Budget.DoesNotExist:
             getBudget = None
         context.update({'getBudget': getBudget})
 
         #get Quantitative data
         try:
-            getQuantitative = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('indicator')
+            getQuantitative = CollectedData.objects.all().filter(complete__id=self.kwargs['pk']).order_by('indicator')
         except CollectedData.DoesNotExist:
             getQuantitative = None
         context.update({'getQuantitative': getQuantitative})
