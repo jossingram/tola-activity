@@ -471,8 +471,20 @@ class ProjectCompleteCreate(CreateView):
 
         latest = ProjectComplete.objects.latest('id')
         getComplete = ProjectComplete.objects.get(id=latest.id)
+        getAgreement = ProjectAgreement.objects.get(id=self.request.POST['project_agreement'])
 
         ProgramDashboard.objects.filter(project_agreement__id=self.request.POST['project_agreement']).update(project_completion=getComplete)
+
+        #update the quantitative data fields to include the newly created complete
+        CollectedData.objects.all().filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
+
+        #update the other budget items
+        Budget.objects.all().filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
+
+        #update main compelte fields
+        getComplete.update(account_code=getAgreement.account_code, lin_code=getAgreement.lin_code)
+        getComplete.save()
+
 
         messages.success(self.request, 'Success, Completion Form Created!')
         redirect_url = '/activitydb/projectcomplete_update/' + str(latest.id)
