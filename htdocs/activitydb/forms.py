@@ -620,7 +620,7 @@ class ProjectCompleteForm(forms.ModelForm):
                         ),
                     ),
                     Fieldset(
-                        '','actual_contribution','beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','quality_assured','issues_and_challenges', 'lessons_learned',
+                        '',AppendedText('progress_against_targets','%'),'actual_contribution','beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','quality_assured','issues_and_challenges', 'lessons_learned',
                     ),
                 ),
 

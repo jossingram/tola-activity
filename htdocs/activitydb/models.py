@@ -839,6 +839,7 @@ class ProjectComplete(models.Model):
     jobs_created = models.CharField("Number of Jobs Created", max_length=255, blank=True, null=True)
     jobs_part_time = models.CharField("Part Time Jobs", max_length=255, blank=True, null=True)
     jobs_full_time = models.CharField("Full Time Jobs", max_length=255, blank=True, null=True)
+    progress_against_targets = models.IntegerField("Progress against Targets (%)",blank=True,null=True)
     government_involvement = models.CharField("Government Involvement", max_length=255, blank=True, null=True)
     community_involvement = models.CharField("Community Involvement", max_length=255, blank=True, null=True)
     community_handover = models.BooleanField("CommunityHandover/Sustainability Maintenance Plan", help_text='Check box if it was completed', default=None)
