@@ -25,7 +25,7 @@ def run():
     #get all the projects and loop over them
     getProjects = ProjectComplete.objects.all()
     for item in getProjects:
-        if item.total_cost and item.local_total_cost is not "Nil":
+        if item.total_cost and item.local_total_cost != "Nil":
             print item.total_cost
             trim_item = re.sub("[^0-9.]", "", item.total_cost)
             trim_item = float(trim_item)
@@ -34,7 +34,7 @@ def run():
         elif item.total_cost in [None, '','Nil']:
             ProjectComplete.objects.all().filter(id=item.id).update(total_cost=0.00)
 
-        if item.estimated_budget and item.local_total_cost is not "Nil":
+        if item.estimated_budget and item.local_total_cost != "Nil":
             print item.estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.estimated_budget)
             trim_item = float(trim_item)
@@ -43,7 +43,7 @@ def run():
         elif item.estimated_budget in [None, '','Nil']:
             ProjectComplete.objects.all().filter(id=item.id).update(estimated_budget=0.00)
 
-        if item.agency_cost and item.local_total_cost is not "Nil":
+        if item.agency_cost and item.local_total_cost != "Nil":
             print item.agency_cost
             trim_item = re.sub("[^0-9.]", "", item.agency_cost)
             trim_item = float(trim_item)
@@ -52,7 +52,7 @@ def run():
         elif item.agency_cost in [None, '','Nil']:
             ProjectComplete.objects.all().filter(id=item.id).update(agency_cost=0.00)
 
-        if item.local_total_cost and item.local_total_cost is not "Nil":
+        if item.local_total_cost and item.local_total_cost != "Nil":
             print item.local_total_cost
             trim_item = re.sub("[^0-9.]", "", item.local_total_cost)
             trim_item = float(trim_item)
@@ -61,7 +61,7 @@ def run():
         elif item.local_total_cost in [None, '','Nil']:
             ProjectComplete.objects.all().filter(id=item.id).update(local_total_cost=0.00)
 
-        if item.local_agency_cost and item.local_agency_cost is not "Nil":
+        if item.local_agency_cost and item.local_agency_cost != "Nil":
             print item.local_agency_cost
             trim_item = re.sub("[^0-9.]", "", item.local_agency_cost)
             trim_item = float(trim_item)
@@ -75,7 +75,7 @@ def run():
     #get all the projects and loop over them
     getProjectsComplete = ProjectAgreement.objects.all()
     for item in getProjectsComplete:
-        if item.total_estimated_budget and item.total_estimated_budget is not "Nil":
+        if item.total_estimated_budget and item.total_estimated_budget != "Nil":
             print item.total_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.total_estimated_budget)
             trim_item = float(trim_item)
@@ -84,7 +84,7 @@ def run():
         elif item.total_estimated_budget in [None, '','Nil']:
             ProjectAgreement.objects.all().filter(id=item.id).update(total_estimated_budget=0.00)
 
-        if item.mc_estimated_budget and item.mc_estimated_budget is not "Nil":
+        if item.mc_estimated_budget and item.mc_estimated_budget != "Nil":
             print item.mc_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.mc_estimated_budget)
             trim_item = float(trim_item)
@@ -93,7 +93,7 @@ def run():
         elif item.mc_estimated_budget in [None, '','Nil']:
             ProjectAgreement.objects.all().filter(id=item.id).update(mc_estimated_budget=0.00)
 
-        if item.local_total_estimated_budget and item.local_total_estimated_budget is not "Nil":
+        if item.local_total_estimated_budget and item.local_total_estimated_budget != "Nil":
             print item.local_total_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.local_total_estimated_budget)
             trim_item = float(trim_item)
@@ -102,7 +102,7 @@ def run():
         elif item.local_total_estimated_budget in [None, '','Nil']:
             ProjectAgreement.objects.all().filter(id=item.id).update(local_total_estimated_budget=0.00)
 
-        if item.local_mc_estimated_budget and item.local_mc_estimated_budget is not "Nil":
+        if item.local_mc_estimated_budget and item.local_mc_estimated_budget != "Nil":
             print item.local_mc_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.local_mc_estimated_budget)
             trim_item = float(trim_item)
