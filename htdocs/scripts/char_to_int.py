@@ -20,7 +20,7 @@ import re
 def run():
     print "Running Script..."
 
-    trim_list = ['estimated_budget', 'total_budget','total_cost','agency_cost','local_total_cost','local_agency_cost']
+    trim_list = ['estimated_budget', 'actual_budget','total_cost','agency_cost','local_total_cost','local_agency_cost']
 
     #get all the projects and loop over them
     getProjects = ProjectComplete.objects.all()
@@ -31,64 +31,82 @@ def run():
             trim_item = float(trim_item)
             print trim_item
             ProjectComplete.objects.all().filter(id=item.id).update(total_cost=trim_item)
-        elif item.estimated_budget:
+        elif item.total_cost in [None, '']:
+            ProjectComplete.objects.all().filter(id=item.id).update(total_cost=0.00)
+
+        if item.estimated_budget:
             print item.estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.estimated_budget)
             trim_item = float(trim_item)
             print trim_item
             ProjectComplete.objects.all().filter(id=item.id).update(estimated_budget=trim_item)
-        elif item.actual_budget:
-            print item.actual_budget
-            trim_item = re.sub("[^0-9.]", "", item.actual_budget)
-            trim_item = float(trim_item)
-            print trim_item
-            ProjectComplete.objects.all().filter(id=item.id).update(actual_budget=trim_item)
-        elif item.agency_cost:
+        elif item.estimated_budget in [None, '']:
+            ProjectComplete.objects.all().filter(id=item.id).update(estimated_budget=0.00)
+
+        if item.agency_cost:
             print item.agency_cost
             trim_item = re.sub("[^0-9.]", "", item.agency_cost)
             trim_item = float(trim_item)
             print trim_item
             ProjectComplete.objects.all().filter(id=item.id).update(agency_cost=trim_item)
-        elif item.local_total_cost:
+        elif item.agency_cost in [None, '']:
+            ProjectComplete.objects.all().filter(id=item.id).update(agency_cost=0.00)
+
+        if item.local_total_cost:
             print item.local_total_cost
             trim_item = re.sub("[^0-9.]", "", item.local_total_cost)
             trim_item = float(trim_item)
             print trim_item
             ProjectComplete.objects.all().filter(id=item.id).update(local_total_cost=trim_item)
-        elif item.local_agency_cost:
+        elif item.local_total_cost in [None, '']:
+            ProjectComplete.objects.all().filter(id=item.id).update(local_total_cost=0.00)
+
+        if item.local_agency_cost:
             print item.local_agency_cost
             trim_item = re.sub("[^0-9.]", "", item.local_agency_cost)
             trim_item = float(trim_item)
             print trim_item
             ProjectComplete.objects.all().filter(id=item.id).update(local_agency_cost=trim_item)
-
+        elif item.local_agency_cost in [None, '']:
+            ProjectComplete.objects.all().filter(id=item.id).update(local_agency_cost=0.00)
 
     trim_list = ['total_estimated_budget', 'mc_estimated_budget','local_total_estimated_budget','local_mc_estimated_budget']
 
     #get all the projects and loop over them
-    getProjects = ProjectAgreement.objects.all()
-    for item in getProjects:
+    getProjectsComplete = ProjectAgreement.objects.all()
+    for item in getProjectsComplete:
         if item.total_estimated_budget:
             print item.total_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.total_estimated_budget)
             trim_item = float(trim_item)
             print trim_item
             ProjectAgreement.objects.all().filter(id=item.id).update(total_estimated_budget=trim_item)
-        elif item.mc_estimated_budget:
+        elif item.total_estimated_budget in [None, '']:
+            ProjectAgreement.objects.all().filter(id=item.id).update(total_estimated_budget=0.00)
+
+        if item.mc_estimated_budget:
             print item.mc_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.mc_estimated_budget)
             trim_item = float(trim_item)
             print trim_item
             ProjectAgreement.objects.all().filter(id=item.id).update(mc_estimated_budget=trim_item)
-        elif item.local_total_estimated_budget:
+        elif item.mc_estimated_budget in [None, '']:
+            ProjectAgreement.objects.all().filter(id=item.id).update(mc_estimated_budget=0.00)
+
+        if item.local_total_estimated_budget:
             print item.local_total_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.local_total_estimated_budget)
             trim_item = float(trim_item)
             print trim_item
             ProjectAgreement.objects.all().filter(id=item.id).update(local_total_estimated_budget=trim_item)
-        elif item.local_mc_estimated_budget:
+        elif item.local_total_estimated_budget in [None, '']:
+            ProjectAgreement.objects.all().filter(id=item.id).update(local_total_estimated_budget=0.00)
+
+        if item.local_mc_estimated_budget:
             print item.local_mc_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.local_mc_estimated_budget)
             trim_item = float(trim_item)
             print trim_item
             ProjectAgreement.objects.all().filter(id=item.id).update(local_mc_estimated_budget=trim_item)
+        elif item.local_mc_estimated_budget in [None, '']:
+            ProjectAgreement.objects.all().filter(id=item.id).update(local_mc_estimated_budget=0.00)

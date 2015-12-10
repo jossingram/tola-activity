@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.conf import settings
 from datetime import datetime
 from django.contrib.auth.models import User
+from decimal import Decimal
 
 
 class TolaUser(User):
@@ -411,7 +412,7 @@ class SiteProfile(models.Model):
 
     # Retained all the fields in the 'For Geographical Sites' tab
     total_num_households = models.IntegerField("Total # Households", help_text="", null=True, blank=True)
-    avg_household_size = models.DecimalField("Average Household Size", decimal_places=14,max_digits=25, null=True, blank=True)
+    avg_household_size = models.DecimalField("Average Household Size", decimal_places=14,max_digits=25, default=Decimal("0.00"))
     male_0_14 = models.IntegerField("Male age 0-14", null=True, blank=True)
     female_0_14 = models.IntegerField("Female age 0-14", null=True, blank=True)
     male_15_24 = models.IntegerField("Male age 15-24 ", null=True, blank=True)
@@ -435,7 +436,7 @@ class SiteProfile(models.Model):
     populations_owning_land = models.IntegerField("Households Owning Land", help_text="(%)", null=True, blank=True)
 
     # Allow for decimal input to average landholding size
-    avg_landholding_size = models.DecimalField("Average Landholding Size", decimal_places=14,max_digits=25, help_text="In hectares/jeribs", null=True, blank=True)
+    avg_landholding_size = models.DecimalField("Average Landholding Size", decimal_places=14,max_digits=25, help_text="In hectares/jeribs", default=Decimal("0.00"))
     households_owning_livestock = models.IntegerField("Households Owning Livestock", help_text="(%)", null=True, blank=True)
     animal_type = models.CharField("Animal Types", help_text="List Animal Types", max_length=255, null=True, blank=True)
 
@@ -443,8 +444,8 @@ class SiteProfile(models.Model):
     province = models.ForeignKey(Province, verbose_name="Administrative Level 1", null=True, blank=True)
     district = models.ForeignKey(District, verbose_name="Administrative Level 2", null=True, blank=True)
     village = models.CharField("Administrative Level 3", help_text="", max_length=255, null=True, blank=True)
-    latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
-    longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=14,max_digits=25, blank=True, null=True)
+    latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=14,max_digits=25, default=Decimal("0.00"))
+    longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=14,max_digits=25, default=Decimal("0.00"))
 
     # remove altitude and precision fields from location tab
     # altitude = models.DecimalField("Altitude (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
@@ -712,10 +713,10 @@ class ProjectAgreement(models.Model):
     estimated_num_direct_beneficiaries = models.CharField("Estimated number of direct beneficiaries", help_text="Please provide achievable estimates as we will use these as are 'Targets'",max_length=255, blank=True, null=True)
     average_household_size = models.CharField("Average Household Size", help_text="Refer to Form 01 - Community Profile",max_length=255, blank=True, null=True)
     estimated_num_indirect_beneficiaries = models.CharField("Estimated Number of indirect beneficiaries", help_text="This is a calculation - multiply direct beneficiaries by average household size",max_length=255, blank=True, null=True)
-    total_estimated_budget = models.DecimalField("Total Project Budget", decimal_places=2,max_digits=12, help_text="In USD", max_length=255, blank=True, null=True)
-    mc_estimated_budget = models.DecimalField("Organizations portion of Project Budget", decimal_places=2,max_digits=12, help_text="In USD", max_length=255, blank=True, null=True)
-    local_total_estimated_budget = models.DecimalField("Estimated Total in Local Currency", decimal_places=2,max_digits=12, help_text="In Local Currency", max_length=255, blank=True, null=True)
-    local_mc_estimated_budget = models.DecimalField("Estimated Organization Total in Local Currency", decimal_places=2,max_digits=12, help_text="Total portion of estimate for your agency", max_length=255, blank=True, null=True)
+    total_estimated_budget = models.DecimalField("Total Project Budget", decimal_places=2,max_digits=12, help_text="In USD", default=Decimal("0.00"))
+    mc_estimated_budget = models.DecimalField("Organizations portion of Project Budget", decimal_places=2,max_digits=12, help_text="In USD", default=Decimal("0.00"))
+    local_total_estimated_budget = models.DecimalField("Estimated Total in Local Currency", decimal_places=2,max_digits=12, help_text="In Local Currency", default=Decimal("0.00"))
+    local_mc_estimated_budget = models.DecimalField("Estimated Organization Total in Local Currency", decimal_places=2,max_digits=12, help_text="Total portion of estimate for your agency", default=Decimal("0.00"))
     exchange_rate = models.CharField(help_text="Local Currency exchange rate to USD", max_length=255, blank=True, null=True)
     exchange_rate_date = models.DateField(help_text="Date of exchange rate", blank=True, null=True)
     project_type_other = models.ForeignKey(ProjectTypeOther, blank=True, null=True)
@@ -821,15 +822,15 @@ class ProjectComplete(models.Model):
     no_explanation = models.TextField("If not on time explain delay", blank=True, null=True)
     account_code = models.CharField("Account Code", help_text='', max_length=255, blank=True, null=True)
     lin_code = models.CharField("LIN Sub Code", help_text='', max_length=255, blank=True, null=True)
-    estimated_budget = models.DecimalField("Estimated Budget", decimal_places=2,max_digits=12,help_text="", null=True, blank=True)
-    actual_budget = models.DecimalField("Actual Cost", decimal_places=2,max_digits=12,help_text="What was the actual final cost?  This should match any financial documentation you have in the file.   It should be completely documented and verifiable by finance and any potential audit", null=True, blank=True)
+    estimated_budget = models.DecimalField("Estimated Budget", decimal_places=2,max_digits=12,help_text="", default=Decimal("0.00"))
+    actual_budget = models.DecimalField("Actual Cost", decimal_places=2,max_digits=20, default=Decimal("0.00"),help_text="What was the actual final cost?  This should match any financial documentation you have in the file.   It should be completely documented and verifiable by finance and any potential audit")
     actual_cost_date = models.DateTimeField(blank=True, null=True)
     budget_variance = models.CharField("Budget versus Actual variance", blank=True, null=True, max_length=255)
     explanation_of_variance = models.CharField("Explanation of variance", blank=True, null=True, max_length=255)
-    total_cost = models.DecimalField("Estimated Budget for Organization",decimal_places=2,max_digits=12,help_text="In USD", blank=True, null=True)
-    agency_cost = models.DecimalField("Actual Cost for Organization", decimal_places=2,max_digits=12,help_text="In USD", blank=True, null=True)
-    local_total_cost = models.DecimalField("Actual Cost", decimal_places=2,max_digits=12, help_text="In Local Currency", blank=True, null=True)
-    local_agency_cost = models.DecimalField("Actual Cost for Organization", decimal_places=2,max_digits=12, help_text="In Local Currency", blank=True, null=True)
+    total_cost = models.DecimalField("Estimated Budget for Organization",decimal_places=2,max_digits=12,help_text="In USD", default=Decimal("0.00"))
+    agency_cost = models.DecimalField("Actual Cost for Organization", decimal_places=2,max_digits=12,help_text="In USD", default=Decimal("0.00"))
+    local_total_cost = models.DecimalField("Actual Cost", decimal_places=2,max_digits=12, help_text="In Local Currency", default=Decimal("0.00"))
+    local_agency_cost = models.DecimalField("Actual Cost for Organization", decimal_places=2,max_digits=12, help_text="In Local Currency", default=Decimal("0.00"))
     exchange_rate = models.CharField(help_text="Local Currency exchange rate to USD", max_length=255, blank=True, null=True)
     exchange_rate_date = models.DateField(help_text="Date of exchange rate", blank=True, null=True)
     beneficiary_type = models.CharField("Type of direct beneficiaries", help_text="i.e. Farmer, Association, Student, Govt, etc.", max_length=255, blank=True, null=True)
