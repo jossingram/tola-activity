@@ -223,3 +223,8 @@ function newPopup(url, windowName) {
 }
 
 // EXAMPLE: <a onclick="newPopup('https://docs.google.com/document/d/1tDwo3m1ychefNiAMr-8hCZnhEugQlt36AOyUYHlPbVo/edit?usp=sharing','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a>
+
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+  e.target // activated tab
+  e.relatedTarget // previous tab
+})
