@@ -75,7 +75,7 @@ def run():
     #get all the projects and loop over them
     getProjectsComplete = ProjectAgreement.objects.all()
     for item in getProjectsComplete:
-        if item.total_estimated_budget and item.local_mc_estimated_budget not "Nil":
+        if item.total_estimated_budget and item.total_estimated_budget is not "Nil":
             print item.total_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.total_estimated_budget)
             trim_item = float(trim_item)
@@ -84,7 +84,7 @@ def run():
         elif item.total_estimated_budget in [None, '','Nil']:
             ProjectAgreement.objects.all().filter(id=item.id).update(total_estimated_budget=0.00)
 
-        if item.mc_estimated_budget and item.local_mc_estimated_budget not "Nil":
+        if item.mc_estimated_budget and item.mc_estimated_budget is not "Nil":
             print item.mc_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.mc_estimated_budget)
             trim_item = float(trim_item)
@@ -93,7 +93,7 @@ def run():
         elif item.mc_estimated_budget in [None, '','Nil']:
             ProjectAgreement.objects.all().filter(id=item.id).update(mc_estimated_budget=0.00)
 
-        if item.local_total_estimated_budget and item.local_mc_estimated_budget not "Nil":
+        if item.local_total_estimated_budget and item.local_total_estimated_budget is not "Nil":
             print item.local_total_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.local_total_estimated_budget)
             trim_item = float(trim_item)
@@ -102,7 +102,7 @@ def run():
         elif item.local_total_estimated_budget in [None, '','Nil']:
             ProjectAgreement.objects.all().filter(id=item.id).update(local_total_estimated_budget=0.00)
 
-        if item.local_mc_estimated_budget and item.local_mc_estimated_budget not "Nil":
+        if item.local_mc_estimated_budget and item.local_mc_estimated_budget is not "Nil":
             print item.local_mc_estimated_budget
             trim_item = re.sub("[^0-9.]", "", item.local_mc_estimated_budget)
             trim_item = float(trim_item)
