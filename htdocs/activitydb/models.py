@@ -143,7 +143,7 @@ class Program(models.Model):
     country = models.ManyToManyField(Country)
 
     class Meta:
-        ordering = ('create_date',)
+        ordering = ('name',)
 
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
