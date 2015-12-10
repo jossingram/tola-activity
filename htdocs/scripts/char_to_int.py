@@ -31,7 +31,7 @@ def run():
             trim_item = float(trim_item)
             print trim_item
             ProjectComplete.objects.all().filter(id=item.id).update(total_cost=trim_item)
-        elif item.total_cost in [None, '']:
+        elif item.total_cost in [None, '','Nil']:
             ProjectComplete.objects.all().filter(id=item.id).update(total_cost=0.00)
 
         if item.estimated_budget:
@@ -40,7 +40,7 @@ def run():
             trim_item = float(trim_item)
             print trim_item
             ProjectComplete.objects.all().filter(id=item.id).update(estimated_budget=trim_item)
-        elif item.estimated_budget in [None, '']:
+        elif item.estimated_budget in [None, '','Nil']:
             ProjectComplete.objects.all().filter(id=item.id).update(estimated_budget=0.00)
 
         if item.agency_cost:
@@ -49,7 +49,7 @@ def run():
             trim_item = float(trim_item)
             print trim_item
             ProjectComplete.objects.all().filter(id=item.id).update(agency_cost=trim_item)
-        elif item.agency_cost in [None, '']:
+        elif item.agency_cost in [None, '','Nil']:
             ProjectComplete.objects.all().filter(id=item.id).update(agency_cost=0.00)
 
         if item.local_total_cost:
@@ -58,7 +58,7 @@ def run():
             trim_item = float(trim_item)
             print trim_item
             ProjectComplete.objects.all().filter(id=item.id).update(local_total_cost=trim_item)
-        elif item.local_total_cost in [None, '']:
+        elif item.local_total_cost in [None, '','Nil']:
             ProjectComplete.objects.all().filter(id=item.id).update(local_total_cost=0.00)
 
         if item.local_agency_cost:
@@ -67,7 +67,7 @@ def run():
             trim_item = float(trim_item)
             print trim_item
             ProjectComplete.objects.all().filter(id=item.id).update(local_agency_cost=trim_item)
-        elif item.local_agency_cost in [None, '']:
+        elif item.local_agency_cost in [None, '','Nil']:
             ProjectComplete.objects.all().filter(id=item.id).update(local_agency_cost=0.00)
 
     trim_list = ['total_estimated_budget', 'mc_estimated_budget','local_total_estimated_budget','local_mc_estimated_budget']
@@ -81,7 +81,7 @@ def run():
             trim_item = float(trim_item)
             print trim_item
             ProjectAgreement.objects.all().filter(id=item.id).update(total_estimated_budget=trim_item)
-        elif item.total_estimated_budget in [None, '']:
+        elif item.total_estimated_budget in [None, '','Nil']:
             ProjectAgreement.objects.all().filter(id=item.id).update(total_estimated_budget=0.00)
 
         if item.mc_estimated_budget:
@@ -90,7 +90,7 @@ def run():
             trim_item = float(trim_item)
             print trim_item
             ProjectAgreement.objects.all().filter(id=item.id).update(mc_estimated_budget=trim_item)
-        elif item.mc_estimated_budget in [None, '']:
+        elif item.mc_estimated_budget in [None, '','Nil']:
             ProjectAgreement.objects.all().filter(id=item.id).update(mc_estimated_budget=0.00)
 
         if item.local_total_estimated_budget:
@@ -99,7 +99,7 @@ def run():
             trim_item = float(trim_item)
             print trim_item
             ProjectAgreement.objects.all().filter(id=item.id).update(local_total_estimated_budget=trim_item)
-        elif item.local_total_estimated_budget in [None, '']:
+        elif item.local_total_estimated_budget in [None, '','Nil']:
             ProjectAgreement.objects.all().filter(id=item.id).update(local_total_estimated_budget=0.00)
 
         if item.local_mc_estimated_budget:
@@ -108,5 +108,5 @@ def run():
             trim_item = float(trim_item)
             print trim_item
             ProjectAgreement.objects.all().filter(id=item.id).update(local_mc_estimated_budget=trim_item)
-        elif item.local_mc_estimated_budget in [None, '']:
+        elif item.local_mc_estimated_budget in [None, '','Nil']:
             ProjectAgreement.objects.all().filter(id=item.id).update(local_mc_estimated_budget=0.00)
