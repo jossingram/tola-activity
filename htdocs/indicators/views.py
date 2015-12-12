@@ -649,9 +649,7 @@ def collecteddata_import(request,indicator_id=0,program_id=0):
             name = item['name']
             url = item['data']
             remote_owner = item['owner']['username']
-        print name
-        print url
-        print remote_owner
+
 
         create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url)
         create_table.save()
