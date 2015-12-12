@@ -27,8 +27,6 @@ $(function () {
 
 //custom jquery to trigger date picker, info pop-over and print category text
 $(document).ready(function() {
-
-
     //Check for chrome and don't provide a datetime pickers for it
     var browser = navigator.userAgent;
 
@@ -65,10 +63,8 @@ $('input[type="file"]').each(function() {
 
 
 $(document).ready(function() {
-
-
      /*
-     * Handle change in the indicator services drop-down; updates the province drop-down accordingly.
+     * Handle change in the indicator services drop-down; updates the indicator drop-down accordingly.
      */
     $("#services").change(function() {
         var selected_service = $(this).val();
@@ -90,6 +86,7 @@ $(document).ready(function() {
         // page-specific-action call if a page has implemented the 'country_dropdwon_has_changed' function
         if(typeof services_dropdwon_has_changed != 'undefined') services_dropdwon_has_changed(selected_service);
     });
+
 
     /*
      * Handle change in the country drop-down; updates the province drop-down accordingly.

@@ -771,6 +771,16 @@ class ProjectAgreement(models.Model):
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
+        # defaults don't work if they aren't in the form so preset these to 0
+        if self.total_estimated_budget == None:
+            self.total_estimated_budget = Decimal("0.00")
+        if self.mc_estimated_budget == None:
+            self.mc_estimated_budget = Decimal("0.00")
+        if self.local_total_estimated_budget == None:
+            self.local_total_estimated_budget = Decimal("0.00")
+        if self.local_mc_estimated_budget == None:
+            self.local_mc_estimated_budget = Decimal("0.00")
+
         self.edit_date = datetime.now()
         super(ProjectAgreement, self).save()
 
@@ -867,6 +877,19 @@ class ProjectComplete(models.Model):
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
+        # defaults don't work if they aren't in the form so preset these to 0
+        if self.estimated_budget == None:
+            self.estimated_budget = Decimal("0.00")
+        if self.actual_budget == None:
+            self.actual_budget = Decimal("0.00")
+        if self.total_cost == None:
+            self.total_cost = Decimal("0.00")
+        if self.agency_cost == None:
+            self.agency_cost = Decimal("0.00")
+        if self.local_total_cost == None:
+            self.local_total_cost = Decimal("0.00")
+        if self.local_agency_cost == None:
+            self.local_agency_cost = Decimal("0.00")
         self.edit_date = datetime.now()
         super(ProjectComplete, self).save()
 

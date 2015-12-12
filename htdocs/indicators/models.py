@@ -3,6 +3,25 @@ from django.contrib import admin
 from django.conf import settings
 from activitydb.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
 from datetime import datetime
+from django.contrib.auth.models import User
+
+
+class TolaTable(models.Model):
+    name = models.CharField(max_length=255, blank=True)
+    table_id = models.IntegerField(blank=True, null=True)
+    owner = models.ForeignKey('auth.User')
+    remote_owner = models.CharField(max_length=255, blank=True)
+    url = models.CharField(max_length=255, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class TolaTablesAdmin(admin.ModelAdmin):
+    list_display = ('name','owner','url','create_date','edit_date')
+    display = 'Tola Table'
 
 
 class IndicatorType(models.Model):
@@ -281,6 +300,7 @@ class CollectedData(models.Model):
     comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
     evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="Originated By", related_name="approving_data")
+    tola_table = models.ForeignKey(TolaTable, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     class Meta:

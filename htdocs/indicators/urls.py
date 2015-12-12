@@ -28,6 +28,7 @@ urlpatterns = patterns('',
 
     url(r'^collecteddata_add/(?P<agreement>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
     url(r'^collecteddata_add/(?P<program>\w+)/(?P<indicator>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
+    url(r'^collecteddata_import/(?P<program_id>\w+)/(?P<indicator_id>\w+)/$', 'indicators.views.collecteddata_import', name='collecteddata_import'),
     url(r'^collecteddata_update/(?P<pk>\w+)/$', CollectedDataUpdate.as_view(), name='collecteddata_update'),
     url(r'^collecteddata_delete/(?P<pk>\w+)/$', CollectedDataDelete.as_view(), name='collecteddata_delete'),
 

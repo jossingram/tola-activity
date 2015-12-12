@@ -8,7 +8,7 @@ import json
 import unicodedata
 from django.http import HttpResponseRedirect
 from django.db import models
-from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService
+from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
 from activitydb.models import Program, ProjectAgreement, SiteProfile, Country, Sector
 from djangocosign.models import UserProfile
 from indicators.forms import IndicatorForm, CollectedDataForm
@@ -27,6 +27,8 @@ from django.views.generic.detail import View, DetailView
 from django.conf import settings
 from django.core import serializers
 import requests
+from activitydb.mixins import AjaxableResponseMixin
+
 
 
 class IndicatorList(ListView):
@@ -73,16 +75,17 @@ def import_tola_table(tag=None,deserialize=True):
     return data
 
 
-def import_indicator(service_id=1,deserialize=True):
+def import_indicator(service=1,deserialize=True):
     """
     Import a indicators from a web service (the dig only for now)
     """
-    service = ExternalService.objects.all().filter(id=service_id)
-
+    service = ExternalService.objects.get(id=service)
     #hard code the path to the file for now
-    get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
-    #response = requests.get(services.feed_url)
-    #get_json = json.loads(response.content)
+    #get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
+    #print service.feed_url
+    response = requests.get(service.feed_url)
+
+    get_json = json.loads(response.content)
     if deserialize == True:
         data = json.load(get_json) # deserialises it
     else:
@@ -498,6 +501,7 @@ class CollectedDataCreate(CreateView):
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'indicator_id': self.kwargs['indicator']})
+        context.update({'program_id': self.kwargs['program']})
         return context
 
     def get_initial(self):
@@ -514,6 +518,7 @@ class CollectedDataCreate(CreateView):
         kwargs = super(CollectedDataCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
         kwargs['program'] = self.kwargs['program']
+
         return kwargs
 
 
@@ -617,13 +622,55 @@ class CollectedDataDelete(DeleteView):
     success_url = '/indicators/collecteddata/0/0/'
 
 
+def collecteddata_import(request,indicator_id=0,program_id=0):
+    """
+    import collected data from Tola Tables
+    """
+
+    service = ExternalService.objects.get(name="TolaTables")
+
+    response = requests.get(service.feed_url)
+    get_json = json.loads(response.content)
+
+    data = get_json
+    #debug the json data string uncomment dump and print
+    #data2 = json.dumps(data) # json formatted string
+    #print data2
+
+    if request.method == 'POST':
+        owner = request.user
+        id = request.POST['service_table']
+        print id
+        filter_url = service.feed_url + "&id=" + id
+        response = requests.get(filter_url)
+        get_json = json.loads(response.content)
+        data = get_json
+        for item in data['results']:
+            name = item['name']
+            url = item['data']
+            remote_owner = item['owner']['username']
+        print name
+        print url
+        print remote_owner
+
+        create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url)
+        create_table.save()
+
+        #redirect to update page
+        messages.success(request, 'Success, Data Imported!')
+        redirect_url = '/indicators/collecteddata_add/' + str(program_id)+ '/' + str(indicator_id)+ '/'
+        return HttpResponseRedirect(redirect_url)
+
+    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+    return render(request, "indicators/collecteddata_import.html", {'indicator_id':int(indicator_id),'program_id':int(program_id),'getTables': data})
+
+
 def service_json(request, service):
     """
     For populating service indicators in dropdown
     """
     service_indicators = import_indicator(service,deserialize=False)
     return HttpResponse(service_indicators, content_type="application/json")
-
 
 
 def tool(request):
