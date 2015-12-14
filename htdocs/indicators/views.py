@@ -622,23 +622,35 @@ class CollectedDataDelete(DeleteView):
     success_url = '/indicators/collecteddata/0/0/'
 
 
+def merge_two_dicts(x, y):
+    '''Given two dicts, merge them into a new dict as a shallow copy.'''
+    z = x.copy()
+    z.update(y)
+    return z
+
+
 def collecteddata_import(request,indicator_id=0,program_id=0):
     """
     import collected data from Tola Tables
     """
-
+    owner = request.user
     service = ExternalService.objects.get(name="TolaTables")
 
-    response = requests.get(service.feed_url)
-    get_json = json.loads(response.content)
+    #add filter to get just the users tables only
+    user_filter_url = service.feed_url + "&owner__username=" + str(owner)
+    #public_filter_url = service.feed_url + "&public=True"
+    #shared_filter_url = service.feed_url + "&shared__username=" + str(owner)
 
-    data = get_json
+    response = requests.get(user_filter_url)
+    user_json = json.loads(response.content)
+
+    data = user_json
+
     #debug the json data string uncomment dump and print
     #data2 = json.dumps(data) # json formatted string
     #print data2
 
     if request.method == 'POST':
-        owner = request.user
         id = request.POST['service_table']
         print id
         filter_url = service.feed_url + "&id=" + id
