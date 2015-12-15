@@ -109,6 +109,7 @@ class ContactAdmin(admin.ModelAdmin):
 class CustomDashboard(models.Model):
     dashboard_name = models.CharField("Custom Dashboard Name", max_length=255, blank=True)
     dashboard_description = models.TextField("Brief Description", null=True, blank=True, help_text="What does this custom dashboard displays to the user?")
+    is_public = models.BooleanField("External Public Dashboard", default=False)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
