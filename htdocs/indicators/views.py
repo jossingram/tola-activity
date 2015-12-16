@@ -53,45 +53,21 @@ class IndicatorList(ListView):
         return render(request, self.template_name, {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
 
 
-def import_indicator2(service=1,deserialize=True):
-    """
-    Import a indicators from a web service (the dig only for now)
-    """
-    service = ExternalService.objects.all().filter(id=service)
-
-    #hard code the path to the file for now
-    get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
-    #response = requests.get(services.feed_url)
-    #get_json = json.loads(response.content)
-    if deserialize == True:
-        data = json.load(get_json) # deserialises it
-    else:
-        #send json data back not deserialized data
-        data = get_json
-    #debug the json data string uncomment dump and print
-    #data2 = json.dumps(json_data) # json formatted string
-    #print data2
-
-    return data
-
-
-
 def import_indicator(service=1,deserialize=True):
     """
     Import a indicators from a web service (the dig only for now)
     """
     service = ExternalService.objects.get(id=service)
     #hard code the path to the file for now
-    get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
+    #get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
     #print service.feed_url
-    #response = requests.get(service.feed_url)
+    response = requests.get(service.feed_url)
 
-    #get_json = json.loads(response.content)
     if deserialize == True:
-        data = json.load(get_json) # deserialises it
+        data = json.loads(response.content) # deserialises it
     else:
         #send json data back not deserialized data
-        data = get_json
+        data = response
     #debug the json data string uncomment dump and print
     #data2 = json.dumps(json_data) # json formatted string
     #print data2
