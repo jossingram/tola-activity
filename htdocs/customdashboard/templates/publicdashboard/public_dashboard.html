@@ -68,7 +68,7 @@
 
                 var map = L.map('map', {
                 center: [country_lat[1], country_long[1]],
-                zoom: 7,
+                zoom: 5,
                 layers: [grayscale, cities]
                 });
 
@@ -78,7 +78,7 @@
                 };
 
                 var overlays = {
-                "Cities": cities
+                "Sites": cities
                 };
                 L.control.layers(baseLayers, overlays).addTo(map);
                </script>
@@ -90,7 +90,7 @@
                   <div class="canvas-container">
                       <canvas id="hours"></canvas>
                   </div>
-                  <div class="chart-legend">
+                   <div class="chart-legend">
                       <b>Total Projects: {{ total_projects }}</b>
                       <ul>
                           <li class="ship">Approved</li>
@@ -98,7 +98,7 @@
                           <li class="admin">Rejected</li>
                           <li class="prod">Archived</li>
                       </ul>
-                  </div>
+                    </div>
               </div>
               <div class="third widget line">
                   <div class="chart-legend">

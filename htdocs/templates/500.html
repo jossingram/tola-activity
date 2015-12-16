@@ -8,3 +8,168 @@
 <p>There was an error on the previous page, an admin has been notified.  Thank you for your patience.</p>
 <img src="{{ STATIC_URL }}img/whoops.png" border="1">
 {% endblock content %}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Mercy Corps Application">
+        <meta name="author" content="Mercy Corps">
+
+        <title>Page Not found</title>
+
+        <link rel="shortcut icon" href="/static/img/favicon.png" type="image/png">
+
+        <!-- Bootstrap -->
+        <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+        <!-- JQuery UI CSS -->
+        <link href="/static/css/ui-lightness/jquery-ui-1.10.4.min.css" rel="stylesheet" type="text/css" />
+
+        <!-- Custom Footer CSS -->
+        <link href="/static/css/app.css" rel="stylesheet" type="text/css">
+
+        <!--- Django Tables2 css -->
+        <link rel="stylesheet" href="/static/django_tables2/themes/paleblue/css/screen.css" />
+
+        <!--- Hosted Leaflet CSS --->
+        <link rel="stylesheet" href="/static/css/leaflet.css">
+
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script type="text/javascript" src="/static/js/jquery-1.11.1.min.js"></script>
+
+        <!-- App specific Javascript -->
+        <script type="text/javascript" src="/static/js/app.js"></script>
+
+        <!-- Hosted Leaflet -->
+        <script src="/static/js/leaflet.js"></script>
+
+
+    </head>
+    <body>
+        <!--http://getbootstrap.com/examples/sticky-footer-navbar/-->
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">
+                    <img style="margin-top: -18px" width="150px" height="61px" src="/static/img/logo.gif" />
+            </div>
+            <div class="navbar-collapse collapse" role=navigation">
+                <ul class="nav navbar-nav">
+                    <li class=""><a href="/"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Workflow<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/activitydb/dashboard/0/"><span class="glyphicon glyphicon-dashboard"></span> Program Dashboard</a></li>
+                            <!-- CONFUSING TO USER FOR NOW TAKING OUT MAY ADD BACK IN IF NEEDED
+                            <li><a href="/activitydb/projectproposal_list/0/"><span class="glyphicon glyphicon-th-list"></span> Project Proposal</a></li>
+                            <li><a href="/activitydb/projectagreement_list/0/"><span class="glyphicon glyphicon-th-list"></span> Project Agreement</a></li>
+                            <li><a href="/activitydb/projectcomplete_list/0/"><span class="glyphicon glyphicon-th-list"></span> Project Complete</a></li>
+                            -->
+                            <li><a href="/activitydb/documentation_list/0/"><span class="glyphicon glyphicon-th-list"></span> Documents</a></li>
+                            <li><a href="/activitydb/siteprofile_list/0/0/"><span class="glyphicon glyphicon-th-list"></span> Sites</a></li>
+                            <li><a href="/activitydb/stakeholder_list/0/"><span class="glyphicon glyphicon-th-list"></span> Stakeholders</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Indicators<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/indicators/home/0/"><span class="glyphicon glyphicon-dashboard"></span> Indicator Planning</a></li>
+                            <li><a href="/indicators/collecteddata/0/0/"><span class="glyphicon glyphicon-th-list"></span> Indicator Data</a></li>
+                            <li><a href="/indicators/report/0/"><span class="glyphicon glyphicon-check"></span> Indicator Library</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Form Library<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/activitydb/training_list/0/"><span class="glyphicon glyphicon-th-list"></span> Training</a></li>
+                            <li><a href="/activitydb/beneficiary_list/0/"><span class="glyphicon glyphicon-th-list"></span> Beneficiaries</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/activitydb/report/"><span class="glyphicon glyphicon-check"></span> Activity Report</a></li>
+                            <li><a href="/indicators/data/0/"><span class="glyphicon glyphicon-check"></span> Indicator Data Report</a></li>
+                            <li><a href="/activitydb/report_builder" target="_new"><span class="glyphicon glyphicon-check"></span> Report Builder</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+
+                            <span class="glyphicon glyphicon-user"></span> Greg Lind<b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/accounts/logout/"><span class="glyphicon glyphicon-lock"></span> Logout</a></li>
+                            <li><a href="/accounts/profile/"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
+                            <li><a href="/accounts/profile/"><span>AF, US</span></a></li>
+                        </ul>
+                    </li><!-- .dropdown collapse -->
+                </ul>
+
+            </div><!-- .navbar-header collapse -->
+            </div><!-- .container collapse -->
+        </div><!-- .navbar collapse -->
+        <br/>
+        <div class="container">
+            <br/>
+            <div></div>
+            <div id = "alerts">
+                <!-- Any messages for users -->
+
+
+
+            </div>
+            <!-- Page title  -->
+            <h2>500 Error...Whoops something went wrong...</h2>
+
+            <!-- Main body content -->
+            <p>
+<p>There was a problem loading this page.  Please notify a systems administrator if you think you should not be seeing this page. <br/><a href="https://tola.work">Tola.Work</a><br/>Email: tola@mercycorps.org
+<img src="/static/img/whoops.png" border="2">
+</p>
+
+        </div><!-- .container collapse -->
+
+        <div id = "loading" class="modal"> </div>
+        <div id="footer">
+            <!-- Sticky Footer -->
+            <div class="container">
+                <div class="col-md-4 text-left">
+                    <a href="https://github.com/mercycorps/tola-activity/blob/master/LICENSE" class="text-muted">GNU GENERAL PUBLIC LICENSE Version 2</a>
+                </div>
+                <div class="col-md-4 text-center">
+                    <a href="http://www.toladata.com" class="text-muted">Inspired in Kabul. Built in Portland.</a>
+                </div>
+                <div class="col-md-4 text-right">
+                    <a href="http://tola.work/documentation" class="text-muted">Documentation</a> | <a href="http://tola.work/faq" class="text-muted">FAQ</a> | <a href="http://tola.work/helpdesk/tickets/submit/" class="text-muted">Feedback</a>
+                </div>
+            </div>
+        </div><!-- .footer collapse -->
+
+        <!-- jQuery UI (necessary for datepicker as well as dataTables library -->
+        <script type="text/javascript" src="/static/js/jquery-ui-1.10.4.min.js"></script>
+
+        <!-- data tables jquery javascript library -->
+        <script type="text/javascript" src="/static/js/jquery.dataTables.min.js"></script>
+
+        <!-- Bootstrap compiled javascript plugins -->
+        <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+
+
+    </body>
+</html>
+
+
