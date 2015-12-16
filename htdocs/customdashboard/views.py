@@ -67,21 +67,25 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
                                                                      'getRejectedCount': getRejectedCount, 'getInProgressCount': getInProgressCount,
                                                                      'getCustomDashboard': getCustomDashboard, 'getProjectsCount': getProjectsCount})
 
-def PublicDashboard(request,id=0,sector=0,status=0):
+def PublicDashboard(request,id=0):
     program_id = id
     countries = getCountry(request.user)
     getProgram=Program.objects.get(id=program_id)
     getProjects = ProjectAgreement.objects.all().filter(program_id=program_id)
-    getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id, projectagreement__sector__id=sector)
+    getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
 
-    getProjectsCount = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries).count()
+    getProjectsCount = ProjectAgreement.objects.all().filter(program__id=program_id).count()
     getAwaitingApprovalCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='awaiting approval').count()
     getApprovedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved').count()
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected').count()
-    getInProgressCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='in progress').count()
+    getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
 
-    return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,'getSiteProfile':getSiteProfile,'countries':countries, 'awaiting':getAwaitingApprovalCount,
+    return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
+                                                                     'getSiteProfile':getSiteProfile,'countries':countries,
+                                                                     'awaiting':getAwaitingApprovalCount,
                                                                      'approved': getApprovedCount,
-                                                                     'rejected': getRejectedCount, 'in_progress': getInProgressCount,
-                                                                    'total_projects': getProjectsCount})
+                                                                     'rejected': getRejectedCount,
+                                                                     'in_progress': getInProgressCount,
+                                                                     'total_projects': getProjectsCount,
+                                                                     'getQuantitativeDataSums': getQuantitativeDataSums})
