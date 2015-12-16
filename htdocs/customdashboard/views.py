@@ -66,3 +66,22 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
                                                                      'getFilteredName': getFilteredName,'getProjects': getProjects, 'getApprovedCount': getApprovedCount,
                                                                      'getRejectedCount': getRejectedCount, 'getInProgressCount': getInProgressCount,
                                                                      'getCustomDashboard': getCustomDashboard, 'getProjectsCount': getProjectsCount})
+
+def PublicDashboard(request,id=0,sector=0,status=0):
+    program_id = id
+    countries = getCountry(request.user)
+    getProgram=Program.objects.get(id=program_id)
+    getProjects = ProjectAgreement.objects.all().filter(program_id=program_id)
+    getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id, projectagreement__sector__id=sector)
+
+    getProjectsCount = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries).count()
+    getAwaitingApprovalCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='awaiting approval').count()
+    getApprovedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved').count()
+    getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected').count()
+    getInProgressCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='in progress').count()
+
+
+    return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,'getSiteProfile':getSiteProfile,'countries':countries, 'awaiting':getAwaitingApprovalCount,
+                                                                     'approved': getApprovedCount,
+                                                                     'rejected': getRejectedCount, 'in_progress': getInProgressCount,
+                                                                    'total_projects': getProjectsCount})

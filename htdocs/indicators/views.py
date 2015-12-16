@@ -130,8 +130,9 @@ def indicator_create(request, id=0):
         #import recursive library for substitution
         import re
 
+        print node_id
         #checkfor service indicator and update based on values
-        if node_id != None:
+        if node_id != None and int(node_id) != 0:
             getImportedIndicators = import_indicator(service)
             for item in getImportedIndicators:
                 if item['nid'] == node_id:
