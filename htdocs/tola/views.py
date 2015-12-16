@@ -47,8 +47,8 @@ def index(request,id=0,sector=0):
         complete_approved_count = ProjectComplete.objects.all().filter(approval='approved', project_agreement__sector__in=sectors, program__country__in=countries).count()
         agreement_open_count = ProjectAgreement.objects.all().filter(approval='open', sector__id__in=sectors, program__country__in=countries).count()
         complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="")), project_agreement__sector__in=sectors, program__country__in=countries).count()
-        agreement_wait_count = ProjectAgreement.objects.all().filter(approval='in progress', sector__in=sectors, program__country__in=countries).count()
-        complete_wait_count = ProjectComplete.objects.all().filter(approval='in progress', project_agreement__sector__in=sectors, program__country__in=countries).count()
+        agreement_wait_count = ProjectAgreement.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), sector__in=sectors, program__country__in=countries).count()
+        complete_wait_count = ProjectComplete.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), project_agreement__sector__in=sectors, program__country__in=countries).count()
         if int(sector) > 0:
             getSiteProfile = SiteProfile.objects.all().filter(Q(Q(projectagreement__sector__in=sectors)), country__in=countries)
         else:
@@ -64,8 +64,8 @@ def index(request,id=0,sector=0):
         complete_approved_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='approved', program__country__in=countries).count()
         agreement_open_count = ProjectAgreement.objects.all().filter(program__id=program_id, approval='open', program__country__in=countries).count()
         complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="")), program__id=program_id, program__country__in=countries).count()
-        agreement_wait_count = ProjectAgreement.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
-        complete_wait_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
+        agreement_wait_count = ProjectAgreement.objects.all().filter(Q(program__id=program_id), Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), program__country__in=countries).count()
+        complete_wait_count = ProjectComplete.objects.all().filter(Q(program__id=program_id), Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), program__country__in=countries).count()
         if int(sector) > 0:
             getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id, projectagreement__sector__id=sector)
         else:
