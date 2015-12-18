@@ -65,11 +65,11 @@ $(function () {
             type: 'column'
         },
         title: {
-            text: ''
+            text: 'Activity Budget v Actuals'
         },
         xAxis: {
             categories: [{% for project in getProjects %}
-                '{{ project.program_id }}.{{ project.id }}',{%endfor%}'Total'
+                '{{ project.activity_code }}',{%endfor%}'Total'
             ],
             crosshair: true
         },
