@@ -21,6 +21,14 @@
         <script src="https://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
         <script src="{{ STATIC_URL }}publicdashboard/js/vendor/leaflet.js"></script>
         <script src="{{ STATIC_URL }}publicdashboard/js/leaflet-google.js"></script>
+
+        <!--- if cartodb layer -->
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+        <![endif]-->
+        <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+
         <link rel="borders" type="application/json" href="js/world_borders.geojson">
         <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700' rel='stylesheet' type='text/css'>
     </head>
@@ -32,11 +40,17 @@
         <!-- Add your site or application content here -->
         <div class="wrapper">
           <header>
-              <div class="logo">
-                  <img src="{{ STATIC_URL }}"
+              <div class="logo" style="float: left">
+                  <a href="/"><img src="{{ STATIC_URL }}/img/logo_full.gif" style="float: left" border="0"></a>
               </div>
               <div class="container clearfix">
                   <h1> {% if getProgram %}{{ getProgram.name }}{% endif %}</h1>
+              </div>
+              <div class="nav" style="float: left">
+                  <ul class="nav">
+                      <li class="active">Dashboard</li>
+                      <li><a href="#story">Story</a></li>
+                  </ul>
               </div>
           </header>
           <div class="container clearfix">
@@ -78,13 +92,14 @@
 
                 var baseLayers = {
                 "Grayscale": grayscale,
-                "Streets": streets
+                "Streets": streets,
                 };
 
                 var overlays = {
-                "Sites": cities
+                "Sites": cities,
                 };
-                L.control.layers(baseLayers, overlays).addTo(map);
+                L.control.layers(baseLayers, overlays).addTo(map);e
+
                </script>
             </div>
           </div>

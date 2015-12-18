@@ -105,6 +105,7 @@ class ContactAdmin(admin.ModelAdmin):
     list_filter = ('create_date','country')
     search_fields = ('name','country','title','city')
 
+
 # For programs that have custom dashboards. The default dashboard for all other programs is 'Program Dashboard'
 class CustomDashboard(models.Model):
     dashboard_name = models.CharField("Custom Dashboard Name", max_length=255, blank=True)
@@ -170,7 +171,7 @@ class ProgramAdmin(admin.ModelAdmin):
 class ApprovalAuthority(models.Model):
     approval_user = models.ForeignKey(TolaUser,help_text='User with Approval Authority', blank=True, null=True, related_name="auth_approving")
     budget_limit = models.IntegerField(null=True, blank=True)
-    fund = models.IntegerField("Fund",null=True, blank=True)
+    fund = models.CharField("Fund",max_length="255",null=True, blank=True)
     country = models.ForeignKey("Country", null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -188,11 +189,11 @@ class ApprovalAuthority(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.approval_user
+        return self.fund
 
 
 class ApprovalAuthorityAdmin(admin.ModelAdmin):
-    list_display = ('approval_user')
+    list_display = ('fund')
     display = 'Approval Authority'
 
 
