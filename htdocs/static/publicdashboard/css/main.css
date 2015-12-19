@@ -167,6 +167,19 @@ header .button {
    box-sizing: border-box;
 }
 
+.left-nav {
+   position: relative;
+   float: left;
+   width: 150px;
+   margin-bottom: 80px;
+   background: #000000;
+   padding: 12px;
+   margin-bottom: 30px;
+   -webkit-box-sizing: border-box;
+   -moz-box-sizing: border-box;
+   box-sizing: border-box;
+}
+
 chart-legend ul {
     list-style: none;
     width: 100%;
