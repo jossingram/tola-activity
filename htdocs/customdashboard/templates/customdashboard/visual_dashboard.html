@@ -189,10 +189,10 @@ $(function () {
                       </button>
                       <ul class="dropdown-menu" role="menu">
                           <li role="presentation">
-                              <a role="menuitem" tabindex="-1" href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- 0 - Basic Visuals --</a></li>
+                              <a role="menuitem" tabindex="-1" href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- 0 - Project Status --</a></li>
                          {%for customdashboard in getCustomDashboard%}
-                          <li class="list-group-item disabled">
-                                <a href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ customdashboard.id }}/">{{customdashboard.id}} - {{ customdashboard.dashboard_name }}</a>
+                          <li class="list-group-item ">
+                                <a href="/customdashboard/public/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ customdashboard.id }}/">{{customdashboard.id}} - {{ customdashboard.dashboard_name }}</a>
                             </li>
                         {%endfor%}
                       </ul>
