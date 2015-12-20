@@ -41,17 +41,12 @@
         <div class="wrapper">
           <header>
               <div class="logo" style="float: left">
-                  <a href="/"><img src="{{ STATIC_URL }}/img/logo_full.gif" style="float: left" border="0"></a>
+                  <a href="/"><img src="{{ STATIC_URL }}/img/logo-big.gif" style="float: left" border="0"></a>
               </div>
               <div class="container clearfix">
                   <h1> {% if getProgram %}{{ getProgram.name }}{% endif %}</h1>
               </div>
-              <div class="nav" style="float: left">
-                  <ul class="nav">
-                      <li class="active">Dashboard</li>
-                      <li><a href="#story">Story</a></li>
-                  </ul>
-              </div>
+
           </header>
           <div class="container clearfix">
             <div class="widget">
@@ -98,7 +93,7 @@
                 var overlays = {
                 "Sites": cities,
                 };
-                L.control.layers(baseLayers, overlays).addTo(map);e
+                L.control.layers(baseLayers, overlays).addTo(map);
 
                </script>
             </div>
