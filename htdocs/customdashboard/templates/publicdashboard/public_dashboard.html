@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+
+{% block content %}
 {% load staticfiles %}
 <!doctype html>
 <html class="no-js" lang="">
@@ -31,17 +34,13 @@
 
         <!-- Add your site or application content here -->
         <div class="wrapper">
-          <header>
-              <div class="logo">
-                  <img src="{{ STATIC_URL }}"
+
+            <div class="container clearfix">
+            <div class="logo" style="float: left">
+                  <a href="/"><img src="{{ STATIC_URL }}/img/logo-big.gif" style="float: left" border="0"></a>
               </div>
-              <div class="container clearfix">
-                  <h1> {% if getProgram %}{{ getProgram.name }}{% endif %}</h1>
-              </div>
-          </header>
-          <div class="container clearfix">
-            <div class="widget">
-              <h3>Map</h3>
+                <div class="widget">
+              <h3>{% if getProgram %}{{ getProgram.name }}{% endif %}</h3>
               <style>
                   #map { height: 350px; }
               </style>
@@ -82,13 +81,13 @@
                 };
 
                 var overlays = {
-                "Sites": cities
+                "Project Sites": cities
                 };
                 L.control.layers(baseLayers, overlays).addTo(map);
                </script>
             </div>
           </div>
-          <div class="container clearfix">
+            <div class="container clearfix">
               <div class="third widget doughnut">
                   <h3>Project by Status</h3>
                   <div class="canvas-container">
@@ -109,7 +108,7 @@
                       <h3>Key Performance Indicators (TvA)</h3>
                   </div>
                   <div class="canvas-container">
-                      <canvas id="shipments"></canvas>
+                      <canvas id="tva"></canvas>
                   </div>
               </div>
               <div class="third widget">
@@ -117,7 +116,7 @@
                       <h3>Survey Responses</h3>
                   </div>
                   <div class="canvas-container">
-                      <canvas id="departments"></canvas>
+                      <canvas id="surveys"></canvas>
                   </div>
               </div>
           </div>
@@ -202,25 +201,28 @@
 
             //Line Graph
             var data = {
-                labels : ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+
+                labels : ["One","Two","Three"],
+
                 datasets : [
                     {
                         fillColor : "rgba(99,123,133,0.4)",
                         strokeColor : "rgba(220,220,220,1)",
                         pointColor : "rgba(220,220,220,1)",
                         pointStrokeColor : "#fff",
-                        data : [65,54,30,81,56,55,40]
+                        data : [23,14,67]
                     },
                     {
                         fillColor : "rgba(219,186,52,0.4)",
                         strokeColor : "rgba(220,220,220,1)",
                         pointColor : "rgba(220,220,220,1)",
                         pointStrokeColor : "#fff",
-                        data : [20,60,42,58,31,21,50]
+                        data : [12,13,14]
                     },
                 ]
+
             }
-            var canvas = document.getElementById("shipments");
+            var canvas = document.getElementById("tva");
             var ctx = canvas.getContext("2d");
             new Chart(ctx).Line(data);
 
@@ -237,7 +239,7 @@
                     }
                 ]
             }
-            var canvas = document.getElementById("departments");
+            var canvas = document.getElementById("surveys");
             var ctx = canvas.getContext("2d");
             new Chart(ctx).Radar(data);
 
@@ -255,3 +257,4 @@
         </script>
     </body>
 </html>
+{% endblock content %}

@@ -96,12 +96,12 @@ $(function () {
         series: [{
             name: 'Estimated',
             data: [
-            {% for project in getProjects %}{{ project.total_estimated_budget }},{%endfor%} 0]
+            {% for project in getProjects %}{{ project.total_estimated_budget }},{%endfor%}]
 
         },  {
             name: 'Actual',
             data: [
-            {% for project in getProjects %}{{ project.total_estimated_budget }},{%endfor%} 0]
+            {% for project in getProjects %}{{ project.total_estimated_budget }},{%endfor%}]
 
         }]
     });
