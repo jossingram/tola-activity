@@ -35,12 +35,18 @@
         <!-- Add your site or application content here -->
         <div class="wrapper">
 
+
             <div class="container clearfix">
             <div class="logo" style="float: left">
                   <a href="/"><img src="{{ STATIC_URL }}/img/logo-big.gif" style="float: left" border="0"></a>
               </div>
                 <div class="widget">
               <h3>{% if getProgram %}{{ getProgram.name }}{% endif %}</h3>
+
+          <div class="container clearfix">
+            <div class="widget">
+              <h3>Map</h3>
+
               <style>
                   #map { height: 350px; }
               </style>
@@ -84,6 +90,7 @@
                 "Project Sites": cities
                 };
                 L.control.layers(baseLayers, overlays).addTo(map);
+
                </script>
             </div>
           </div>
