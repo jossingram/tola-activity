@@ -128,9 +128,11 @@ class CustomDashboard(models.Model):
     def __unicode__(self):
         return self.dashboard_name
 
+
 class CustomDashboardAdmin(admin.ModelAdmin):
     list_display = ('dashboard_name', 'dashboard_description', 'create_date', 'edit_date')
     display = 'Custom Dashboard'
+
 
 class Program(models.Model):
     gaitid = models.CharField("GAITID", max_length=255, blank=True, unique=True)
@@ -142,6 +144,7 @@ class Program(models.Model):
     dashboard_name = models.ForeignKey(CustomDashboard, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    budget_check = models.BooleanField("Enable Approval Authority Matrix", default=False)
     country = models.ManyToManyField(Country)
 
     class Meta:
@@ -156,14 +159,18 @@ class Program(models.Model):
         self.edit_date = datetime.now()
         super(Program, self).save()
 
+    @property
+    def countries(self):
+        return ', '.join([x.country for x in self.country.all()])
+
     #displayed in admin templates
     def __unicode__(self):
         return self.name
 
 
 class ProgramAdmin(admin.ModelAdmin):
-    list_display = ('name','country', 'description', 'create_date', 'edit_date')
-    search_fields = ('name','country')
+    list_display = ('countries','name','gaitid', 'description')
+    search_fields = ('name','gaitid')
     list_filter = ('funding_status','country')
     display = 'Program'
 
@@ -189,12 +196,14 @@ class ApprovalAuthority(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.fund
+        return self.approval_user.first_name + " " + self.approval_user.last_name
 
 
 class ApprovalAuthorityAdmin(admin.ModelAdmin):
-    list_display = ('fund')
+    list_display = ('approval_user','budget_limit','fund','country')
     display = 'Approval Authority'
+    search_fields = ('approval_user','country')
+    list_filter = ('create_date','country')
 
 
 class Province(models.Model):

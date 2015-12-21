@@ -285,40 +285,45 @@ class ProjectAgreementUpdate(UpdateView):
         #get the approval status of the form before it was submitted
         check_agreement_status = ProjectAgreement.objects.get(id=str(self.kwargs['pk']))
         is_approved = str(form.instance.approval)
-        print check_agreement_status.approval
-        print is_approved
+        country = getCountry(self.request.user)
+        countries = []
+        for c in country:
+            countries = countries.append(c.id)
+
         #check to see if the approval status has changed
-        if str(is_approved) is "approved" and check_agreement_status.approval is not "approved":
+        if str(is_approved) == "approved" and check_agreement_status.approval != "approved":
+            getProgram = Program.objects.get(agreement=check_agreement_status)
             budget = form.instance.total_estimated_budget
-            try:
-                user_budget_approval = ApprovalAuthority.objects.get(approval_user=self.request.user)
-            except ApprovalAuthority.DoesNotExist:
-                user_budget_approval = None
+            if getProgram.budget_check == True:
+                try:
+                    user_budget_approval = ApprovalAuthority.objects.get(approval_user=self.request.user)
+                except ApprovalAuthority.DoesNotExist:
+                    user_budget_approval = None
             #compare budget amount to users approval amounts
-            print "has approval="
-            print user_budget_approval
-            print " approval amount = "
-            print budget
-            print "budget limit = "
-            print user_budget_approval.budget_limit
-            if not user_budget_approval or int(budget) > int(user_budget_approval.budget_limit):
-                messages.success(self.request, 'You do not appear to have permissions to approve this agreement')
-                form.instance.approval = 'awaiting approval'
+
+            if getProgram.budget_check:
+                if not user_budget_approval or int(budget) > int(user_budget_approval.budget_limit):
+                    messages.success(self.request, 'You do not appear to have permissions to approve this agreement')
+                    form.instance.approval = 'awaiting approval'
+                else:
+                    messages.success(self.request, 'Success, Agreement and Budget Approved')
             else:
-                messages.success(self.request, 'Success, Agreement and Budget Approved')
-                #email the approver group so they know this was approved
-                link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
-                subject = "Project Agreement Approved: " + str(form.instance.project_name)
-                message = "A new agreement was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
-                emailGroup(group="Approver",link=link,subject=subject,message=message)
-                form.instance.approval = 'approved'
-        elif str(is_approved) is "awaiting approval" and check_agreement_status.approval is not "awaiting approval":
-                messages.success(self.request, 'Success, Agreement has been saved and is now Awaiting Approval (Notifications have been Sent)')
-                #email the approver group so they know this was approved
-                link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
-                subject = "Project Agreement Waiting for Approval: " + str(form.instance.project_name)
-                message = "A new agreement was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
-                emailGroup(group="Approver",link=link,subject=subject,message=message)
+                messages.success(self.request, 'Success, Agreement Approved')
+
+            #email the approver group so they know this was approved
+            link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+            subject = "Project Agreement Approved: " + str(form.instance.project_name)
+            message = "A new agreement was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
+            getSubmiter = User.objects.get(username=self.request.user)
+            emailGroup(submiter=getSubmiter.email, country=countries,group="Approver",link=link,subject=subject,message=message)
+            form.instance.approval = 'approved'
+        elif str(is_approved) == "awaiting approval" and check_agreement_status.approval != "awaiting approval":
+            messages.success(self.request, 'Success, Agreement has been saved and is now Awaiting Approval (Notifications have been Sent)')
+            #email the approver group so they know this was approved
+            link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+            subject = "Project Agreement Waiting for Approval: " + str(form.instance.project_name)
+            message = "A new agreement was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
+            emailGroup(country=countries,group="Approver",link=link,subject=subject,message=message)
         else:
             messages.success(self.request, 'Success, form updated!')
         form.save()
