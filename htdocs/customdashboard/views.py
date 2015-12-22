@@ -70,7 +70,6 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
 def PublicDashboard(request,id=0):
     program_id = id
     countries = getCountry(request.user)
-    getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id)
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     getProgram=Program.objects.get(id=program_id)
     getProjects = ProjectAgreement.objects.all().filter(program_id=program_id)
@@ -87,7 +86,7 @@ def PublicDashboard(request,id=0):
                                                                      'getSiteProfile':getSiteProfile,'countries':countries,
                                                                      'awaiting':getAwaitingApprovalCount,
                                                                      'approved': getApprovedCount,
-                                                                     'rejected': getRejectedCount, 'getQuantitativeDataSums_2': getQuantitativeDataSums_2,
+                                                                     'rejected': getRejectedCount,
                                                                      'in_progress': getInProgressCount,
                                                                      'total_projects': getProjectsCount,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums})
