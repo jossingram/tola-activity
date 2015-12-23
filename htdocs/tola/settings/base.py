@@ -211,6 +211,9 @@ THIRD_PARTY_APPS = (
     'report_builder',
     'mathfilters',
     'import_export',
+    'django_wysiwyg',
+    'ckeditor',
+    'ckeditor_uploader',
 )
 
 # Apps specific for this project go here.
@@ -319,3 +322,15 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 REPORT_BUILDER_INCLUDE = []
 REPORT_BUILDER_EXCLUDE = ['user','groups','read','template','silo','readtoken']
 REPORT_BUILDER_ASYNC_REPORT = False
+
+#wysiwyg settings
+DJANGO_WYSIWYG_FLAVOR = "ckeditor"
+CKEDITOR_UPLOAD_PATH = "media/uploads/"
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': 300,
+    },
+}

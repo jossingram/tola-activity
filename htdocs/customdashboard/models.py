@@ -33,7 +33,7 @@ class ProgramNarrative(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.program
+        return '%s' % (self.program)
 
 
 class ProgramNarrativeAdmin(admin.ModelAdmin):
@@ -63,7 +63,7 @@ class ProgramLinks(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.program
+        return '%s' % (self.program)
 
 
 class ProgramLinksAdmin(admin.ModelAdmin):
