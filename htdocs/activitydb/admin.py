@@ -4,7 +4,24 @@ from .models import Country, Province, Office, Village, Program, ProgramAdmin, D
     Benchmarks, Evaluate, ProjectType, ProjectTypeOther, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ApprovalAuthorityAdmin, ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
     Contact, StakeholderAdmin, ContactAdmin, FormLibrary, FormLibraryAdmin, FormEnabled, FormEnabledAdmin, Feedback, FeedbackAdmin
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
+
+class ProjectAgreementResource(resources.ModelResource):
+
+    class Meta:
+        model = ProjectAgreement
+        widgets = {
+                'create_date': {'format': '%d/%m/%Y'},
+                'edit_date': {'format': '%d/%m/%Y'},
+                'expected_start_date': {'format': '%d/%m/%Y'},
+                }
+
+
+class ProjectAgreementAdmin(ImportExportModelAdmin):
+    resource_class = ProjectAgreementResource
+    pass
 
 admin.site.register(Country)
 admin.site.register(Province, ProvinceAdmin)
