@@ -49,7 +49,7 @@ class IndicatorForm(forms.ModelForm):
                 ),
                 Tab('Performance',
                      Fieldset('Performance',
-                        'name', 'type', 'level', 'number', 'source', 'definition', 'disaggregation','owner', 'country','indicator_type',PrependText('','key_performance_inidcator')
+                        'name', 'type', 'level', 'number', 'source', 'definition', 'disaggregation','owner', 'country','indicator_type',PrependedText('key_performance_indicator','')
                         ),
                 ),
                 Tab('Targets',
