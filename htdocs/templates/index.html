@@ -257,10 +257,6 @@ $(function () {
                 break;
             }
 
-            // Print a feedback on the performance
-            if (n === fullLen) {
-                $('#result').html('Generated ' + fullLen + ' sparklines in ' + (new Date() - start) + ' ms');
-            }
         }
     }
     doChunk();
@@ -279,7 +275,7 @@ $(function () {
                     <div class="btn-group" role="group">
                         <div class="btn-group" role="group">
                             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                Country Dashboard
+                                {% if selected_countries_list %} {% for item in selected_countries_list %} {{ item.country }} {%endfor%}{%else%} Country {% endif %}Dashboard
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
@@ -287,7 +283,7 @@ $(function () {
                                  <li><a href="/{{ item.id }}/">{{ item.country }}</a></li>
                               {% endfor %}
                               <li role="separator" class="divider"></li>
-                              <li class="disabled"><a href="/">All</a></li>
+                              <li><a href="/">All</a></li>
                             </ul>
                         </div>
                         <a href="/activitydb/dashboard/project/0/" class="btn btn-default btn-success">Create a Project</a>

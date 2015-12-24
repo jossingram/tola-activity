@@ -26,15 +26,16 @@ from django.contrib.auth.decorators import login_required
 def index(request,selected_countries=None,id=0,sector=0):
     """
     Home page
-    get count of proposals and agreements approved and total for dashboard
+    get count of agreements approved and total for dashboard
     """
     program_id = id
     user_countries = getCountry(request.user)
     if not selected_countries:
         selected_countries = user_countries
+        selected_countries_list = None
+    else:
+        selected_countries_list = ActivityCountry.objects.all().filter(id__in=selected_countries)
 
-    print user_countries
-    print selected_countries
     getSectors = Sector.objects.all().exclude(program__isnull=True).select_related()
 
     if int(sector) == 0:
@@ -81,7 +82,7 @@ def index(request,selected_countries=None,id=0,sector=0):
     getObjectives = CollectedData.objects.all().filter(Q(Q(agreement__sector__in=sectors)|Q(agreement__sector__isnull=True)),achieved__isnull=False,targeted__isnull=False,indicator__strategic_objectives__isnull=False, indicator__country__in=selected_countries).exclude(achieved=None,targeted=None).order_by('indicator__strategic_objectives__name').values('indicator__strategic_objectives__name').annotate(indicators=Count('pk', distinct=True),targets=Sum('targeted'), actuals=Sum('achieved'))
     table = IndicatorDataTable(getQuantitativeDataSums)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
-
+    print selected_countries_list
     return render(request, "index.html", {'agreement_total_count':agreement_total_count,\
                                           'agreement_approved_count':agreement_approved_count,\
                                           'agreement_open_count':agreement_open_count,\
@@ -92,7 +93,8 @@ def index(request,selected_countries=None,id=0,sector=0):
                                           'programs':getPrograms,'getSiteProfile':getSiteProfile,'countries': user_countries,'selected_countries':selected_countries,'getFilteredName':getFilteredName,'getSectors':getSectors,\
                                           'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums,\
                                           'count_evidence':count_evidence,
-                                          'getObjectives':getObjectives
+                                          'getObjectives':getObjectives,
+                                          'selected_countries_list': selected_countries_list
                                           })
 
 def contact(request):
