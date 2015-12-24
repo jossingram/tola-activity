@@ -8,7 +8,7 @@
     var country=[];
     var country_lat=[];
     var country_long=[];
-    {% for item in country %}
+    {% for item in countries %}
         country[{{forloop.counter}}] = "{{ item.country }}";
         country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
         country_long[{{forloop.counter}}] = "{{ item.longitude }}";
