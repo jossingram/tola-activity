@@ -129,7 +129,7 @@ class ProjectAgreementList(ListView):
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
         if int(self.kwargs['pk']) == 0:
-            getDashboard = ProjectAgreement.objects.all()
+            getDashboard = ProjectAgreement.objects.all().filter(program__country__in=countries)
             return render(request, self.template_name, {'form': form, 'getDashboard':getDashboard,'getPrograms':getPrograms})
         else:
             getDashboard = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk'])

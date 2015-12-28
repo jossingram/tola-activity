@@ -825,7 +825,7 @@ class ProjectAgreementAdmin(admin.ModelAdmin):
 
 class ProjectComplete(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True, related_name="complete")
-    project_agreement = models.ForeignKey(ProjectAgreement)
+    project_agreement = models.OneToOneField(ProjectAgreement)
     activity_code = models.CharField("Activity Code", max_length=255, blank=True, null=True)
     project_name = models.CharField("Project Name", max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", max_length=255, blank=True, null=True)
