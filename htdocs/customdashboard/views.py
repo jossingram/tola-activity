@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
+
 from django.shortcuts import render
 from django.contrib import auth
 from activitydb.models import ProjectAgreement, CustomDashboard ,ProjectComplete, Program, SiteProfile, Sector,Country as ActivityCountry, Feedback, FAQ, DocumentationApp
@@ -96,7 +97,7 @@ def Gallery(request,id=0):
     countries = getCountry(request.user)
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
-
+    getProgram = Program.objects.all().get(id=program_id)
     getProjects = ProjectAgreement.objects.all().filter(program_id=program_id, program__country__in=countries)
     getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
 
@@ -107,7 +108,7 @@ def Gallery(request,id=0):
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
 
-    return render(request, "gallery/gallery.html", {'getProjects':getProjects,
+    return render(request, "gallery/gallery.html", {'getProjects':getProjects, 'getProgram':getProgram,
                                                                      'getSiteProfile':getSiteProfile,'countries':countries,
                                                                      'awaiting':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
                                                                      'approved': getApprovedCount,
@@ -115,3 +116,4 @@ def Gallery(request,id=0):
                                                                      'in_progress': getInProgressCount,
                                                                      'total_projects': getProjectsCount,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums})
+

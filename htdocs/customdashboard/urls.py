@@ -2,6 +2,7 @@ from .views import DefaultCustomDashboard, PublicDashboard
 
 from django.conf.urls import *
 
+
 # place app url patterns here
 
 urlpatterns = patterns('',
@@ -21,4 +22,7 @@ urlpatterns = patterns('',
 
                        #gallery
                        url(r'^public/(?P<id>\w+)/gallery/([0-9]+)/$', 'customdashboard.views.Gallery', name='gallery'),
+                       url(r'^public/(?P<id>\w+)/([0-9]+)/gallery/([0-9]+)/$', 'customdashboard.views.Gallery', name='gallery'),
                        )
+
+
