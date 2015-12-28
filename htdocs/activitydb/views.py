@@ -478,12 +478,6 @@ class ProjectCompleteCreate(CreateView):
         getComplete = ProjectComplete.objects.get(id=latest.id)
         getAgreement = ProjectAgreement.objects.get(id=self.request.POST['project_agreement'])
 
-        print latest
-        print getComplete.id
-        print getComplete.project_agreement_id
-        print getAgreement.account_code
-        print getAgreement.lin_code
-
         ProgramDashboard.objects.filter(project_agreement__id=self.request.POST['project_agreement']).update(project_completion=getComplete)
 
         #update the quantitative data fields to include the newly created complete
@@ -1268,7 +1262,9 @@ class ContactCreate(CreateView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Success, Contact Created!')
-        return self.render_to_response(self.get_context_data(form=form))
+        latest = Contact.objects.latest('id')
+        redirect_url = '/activitydb/contact_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
 
     form_class = ContactForm
 
@@ -1378,7 +1374,9 @@ class StakeholderCreate(CreateView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Success, Stakeholder Created!')
-        return self.render_to_response(self.get_context_data(form=form))
+        latest = Stakeholder.objects.latest('id')
+        redirect_url = '/activitydb/stakeholder_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
 
     form_class = StakeholderForm
 
@@ -1485,7 +1483,9 @@ class TrainingCreate(CreateView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Success, Training Created!')
-        return self.render_to_response(self.get_context_data(form=form))
+        latest = TrainingAttendance.objects.latest('id')
+        redirect_url = '/activitydb/training_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
 
     form_class = TrainingAttendanceForm
 
@@ -1582,7 +1582,9 @@ class BeneficiaryCreate(CreateView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Success, Beneficiary Created!')
-        return self.render_to_response(self.get_context_data(form=form))
+        latest = Beneficiary.objects.latest('id')
+        redirect_url = '/activitydb/beneficiary_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
 
     form_class = BeneficiaryForm
 
