@@ -96,7 +96,7 @@
                     <a href="http://www.toladata.com" class="text-muted">Inspired in Kabul. Built in Portland.</a>
                 </div>
                 <div class="col-md-4 text-right">
-                    <a href="" class="text-muted">Gallery</a> | <a href="" class="text-muted">Surveys</a> | <a href="" class="text-muted">Success Stories</a>
+                    <a href="/customdashboard/public/{% if getProgram %}{{ getProgram.id }}{% else %}0{% endif %}/{{ getProgram.id }}gallery/0/" class="text-muted">Gallery</a> | <a href="" class="text-muted">Surveys</a> | <a href="" class="text-muted">Success Stories</a>
                 </div>
             </div>
         </div><!-- .footer collapse -->

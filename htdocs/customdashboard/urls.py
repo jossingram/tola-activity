@@ -19,5 +19,6 @@ urlpatterns = patterns('',
                        #project status
                        url(r'^(?P<id>[0-9]+)/(?P<status>[\w ]+)/$', 'customdashboard.views.DefaultCustomDashboard', name='project_status'),
 
-
+                       #gallery
+                       url(r'^public/(?P<id>\w+)/gallery/([0-9]+)/$', 'customdashboard.views.Gallery', name='gallery'),
                        )
