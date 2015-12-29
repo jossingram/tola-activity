@@ -118,6 +118,7 @@ $(function () {
         var hasRenderToArg = typeof a === 'string' || a.nodeName,
             options = arguments[hasRenderToArg ? 1 : 0],
             defaultOptions = {
+                exporting: { enabled: false },
                 chart: {
                     renderTo: (options.chart && options.chart.renderTo) || this,
                     backgroundColor: null,
@@ -226,6 +227,8 @@ $(function () {
             data,
             chart;
 
+
+
         for (i = 0; i < len; i += 1) {
             $td = $($tds[i]);
             stringdata = $td.data('sparkline');
@@ -236,13 +239,15 @@ $(function () {
             if (arr[1]) {
                 chart.type = arr[1];
             }
+
+
             $td.highcharts('SparkLine', {
                 series: [{
                     data: data,
                     pointStart: 1
                 }],
                 tooltip: {
-                    headerFormat: '<span style="font-size: 10px">' + $td.parent().find('th').html() + ':</span><br/>',
+                    headerFormat: '<span style="font-size: 10px">' + "Target" + ':</span><br/>',
                     pointFormat: '<b>{point.y}</b>'
                 },
                 chart: chart
@@ -299,7 +304,7 @@ $(function () {
                     Indicator Evidence Leaderboard
                 </div>
                 <div class="panel-body">
-                    <table class="table">
+                    <table class="table table-bordered">
                         <tr>
                             <th>Country</th>
                             <th>Indicator Data</th>
@@ -320,28 +325,31 @@ $(function () {
                     Strategic Objectives
                 </div>
                 <div class="panel-body">
-                    <div id="result"></div>
-                    <table class="table" id="table-sparkline">
+                {% if getObjectives %}
+                    <table class="table table-bordered table-striped" id="table-sparkline">
                         <tbody id="tbody-sparkline">
                         {%for value in getObjectives  %}
                             <thead>
-                                <tr>
+                                <tr class="info">
                                     <th colspan="2">{{value.indicator__strategic_objectives__name}}</th>
                                 </tr>
                                 <tr>
-                                    <th>Indicators</th>
-                                    <th>TvA</th>
+                                    <th># of Indicators</th>
+                                    <th>Target/Actuals</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody-sparkline">
                                 <tr>
-                                   <td>{{value.indicators}}</td>
+                                   <th>{{value.indicators}}</th>
                                    <td data-sparkline="{{value.targets}}, {{value.actuals}};"/>
                                 </tr>
                             </tbody>
                         {%endfor%}
                     </table>
-                </div>
+                {% else %}
+                    <p>No indicators currently aligned with country strategic objectives.</p>
+                {% endif %}
+                 </div>
              </div>
 
             <div class="panel panel-info">
