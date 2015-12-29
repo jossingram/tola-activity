@@ -46,6 +46,9 @@ urlpatterns = patterns('',
 
                         #index
                         url(r'^$', 'tola.views.index', name='index'),
+                        #enable the admin:
+                        url(r'^admin/', include(admin.site.urls)),
+                        url(r'^(?P<selected_countries>\w+)/$', 'tola.views.index', name='index'),
 
                         #index
                         url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', 'tola.views.index', name='index'),
@@ -59,8 +62,7 @@ urlpatterns = patterns('',
                         #enable admin documentation:
                         url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-                        #enable the admin:
-                        url(r'^admin/', include(admin.site.urls)),
+
 
                         #home
                         url(r'^contact', 'tola.views.contact', name='contact'),

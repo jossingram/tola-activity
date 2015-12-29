@@ -129,7 +129,7 @@ class ProjectAgreementList(ListView):
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
         if int(self.kwargs['pk']) == 0:
-            getDashboard = ProjectAgreement.objects.all()
+            getDashboard = ProjectAgreement.objects.all().filter(program__country__in=countries)
             return render(request, self.template_name, {'form': form, 'getDashboard':getDashboard,'getPrograms':getPrograms})
         else:
             getDashboard = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk'])
@@ -285,40 +285,45 @@ class ProjectAgreementUpdate(UpdateView):
         #get the approval status of the form before it was submitted
         check_agreement_status = ProjectAgreement.objects.get(id=str(self.kwargs['pk']))
         is_approved = str(form.instance.approval)
-        print check_agreement_status.approval
-        print is_approved
+        country = getCountry(self.request.user)
+        countries = []
+        for c in country:
+            countries = countries.append(c.id)
+
         #check to see if the approval status has changed
-        if str(is_approved) is "approved" and check_agreement_status.approval is not "approved":
+        if str(is_approved) == "approved" and check_agreement_status.approval != "approved":
+            getProgram = Program.objects.get(agreement=check_agreement_status)
             budget = form.instance.total_estimated_budget
-            try:
-                user_budget_approval = ApprovalAuthority.objects.get(approval_user=self.request.user)
-            except ApprovalAuthority.DoesNotExist:
-                user_budget_approval = None
+            if getProgram.budget_check == True:
+                try:
+                    user_budget_approval = ApprovalAuthority.objects.get(approval_user=self.request.user)
+                except ApprovalAuthority.DoesNotExist:
+                    user_budget_approval = None
             #compare budget amount to users approval amounts
-            print "has approval="
-            print user_budget_approval
-            print " approval amount = "
-            print budget
-            print "budget limit = "
-            print user_budget_approval.budget_limit
-            if not user_budget_approval or int(budget) > int(user_budget_approval.budget_limit):
-                messages.success(self.request, 'You do not appear to have permissions to approve this agreement')
-                form.instance.approval = 'awaiting approval'
+
+            if getProgram.budget_check:
+                if not user_budget_approval or int(budget) > int(user_budget_approval.budget_limit):
+                    messages.success(self.request, 'You do not appear to have permissions to approve this agreement')
+                    form.instance.approval = 'awaiting approval'
+                else:
+                    messages.success(self.request, 'Success, Agreement and Budget Approved')
             else:
-                messages.success(self.request, 'Success, Agreement and Budget Approved')
-                #email the approver group so they know this was approved
-                link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
-                subject = "Project Agreement Approved: " + str(form.instance.project_name)
-                message = "A new agreement was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
-                emailGroup(group="Approver",link=link,subject=subject,message=message)
-                form.instance.approval = 'approved'
-        elif str(is_approved) is "awaiting approval" and check_agreement_status.approval is not "awaiting approval":
-                messages.success(self.request, 'Success, Agreement has been saved and is now Awaiting Approval (Notifications have been Sent)')
-                #email the approver group so they know this was approved
-                link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
-                subject = "Project Agreement Waiting for Approval: " + str(form.instance.project_name)
-                message = "A new agreement was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
-                emailGroup(group="Approver",link=link,subject=subject,message=message)
+                messages.success(self.request, 'Success, Agreement Approved')
+
+            #email the approver group so they know this was approved
+            link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+            subject = "Project Agreement Approved: " + str(form.instance.project_name)
+            message = "A new agreement was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
+            getSubmiter = User.objects.get(username=self.request.user)
+            emailGroup(submiter=getSubmiter.email, country=countries,group="Approver",link=link,subject=subject,message=message)
+            form.instance.approval = 'approved'
+        elif str(is_approved) == "awaiting approval" and check_agreement_status.approval != "awaiting approval":
+            messages.success(self.request, 'Success, Agreement has been saved and is now Awaiting Approval (Notifications have been Sent)')
+            #email the approver group so they know this was approved
+            link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+            subject = "Project Agreement Waiting for Approval: " + str(form.instance.project_name)
+            message = "A new agreement was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
+            emailGroup(country=countries,group="Approver",link=link,subject=subject,message=message)
         else:
             messages.success(self.request, 'Success, form updated!')
         form.save()
@@ -472,12 +477,6 @@ class ProjectCompleteCreate(CreateView):
         latest = ProjectComplete.objects.latest('id')
         getComplete = ProjectComplete.objects.get(id=latest.id)
         getAgreement = ProjectAgreement.objects.get(id=self.request.POST['project_agreement'])
-
-        print latest
-        print getComplete.id
-        print getComplete.project_agreement_id
-        print getAgreement.account_code
-        print getAgreement.lin_code
 
         ProgramDashboard.objects.filter(project_agreement__id=self.request.POST['project_agreement']).update(project_completion=getComplete)
 
@@ -1263,7 +1262,9 @@ class ContactCreate(CreateView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Success, Contact Created!')
-        return self.render_to_response(self.get_context_data(form=form))
+        latest = Contact.objects.latest('id')
+        redirect_url = '/activitydb/contact_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
 
     form_class = ContactForm
 
@@ -1373,7 +1374,9 @@ class StakeholderCreate(CreateView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Success, Stakeholder Created!')
-        return self.render_to_response(self.get_context_data(form=form))
+        latest = Stakeholder.objects.latest('id')
+        redirect_url = '/activitydb/stakeholder_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
 
     form_class = StakeholderForm
 
@@ -1480,7 +1483,9 @@ class TrainingCreate(CreateView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Success, Training Created!')
-        return self.render_to_response(self.get_context_data(form=form))
+        latest = TrainingAttendance.objects.latest('id')
+        redirect_url = '/activitydb/training_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
 
     form_class = TrainingAttendanceForm
 
@@ -1577,7 +1582,9 @@ class BeneficiaryCreate(CreateView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Success, Beneficiary Created!')
-        return self.render_to_response(self.get_context_data(form=form))
+        latest = Beneficiary.objects.latest('id')
+        redirect_url = '/activitydb/beneficiary_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
 
     form_class = BeneficiaryForm
 

@@ -63,6 +63,14 @@ $('input[type="file"]').each(function() {
 
 
 $(document).ready(function() {
+
+    /*
+    *  Reload page if country dropdown changes on main dashboard
+    */
+    $('#something').click(function() {
+        load(url, data, loadComplete);
+    });
+
      /*
      * Handle change in the indicator services drop-down; updates the indicator drop-down accordingly.
      */

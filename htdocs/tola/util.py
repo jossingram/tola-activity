@@ -83,16 +83,21 @@ def getTolaDataSilos(user):
         return silos
 
 
-def emailGroup(group,link,subject,message):
+def emailGroup(country,group,link,subject,message,submiter=None):
         #email incident to admins
-        getGroupEmails = User.objects.all().filter(groups__name=group).values_list('email', flat=True)
+        getGroupEmails = User.objects.all().filter(groups__name=group,userprofile__country=country).values_list('email', flat=True)
+        print getGroupEmails
         email_link = link
         formatted_email = email_link
         subject = str(subject)
         message = str(message) + formatted_email
+       
         to = [str(item) for item in getGroupEmails]
+        if submiter:
+            to.append(submiter)
+        print to
 
-        email = EmailMessage(subject, message, 'systems-incident@mercycorps.org',
+        email = EmailMessage(subject, message, 'systems@mercycorps.org',
                 to)
 
         email.send()
