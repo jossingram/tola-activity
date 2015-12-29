@@ -30,7 +30,6 @@ import requests
 from activitydb.mixins import AjaxableResponseMixin
 
 
-
 class IndicatorList(ListView):
     """
     indicator List
@@ -478,15 +477,13 @@ class CollectedDataCreate(CreateView):
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
-        context.update({'indicator_id': self.kwargs['indicator']})
-        context.update({'program_id': self.kwargs['program']})
+
         return context
 
     def get_initial(self):
         initial = {
             'indicator': self.kwargs['indicator'],
             'program': self.kwargs['program'],
-
         }
 
         return initial
@@ -659,6 +656,16 @@ def service_json(request, service):
     """
     service_indicators = import_indicator(service,deserialize=False)
     return HttpResponse(service_indicators, content_type="application/json")
+
+
+def collected_data_json(AjaxableResponseMixin, indicator,program):
+    """
+    For populating service indicators in dropdown
+    """
+    template_name = 'indicators/collected_data_table.html'
+    collecteddata = CollectedData.objects.all().filter(indicator=indicator)
+    collected_sum = CollectedData.objects.filter(indicator=indicator).aggregate(Sum('targeted'),Sum('achieved'))
+    return render_to_response(template_name, {'collecteddata': collecteddata, 'collected_sum': collected_sum, 'indicator_id': indicator, 'program_id': program})
 
 
 def tool(request):

@@ -26,7 +26,6 @@ urlpatterns = patterns('',
     url(r'^collecteddata/(?P<indicator>\w+)/(?P<program>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
     url(r'^collecteddata/(?P<indicator>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
 
-    url(r'^collecteddata_add/(?P<agreement>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
     url(r'^collecteddata_add/(?P<program>\w+)/(?P<indicator>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
     url(r'^collecteddata_import/(?P<program_id>\w+)/(?P<indicator_id>\w+)/$', 'indicators.views.collecteddata_import', name='collecteddata_import'),
     url(r'^collecteddata_update/(?P<pk>\w+)/$', CollectedDataUpdate.as_view(), name='collecteddata_update'),
@@ -41,5 +40,6 @@ urlpatterns = patterns('',
 
     #ajax calls
     url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),
+    url(r'^collected_data_table/(?P<indicator>[-\w]+)/(?P<program>[-\w]+)/', 'indicators.views.collected_data_json', name='collected_data_json'),
 
 )
