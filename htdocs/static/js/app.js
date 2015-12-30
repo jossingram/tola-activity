@@ -62,6 +62,18 @@ $('input[type="file"]').each(function() {
 });
 
 
+/*
+*  Load the collected data for an indicator on the results page
+*/
+function loadCollected(indicator,program){
+    var indicator;
+    $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
+        $('#hidden-' + indicator).html(data);
+      });
+
+};
+
+
 $(document).ready(function() {
 
     /*

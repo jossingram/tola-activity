@@ -28,7 +28,7 @@ from django.conf import settings
 from django.core import serializers
 import requests
 from activitydb.mixins import AjaxableResponseMixin
-
+from export import IndicatorResource, CollectedDataResource
 
 
 class IndicatorList(ListView):
@@ -478,15 +478,13 @@ class CollectedDataCreate(CreateView):
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
-        context.update({'indicator_id': self.kwargs['indicator']})
-        context.update({'program_id': self.kwargs['program']})
+
         return context
 
     def get_initial(self):
         initial = {
             'indicator': self.kwargs['indicator'],
             'program': self.kwargs['program'],
-
         }
 
         return initial
@@ -661,7 +659,42 @@ def service_json(request, service):
     return HttpResponse(service_indicators, content_type="application/json")
 
 
+def collected_data_json(AjaxableResponseMixin, indicator,program):
+    """
+    For populating service indicators in dropdown
+    """
+    template_name = 'indicators/collected_data_table.html'
+    collecteddata = CollectedData.objects.all().filter(indicator=indicator)
+    collected_sum = CollectedData.objects.filter(indicator=indicator).aggregate(Sum('targeted'),Sum('achieved'))
+    return render_to_response(template_name, {'collecteddata': collecteddata, 'collected_sum': collected_sum, 'indicator_id': indicator, 'program_id': program})
+
+
 def tool(request):
 
     return render(request, 'indicators/tool.html')
 
+
+class IndicatorExport(View):
+    """
+    Export all incidents to a CSV file called from a button at the bottom of the incidentList table
+    """
+
+    def get(self, *args, **kwargs ):
+        queryset = Indicator.objects.all().filter(program=self.kwargs['program'])
+        dataset = IndicatorResource().export(queryset)
+        response = HttpResponse(dataset, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+        return response
+
+
+class CollectedDataExport(View):
+    """
+    Export all incidents to a CSV file called from a button at the bottom of the incidentList table
+    """
+
+    def get(self, *args, **kwargs ):
+        queryset = CollectedData.objects.all().filter(indicator__program=program)
+        dataset = CollectedDataResource().export(queryset)
+        response = HttpResponse(dataset, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+        return response
