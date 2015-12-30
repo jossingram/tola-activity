@@ -28,6 +28,7 @@ from django.conf import settings
 from django.core import serializers
 import requests
 from activitydb.mixins import AjaxableResponseMixin
+from export import IndicatorResource, CollectedDataResource
 
 
 class IndicatorList(ListView):
@@ -672,3 +673,28 @@ def tool(request):
 
     return render(request, 'indicators/tool.html')
 
+
+class IndicatorExport(View):
+    """
+    Export all incidents to a CSV file called from a button at the bottom of the incidentList table
+    """
+
+    def get(self, *args, **kwargs ):
+        queryset = Indicator.objects.all().filter(program=self.kwargs['program'])
+        dataset = IndicatorResource().export(queryset)
+        response = HttpResponse(dataset, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+        return response
+
+
+class CollectedDataExport(View):
+    """
+    Export all incidents to a CSV file called from a button at the bottom of the incidentList table
+    """
+
+    def get(self, *args, **kwargs ):
+        queryset = CollectedData.objects.all().filter(indicator__program=program)
+        dataset = CollectedDataResource().export(queryset)
+        response = HttpResponse(dataset, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+        return response
