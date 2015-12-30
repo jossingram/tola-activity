@@ -169,9 +169,9 @@ class Program(models.Model):
 
 
 class ProgramAdmin(admin.ModelAdmin):
-    list_display = ('countries','name','gaitid', 'description')
+    list_display = ('countries','name','gaitid', 'description','budget_check')
     search_fields = ('name','gaitid')
-    list_filter = ('funding_status','country')
+    list_filter = ('funding_status','country','budget_check')
     display = 'Program'
 
 
