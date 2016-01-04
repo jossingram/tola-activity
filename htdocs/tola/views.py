@@ -18,6 +18,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Q, Count
 import collections
 from tola.util import getCountry
+from settings.local import REPORT_SERVER
 
 from django.contrib.auth.decorators import login_required
 
