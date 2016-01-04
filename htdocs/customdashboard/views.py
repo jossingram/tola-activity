@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
+from django.views.generic.list import ListView
 
 from django.shortcuts import render
 from django.contrib import auth
@@ -116,4 +117,22 @@ def Gallery(request,id=0):
                                                                      'in_progress': getInProgressCount,
                                                                      'total_projects': getProjectsCount,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums})
+
+class ProgramList(ListView):
+    """
+    Documentation
+    """
+    model = Program
+    template_name = 'customdashboard/program_list.html'
+
+    def get(self, request, *args, **kwargs):
+        getCountry = Country.objects.all()
+
+        if int(self.kwargs['pk']) == 0:
+            getProgram = Program.objects.all().filter(dashboard_name__is_public=1)
+        else:
+            getProgram = Program.objects.all().filter(dashboard_name__is_public=1, country__id=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
+
 

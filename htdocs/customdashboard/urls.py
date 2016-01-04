@@ -1,4 +1,4 @@
-from .views import DefaultCustomDashboard, PublicDashboard
+from .views import DefaultCustomDashboard, PublicDashboard, ProgramList
 
 from django.conf.urls import *
 
@@ -9,6 +9,7 @@ urlpatterns = patterns('',
 
 
                        #display public custom dashboard
+                       url(r'^program_list/(?P<pk>\w+)/$', ProgramList.as_view(), name='program_list'),
                        url(r'^public/(?P<id>\w+)/$', 'customdashboard.views.PublicDashboard', name='public_dashboard'),
                        url(r'^public/(?P<id>\w+)/([0-9]+)/$', 'customdashboard.views.PublicDashboard', name='public_dashboard'),
 
