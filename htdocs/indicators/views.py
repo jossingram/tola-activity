@@ -467,7 +467,6 @@ class CollectedDataCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataCreate, self).get_context_data(**kwargs)
-
         try:
             getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
         except DisaggregationLabel.DoesNotExist:
@@ -478,6 +477,8 @@ class CollectedDataCreate(CreateView):
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
+        context.update({'indicator_id': self.kwargs['indicator']})
+        context.update({'program_id': self.kwargs['program']})
 
         return context
 
@@ -552,7 +553,6 @@ class CollectedDataUpdate(UpdateView):
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
-        context.update({'indicator_id': getIndicator.indicator_id})
         return context
 
     def form_invalid(self, form):
@@ -605,7 +605,7 @@ def merge_two_dicts(x, y):
     return z
 
 
-def collecteddata_import(request,indicator_id=0,program_id=0):
+def collecteddata_import(request):
     """
     import collected data from Tola Tables
     """
@@ -628,7 +628,6 @@ def collecteddata_import(request,indicator_id=0,program_id=0):
 
     if request.method == 'POST':
         id = request.POST['service_table']
-        print id
         filter_url = service.feed_url + "&id=" + id
         response = requests.get(filter_url)
         get_json = json.loads(response.content)
@@ -638,17 +637,20 @@ def collecteddata_import(request,indicator_id=0,program_id=0):
             url = item['data']
             remote_owner = item['owner']['username']
 
+        check_for_existence = TolaTable.objects.all().filter(name=name,owner=owner)
+        if check_for_existence:
+            result="error"
+        else:
+            create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url)
+            create_table.save()
+            result = "success"
 
-        create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url)
-        create_table.save()
-
-        #redirect to update page
-        messages.success(request, 'Success, Data Imported!')
-        redirect_url = '/indicators/collecteddata_add/' + str(program_id)+ '/' + str(indicator_id)+ '/'
-        return HttpResponseRedirect(redirect_url)
+        #send result back as json
+        message = result
+        return HttpResponse(json.dumps(message), content_type='application/json')
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/collecteddata_import.html", {'indicator_id':int(indicator_id),'program_id':int(program_id),'getTables': data})
+    return render(request, "indicators/collecteddata_import.html", {'getTables': data})
 
 
 def service_json(request, service):

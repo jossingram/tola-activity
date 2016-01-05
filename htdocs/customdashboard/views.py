@@ -8,7 +8,7 @@ from django.views.generic.list import ListView
 from django.shortcuts import render
 from django.contrib import auth
 from activitydb.models import ProjectAgreement, CustomDashboard ,ProjectComplete, Program, SiteProfile, Sector,Country as ActivityCountry, Feedback, FAQ, DocumentationApp
-from .models import ProjectStatus
+from .models import ProjectStatus, Gallery
 from indicators.models import CollectedData
 from djangocosign.models import UserProfile
 from djangocosign.models import Country
@@ -69,13 +69,14 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
                                                                      'getRejectedCount': getRejectedCount, 'getInProgressCount': getInProgressCount,
                                                                      'getCustomDashboard': getCustomDashboard, 'getProjectsCount': getProjectsCount})
 
+
+
 def PublicDashboard(request,id=0):
     program_id = id
-    countries = getCountry(request.user)
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     getProgram = Program.objects.all().get(id=program_id)
-    getProjects = ProjectAgreement.objects.all().filter(program_id=program_id, program__country__in=countries)
+    getProjects = ProjectAgreement.objects.all().filter(program_id=program_id)
     getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
 
     getProjectsCount = ProjectAgreement.objects.all().filter(program__id=program_id).count()
@@ -86,37 +87,21 @@ def PublicDashboard(request,id=0):
 
 
     return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
-                                                                     'getSiteProfile':getSiteProfile,'countries':countries,
+                                                                     'getSiteProfile':getSiteProfile,
                                                                      'awaiting':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
                                                                      'approved': getApprovedCount,
                                                                      'rejected': getRejectedCount,
                                                                      'in_progress': getInProgressCount,
                                                                      'total_projects': getProjectsCount,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums})
+
+
 def Gallery(request,id=0):
     program_id = id
-    countries = getCountry(request.user)
-    getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
-    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
-    getProgram = Program.objects.all().get(id=program_id)
-    getProjects = ProjectAgreement.objects.all().filter(program_id=program_id, program__country__in=countries)
-    getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
+    getProgram = Program.objects.all().filter(id=program_id)
+    getGallery = Gallery.objects.all().filter(program_name__id=program_id)
+    return render(request, "gallery/gallery.html", {'getGallery':getGallery, 'getProgram':getProgram})
 
-    getProjectsCount = ProjectAgreement.objects.all().filter(program__id=program_id).count()
-    getAwaitingApprovalCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='awaiting approval').count()
-    getApprovedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved').count()
-    getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected').count()
-    getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
-
-
-    return render(request, "gallery/gallery.html", {'getProjects':getProjects, 'getProgram':getProgram,
-                                                                     'getSiteProfile':getSiteProfile,'countries':countries,
-                                                                     'awaiting':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
-                                                                     'approved': getApprovedCount,
-                                                                     'rejected': getRejectedCount,
-                                                                     'in_progress': getInProgressCount,
-                                                                     'total_projects': getProjectsCount,
-                                                                     'getQuantitativeDataSums': getQuantitativeDataSums})
 
 class ProgramList(ListView):
     """

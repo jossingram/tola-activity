@@ -52,14 +52,16 @@
                 <ul class="nav navbar-nav">
                     <li class="{{ home_tab }}"><a href="{% url 'index' %}"><span class="glyphicon glyphicon-home"></span> Home</a></li>
                     {% if report_server == True%}
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports<b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="/activitydb/report/"><span class="glyphicon glyphicon-check"></span> Activity Report</a></li>
-                                <li><a href="/indicators/data/0/"><span class="glyphicon glyphicon-check"></span> Indicator Data Report</a></li>
-                                <li><a href="/activitydb/report_builder" target="_new"><span class="glyphicon glyphicon-check"></span> Report Builder</a></li>
-                            </ul>
-                        </li>
+                        {% if user.is_authenticated  %}
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/activitydb/report/"><span class="glyphicon glyphicon-check"></span> Activity Report</a></li>
+                                    <li><a href="/indicators/data/0/"><span class="glyphicon glyphicon-check"></span> Indicator Data Report</a></li>
+                                    <li><a href="/activitydb/report_builder" target="_new"><span class="glyphicon glyphicon-check"></span> Report Builder</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dashboards<b class="caret"></b></a>
                             <ul class="dropdown-menu">

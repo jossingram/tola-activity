@@ -263,7 +263,7 @@ class Indicator(models.Model):
 
     @property
     def programs(self):
-        return ', '.join([x.name for x in self.program.all()])
+        return ', '.join([x.name in self.program.all()])
 
     @property
     def indicator_types(self):

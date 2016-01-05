@@ -16,6 +16,24 @@
 
 </script>
 
+<script type="text/javascript">
+    var frm = $('#importForm');
+    frm.submit(function () {
+        $.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
+            success: function (data) {
+                $("#alert-error").html("Success! ");
+            },
+            error: function(data) {
+                $("#alert-error").html("Something went wrong!");
+            }
+        });
+        return false;
+    });
+</script>
+
     <div class="modal-header">
 
     <div class="alert alert-error" id="alert-error">
@@ -47,7 +65,7 @@
         <h4>Import Indicator Evidence from <a href="http://tola-tables.mercycorps.org" target="_new">Tola Tables</a>.</h4>
         <p>Link one of your Tola Tables or a Table shared with you as your indicator evidence.</p>
         <div class="panel-body">
-            <form class="form-horizontal" method="post" enctype="multipart/form-data" name="most" action="/indicators/collecteddata_import/{{ program_id }}/{{ indicator_id }}/" role="form">
+            <form class="form-horizontal" method="post" enctype="multipart/form-data" id="importForm" name="most" action="/indicators/collecteddata_import/" role="form">
               {% csrf_token %}
 
               <div class="form-group">
@@ -68,7 +86,7 @@
 
     </div>
     <div class="modal-footer">
-       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/indicator/collecteddata_create/{{ id }}/#M&E';parent.location.reload();">Close</button>
+       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.reload();parent.location.reload();">Close</button>
     </div>
 
 </body>
