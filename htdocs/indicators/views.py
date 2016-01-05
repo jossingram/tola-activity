@@ -639,7 +639,7 @@ def collecteddata_import(request):
 
         check_for_existence = TolaTable.objects.all().filter(name=name,owner=owner)
         if check_for_existence:
-            result="error"
+            result = "error"
         else:
             create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url)
             create_table.save()
