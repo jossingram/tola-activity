@@ -553,6 +553,8 @@ class CollectedDataUpdate(UpdateView):
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
+        context.update({'indicator_id': getIndicator.indicator_id})
+
         return context
 
     def form_invalid(self, form):
