@@ -85,7 +85,7 @@ class ProjectDash(ListView):
 
 
         if int(self.kwargs['pk']) == 0:
-            getProgram =Program.objects.all().filter(funding_status="Funded", country__in=countries)
+            getProgram =Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
         else:
             getProgram =Program.objects.get(agreement__id=self.kwargs['pk'])
 
@@ -105,7 +105,7 @@ class ProgramDash(ListView):
 
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
         if int(self.kwargs['pk']) == 0:
             getDashboard = Program.objects.all().select_related().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('agreement'),has_complete=Count('complete'))
@@ -126,7 +126,7 @@ class ProjectAgreementList(ListView):
     def get(self, request, *args, **kwargs):
         form = ProgramDashboardForm
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
         if int(self.kwargs['pk']) == 0:
             getDashboard = ProjectAgreement.objects.all().filter(program__country__in=countries)
