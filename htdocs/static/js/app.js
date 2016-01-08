@@ -71,7 +71,7 @@ function loadCollected(indicator,program){
     $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
         $('#hidden-' + indicator).html(data);
       });
-    //$('.ajaxLoader').hide();
+    $('.ajaxLoader').hide();
 };
 
 

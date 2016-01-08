@@ -292,7 +292,7 @@ class ProjectAgreementUpdate(UpdateView):
 
         #check to see if the approval status has changed
         if str(is_approved) == "approved" and check_agreement_status.approval != "approved":
-            getProgram = Program.objects.get(agreement=check_agreement_status)
+            getProgram = Program.objects.get(agreement__id=check_agreement_status.id)
             budget = form.instance.total_estimated_budget
             if getProgram.budget_check == True:
                 try:
