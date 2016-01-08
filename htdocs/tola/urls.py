@@ -62,8 +62,6 @@ urlpatterns = patterns('',
                         #enable admin documentation:
                         url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-
-
                         #home
                         url(r'^contact', 'tola.views.contact', name='contact'),
                         url(r'^faq', 'tola.views.faq', name='faq'),
@@ -75,16 +73,21 @@ urlpatterns = patterns('',
                         #app include of activitydb urls
                         url(r'^indicators/', include('indicators.urls')),
 
-                       #app include of customdashboard urls
-                       url(r'^customdashboard/', include('customdashboard.urls')),
+                        #app include of customdashboard urls
+                        url(r'^customdashboard/', include('customdashboard.urls')),
 
                         #local login
-                        (r'^accounts/login/',  login),
+                        url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
+                        url(r'^accounts/login/$', 'django.contrib.auth.views.login', name='login'),
                         url(r'^accounts/logout/$', 'tola.views.logout_view', name='logout'),
 
                         #accounts
                         url(r'^accounts/profile/$', 'tola.views.profile', name='profile'),
                         url(r'^accounts/register/$', 'tola.views.register', name='register'),
+
+                        #Auth backend URL's
+                        url('', include('django.contrib.auth.urls', namespace='auth')),
+                        url('', include('social.apps.django_app.urls', namespace='social')),
 
 
 

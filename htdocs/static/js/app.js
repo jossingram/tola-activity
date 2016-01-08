@@ -67,10 +67,11 @@ $('input[type="file"]').each(function() {
 */
 function loadCollected(indicator,program){
     var indicator;
+    $('.ajaxLoader').show();
     $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
         $('#hidden-' + indicator).html(data);
       });
-
+    //$('.ajaxLoader').hide();
 };
 
 

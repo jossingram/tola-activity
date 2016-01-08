@@ -207,7 +207,7 @@ class ApprovalAuthorityAdmin(admin.ModelAdmin):
 
 
 class Province(models.Model):
-    name = models.CharField("Province Name", max_length=255, blank=True)
+    name = models.CharField("Admin Level 1", max_length=255, blank=True)
     country = models.ForeignKey(Country)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -235,7 +235,7 @@ class ProvinceAdmin(admin.ModelAdmin):
 
 
 class District(models.Model):
-    name = models.CharField("District Name", max_length=255, blank=True)
+    name = models.CharField("Admin Level 2", max_length=255, blank=True)
     province = models.ForeignKey(Province)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -263,7 +263,7 @@ class DistrictAdmin(admin.ModelAdmin):
 
 
 class AdminLevelThree(models.Model):
-    name = models.CharField("District Name", max_length=255, blank=True)
+    name = models.CharField("Admin Level 3", max_length=255, blank=True)
     district = models.ForeignKey(District)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -321,7 +321,7 @@ class OfficeAdmin(admin.ModelAdmin):
 
 
 class Village(models.Model):
-    name = models.CharField("Village Name", max_length=255, blank=True)
+    name = models.CharField("Admin Level 4", max_length=255, blank=True)
     district = models.ForeignKey(District)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
