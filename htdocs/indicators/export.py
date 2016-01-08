@@ -12,7 +12,7 @@ class IndicatorResource(resources.ModelResource):
     objective = fields.Field(column_name='objectives', attribute='objectives_list')
     strategic_objective = fields.Field(column_name='strategic objectives', attribute='strategicobjectives_list')
     program = fields.Field(column_name='program', attribute='programs')
-    sector = fields.Field(column_name='sector', attribute='sector', widget=ForeignKeyWidget(Sector, 'name'))
+    sector = fields.Field(column_name='sector', attribute='sector', widget=ForeignKeyWidget(Sector, 'sector'))
     level = fields.Field(column_name='levels', attribute='levels')
 
 
