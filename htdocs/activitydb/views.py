@@ -285,14 +285,11 @@ class ProjectAgreementUpdate(UpdateView):
         #get the approval status of the form before it was submitted
         check_agreement_status = ProjectAgreement.objects.get(id=str(self.kwargs['pk']))
         is_approved = str(form.instance.approval)
-        country = getCountry(self.request.user)
-        countries = []
-        for c in country:
-            countries = countries.append(c.id)
 
         #check to see if the approval status has changed
         if str(is_approved) == "approved" and check_agreement_status.approval != "approved":
             getProgram = Program.objects.get(agreement__id=check_agreement_status.id)
+            country = getProgram.country
             budget = form.instance.total_estimated_budget
             if getProgram.budget_check == True:
                 try:
@@ -315,7 +312,7 @@ class ProjectAgreementUpdate(UpdateView):
             subject = "Project Agreement Approved: " + str(form.instance.project_name)
             message = "A new agreement was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
             getSubmiter = User.objects.get(username=self.request.user)
-            emailGroup(submiter=getSubmiter.email, country=countries,group="Approver",link=link,subject=subject,message=message)
+            emailGroup(submiter=getSubmiter.email, country=country,group="Approver",link=link,subject=subject,message=message)
             form.instance.approval = 'approved'
         elif str(is_approved) == "awaiting approval" and check_agreement_status.approval != "awaiting approval":
             messages.success(self.request, 'Success, Agreement has been saved and is now Awaiting Approval (Notifications have been Sent)')
@@ -323,7 +320,7 @@ class ProjectAgreementUpdate(UpdateView):
             link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
             subject = "Project Agreement Waiting for Approval: " + str(form.instance.project_name)
             message = "A new agreement was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
-            emailGroup(country=countries,group="Approver",link=link,subject=subject,message=message)
+            emailGroup(country=country,group="Approver",link=link,subject=subject,message=message)
         else:
             messages.success(self.request, 'Success, form updated!')
         form.save()
