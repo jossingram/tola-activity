@@ -254,6 +254,10 @@ class Indicator(models.Model):
         super(Indicator, self).save(*args, **kwargs)
 
     @property
+    def name_clean(self):
+        return self.name.encode('ascii', 'ignore')
+
+    @property
     def objectives_list(self):
         return ', '.join([x.name for x in self.objectives.all()])
 

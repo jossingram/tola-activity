@@ -41,7 +41,7 @@ class IndicatorList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
+        getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded").distinct()
 
         if int(self.kwargs['pk']) == 0:
             getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name')
@@ -83,7 +83,7 @@ def indicator_create(request, id=0):
     getCountries = Country.objects.all()
     countries = getCountry(request.user)
     country_id = Country.objects.get(country=countries[0]).id
-    getPrograms = Program.objects.all().filter(funding_status="Funded",country__in=countries)
+    getPrograms = Program.objects.all().filter(funding_status="Funded",country__in=countries).distinct()
     getServices = ExternalService.objects.all()
     program_id = id
 
@@ -268,7 +268,7 @@ def indicator_report(request, program=0):
     and django-filter
     """
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
     if int(program) == 0:
         getIndicators = Indicator.objects.all().select_related().filter(country__in=countries)
@@ -307,7 +307,7 @@ def programIndicatorReport(request, program=0):
     """
     program = int(program)
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('level', 'number')
     getProgram = Program.objects.get(id=program)
 
@@ -337,7 +337,7 @@ def indicator_data_report(request, id=0, program=0):
     and django-filter
     """
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getIndicators = Indicator.objects.select_related().filter(country__in=countries)
     indicator_name = None
     program_name = None
@@ -404,7 +404,7 @@ class CollectedDataList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
         getIndicators = Indicator.objects.select_related().filter(country__in=countries).exclude(collecteddata__isnull=True)
         getCollectedData = None
         collected_sum = None
@@ -687,7 +687,7 @@ class IndicatorExport(View):
         queryset = Indicator.objects.all().filter(program=self.kwargs['program'])
         dataset = IndicatorResource().export(queryset)
         response = HttpResponse(dataset, content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+        response['Content-Disposition'] = 'attachment; filename=indicator.csv'
         return response
 
 
@@ -697,7 +697,18 @@ class CollectedDataExport(View):
     """
 
     def get(self, *args, **kwargs ):
-        queryset = CollectedData.objects.all().filter(indicator__program=program)
+        #filter by program or indicator
+        print int(self.kwargs['program'])
+        print int(self.kwargs['indicator'])
+        if int(self.kwargs['program']) != 0 and int(self.kwargs['indicator']) == 0:
+            print "Program"
+            queryset = CollectedData.objects.all().filter(indicator__program__id=self.kwargs['program'])
+        elif int(self.kwargs['program']) == 0 and int(self.kwargs['indicator']) != 0:
+            print "Indicator"
+            queryset = CollectedData.objects.all().filter(indicator__id=self.kwargs['indicator'])
+        else:
+            countries = getCountry(self.request.user)
+            queryset = CollectedData.objects.all().filter(indicator__country__in=countries)
         dataset = CollectedDataResource().export(queryset)
         response = HttpResponse(dataset, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'

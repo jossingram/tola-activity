@@ -796,6 +796,10 @@ class ProjectAgreement(models.Model):
         super(ProjectAgreement, self).save()
 
     @property
+    def project_name_clean(self):
+        return self.project_name.encode('ascii', 'ignore')
+
+    @property
     def sites(self):
         return ', '.join([x.name for x in self.site.all()])
 
@@ -908,6 +912,10 @@ class ProjectComplete(models.Model):
     def __unicode__(self):
         new_name = unicode(self.office) + unicode(" - ") + unicode(self.project_name)
         return new_name
+
+    @property
+    def project_name_clean(self):
+        return self.project_name.encode('ascii', 'ignore')
 
 
 class ProjectCompleteAdmin(admin.ModelAdmin):
