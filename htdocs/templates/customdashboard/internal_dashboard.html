@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block page_title %}Public Dashboards{% endblock %}
+{% block page_title %}Internal Dashboards{% endblock %}
 
 {% block content %}
 
@@ -10,9 +10,9 @@
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/customdashboard/program_list/0">--All--</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/customdashboard/internal_dashboard/0">--All--</a></li>
     {% for country in getCountry %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/customdashboard/program_list/{{ country.id }}">{{ country.name}}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/customdashboard/internal_dashboard/{{ country.id }}">{{ country.name}}</a></li>
     {% endfor %}
   </ul>
 </div>
@@ -26,14 +26,14 @@
     <tr>
         <th>Date Created</th>
         <th>Program Name</th>
-        <th>Public Dashboard</th>
+
         <th>View Dashboard</th>
     </tr>
     {% for item in getProgram %}
     <tr>
         <td>{{ item.create_date}}</td>
         <td>{{ item.name}}</td>
-        <td>{{ item.dashboard_name.is_public}}</a></td>
+
         <td><a href="/customdashboard/public/{{ item.id }}">{{ item.dashboard_name }}</a></td>
     </tr>
     {% empty %}

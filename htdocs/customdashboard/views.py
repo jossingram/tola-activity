@@ -123,4 +123,20 @@ class ProgramList(ListView):
 
         return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
 
+class InternalDashboard(ListView):
+    """
+    Internal Dashboard for user.is_authenticated
+    """
+    model = Program
+    template_name = 'customdashboard/internal_dashboard.html'
+
+    def get(self, request, *args, **kwargs):
+        getCountry = Country.objects.all()
+
+        if int(self.kwargs['pk']) == 0:
+            getProgram = Program.objects.all().filter(dashboard_name__is_public=0)
+        else:
+            getProgram = Program.objects.all().filter(dashboard_name__is_public=0, country__id=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
 
