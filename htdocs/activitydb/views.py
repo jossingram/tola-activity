@@ -1346,6 +1346,12 @@ class StakeholderCreate(CreateView):
     def dispatch(self, request, *args, **kwargs):
         return super(StakeholderCreate, self).dispatch(request, *args, **kwargs)
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(StakeholderCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super(StakeholderCreate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['id']})
@@ -1383,6 +1389,12 @@ class StakeholderUpdate(UpdateView):
     Stakeholder Form
     """
     model = Stakeholder
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(StakeholderUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super(StakeholderUpdate, self).get_context_data(**kwargs)
