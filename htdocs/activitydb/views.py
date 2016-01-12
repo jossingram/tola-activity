@@ -795,7 +795,9 @@ class DocumentationCreate(CreateView):
         form.save()
 
         messages.success(self.request, 'Success, Documentation Created!')
-        return self.render_to_response(self.get_context_data(form=form))
+        latest = Documentation.objects.latest('id')
+        redirect_url = '/activitydb/documentation_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
 
     form_class = DocumentationForm
 
@@ -951,7 +953,9 @@ class SiteProfileCreate(CreateView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Success, Site Profile Created!')
-        return self.render_to_response(self.get_context_data(form=form))
+        latest = SiteProfile.objects.latest('id')
+        redirect_url = '/activitydb/siteprofile_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
 
     form_class = SiteProfileForm
 
@@ -1907,8 +1911,9 @@ class ChecklistItemCreate(CreateView):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, 'Success, Checklist Item Created!')
-        form = ""
-        return self.render_to_response(self.get_context_data(form=form))
+        latest = ChecklistItem.objects.latest('id')
+        redirect_url = '/activitydb/checklistitem_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
 
 
     form_class = ChecklistItemForm

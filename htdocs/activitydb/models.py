@@ -96,7 +96,7 @@ class Contact(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.name
+        return self.title + " " + self.name
 
 
 class ContactAdmin(admin.ModelAdmin):
