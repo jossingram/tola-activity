@@ -304,8 +304,10 @@ class ProjectAgreementUpdate(UpdateView):
                     form.instance.approval = 'awaiting approval'
                 else:
                     messages.success(self.request, 'Success, Agreement and Budget Approved')
+                    form.instance.approval = 'approved'
             else:
                 messages.success(self.request, 'Success, Agreement Approved')
+                form.instance.approval = 'approved'
 
             #email the approver group so they know this was approved
             link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
@@ -313,7 +315,6 @@ class ProjectAgreementUpdate(UpdateView):
             message = "A new agreement was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
             getSubmiter = User.objects.get(username=self.request.user)
             emailGroup(submiter=getSubmiter.email, country=country,group="Approver",link=link,subject=subject,message=message)
-            form.instance.approval = 'approved'
         elif str(is_approved) == "awaiting approval" and check_agreement_status.approval != "awaiting approval":
             messages.success(self.request, 'Success, Agreement has been saved and is now Awaiting Approval (Notifications have been Sent)')
             #email the approver group so they know this was approved
